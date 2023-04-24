@@ -1,0 +1,94 @@
+PWD d:\Files\Documents\GitHub\hci\interview_questions
+INPUT C:\Users\surre\AppData\Local\MiKTeX\miktex\data\le\pdftex\pdflatex.fmt
+INPUT d:\Files\Documents\GitHub\hci\interview_questions\interview_questions.tex
+OUTPUT interview_questions.log
+INPUT D:\Program Files\MiKTeX\tex\latex\base\article.cls
+INPUT D:\Program Files\MiKTeX\tex\latex\base\article.cls
+INPUT D:\Program Files\MiKTeX\tex\latex\base\article.cls
+INPUT D:\Program Files\MiKTeX\tex\latex\base\article.cls
+INPUT D:\Program Files\MiKTeX\tex\latex\base\article.cls
+INPUT D:\Program Files\MiKTeX\tex\latex\base\article.cls
+INPUT D:\Program Files\MiKTeX\tex\latex\base\article.cls
+INPUT D:\Program Files\MiKTeX\tex\latex\base\article.cls
+INPUT D:\Program Files\MiKTeX\tex\latex\base\article.cls
+INPUT D:\Program Files\MiKTeX\tex\latex\base\article.cls
+INPUT D:\Program Files\MiKTeX\tex\latex\base\article.cls
+INPUT D:\Program Files\MiKTeX\tex\latex\base\size12.clo
+INPUT D:\Program Files\MiKTeX\tex\latex\base\size12.clo
+INPUT D:\Program Files\MiKTeX\tex\latex\base\size12.clo
+INPUT D:\Program Files\MiKTeX\tex\latex\base\size12.clo
+INPUT D:\Program Files\MiKTeX\fonts\tfm\public\cm\cmr12.tfm
+INPUT D:\Program Files\MiKTeX\tex\latex\microtype\microtype.sty
+INPUT D:\Program Files\MiKTeX\tex\latex\microtype\microtype.sty
+INPUT D:\Program Files\MiKTeX\tex\latex\microtype\microtype.sty
+INPUT D:\Program Files\MiKTeX\tex\latex\microtype\microtype.sty
+INPUT D:\Program Files\MiKTeX\tex\latex\microtype\microtype.sty
+INPUT D:\Program Files\MiKTeX\tex\latex\microtype\microtype.sty
+INPUT D:\Program Files\MiKTeX\tex\latex\microtype\microtype.sty
+INPUT D:\Program Files\MiKTeX\tex\latex\microtype\microtype.sty
+INPUT D:\Program Files\MiKTeX\tex\latex\microtype\microtype.sty
+INPUT D:\Program Files\MiKTeX\tex\latex\microtype\microtype.sty
+INPUT D:\Program Files\MiKTeX\tex\latex\microtype\microtype.sty
+INPUT D:\Program Files\MiKTeX\tex\latex\graphics\keyval.sty
+INPUT D:\Program Files\MiKTeX\tex\latex\graphics\keyval.sty
+INPUT D:\Program Files\MiKTeX\tex\latex\graphics\keyval.sty
+INPUT D:\Program Files\MiKTeX\tex\latex\graphics\keyval.sty
+INPUT D:\Program Files\MiKTeX\tex\latex\graphics\keyval.sty
+INPUT D:\Program Files\MiKTeX\tex\latex\graphics\keyval.sty
+INPUT D:\Program Files\MiKTeX\tex\latex\graphics\keyval.sty
+INPUT D:\Program Files\MiKTeX\tex\latex\graphics\keyval.sty
+INPUT D:\Program Files\MiKTeX\tex\latex\graphics\keyval.sty
+INPUT D:\Program Files\MiKTeX\tex\latex\graphics\keyval.sty
+INPUT D:\Program Files\MiKTeX\tex\latex\graphics\keyval.sty
+INPUT D:\Program Files\MiKTeX\tex\latex\etoolbox\etoolbox.sty
+INPUT D:\Program Files\MiKTeX\tex\latex\etoolbox\etoolbox.sty
+INPUT D:\Program Files\MiKTeX\tex\latex\etoolbox\etoolbox.sty
+INPUT D:\Program Files\MiKTeX\tex\latex\etoolbox\etoolbox.sty
+INPUT D:\Program Files\MiKTeX\tex\latex\etoolbox\etoolbox.sty
+INPUT D:\Program Files\MiKTeX\tex\latex\etoolbox\etoolbox.sty
+INPUT D:\Program Files\MiKTeX\tex\latex\etoolbox\etoolbox.sty
+INPUT D:\Program Files\MiKTeX\tex\latex\etoolbox\etoolbox.sty
+INPUT D:\Program Files\MiKTeX\tex\latex\etoolbox\etoolbox.sty
+INPUT D:\Program Files\MiKTeX\tex\latex\etoolbox\etoolbox.sty
+INPUT D:\Program Files\MiKTeX\tex\latex\etoolbox\etoolbox.sty
+INPUT D:\Program Files\MiKTeX\tex\latex\microtype\microtype-pdftex.def
+INPUT D:\Program Files\MiKTeX\tex\latex\microtype\microtype-pdftex.def
+INPUT D:\Program Files\MiKTeX\tex\latex\microtype\microtype-pdftex.def
+INPUT D:\Program Files\MiKTeX\tex\latex\microtype\microtype-pdftex.def
+INPUT D:\Program Files\MiKTeX\tex\latex\microtype\microtype.cfg
+INPUT D:\Program Files\MiKTeX\tex\latex\microtype\microtype.cfg
+INPUT D:\Program Files\MiKTeX\tex\latex\microtype\microtype.cfg
+INPUT D:\Program Files\MiKTeX\tex\latex\microtype\microtype.cfg
+INPUT D:\Program Files\MiKTeX\tex\latex\microtype\microtype.cfg
+INPUT D:\Program Files\MiKTeX\tex\latex\microtype\microtype.cfg
+INPUT D:\Program Files\MiKTeX\tex\latex\l3backend\l3backend-pdftex.def
+INPUT D:\Program Files\MiKTeX\tex\latex\l3backend\l3backend-pdftex.def
+INPUT D:\Program Files\MiKTeX\tex\latex\l3backend\l3backend-pdftex.def
+INPUT D:\Program Files\MiKTeX\tex\latex\l3backend\l3backend-pdftex.def
+INPUT D:\Program Files\MiKTeX\tex\latex\l3backend\l3backend-pdftex.def
+INPUT D:\Program Files\MiKTeX\tex\latex\l3backend\l3backend-pdftex.def
+INPUT D:\Program Files\MiKTeX\tex\latex\l3backend\l3backend-pdftex.def
+INPUT D:\Program Files\MiKTeX\tex\latex\l3backend\l3backend-pdftex.def
+INPUT D:\Program Files\MiKTeX\tex\latex\l3backend\l3backend-pdftex.def
+INPUT D:\Program Files\MiKTeX\tex\latex\l3backend\l3backend-pdftex.def
+INPUT D:\Program Files\MiKTeX\tex\latex\l3backend\l3backend-pdftex.def
+INPUT .\interview_questions.aux
+INPUT interview_questions.aux
+INPUT interview_questions.aux
+OUTPUT interview_questions.aux
+INPUT D:\Program Files\MiKTeX\tex\latex\microtype\mt-cmr.cfg
+INPUT D:\Program Files\MiKTeX\tex\latex\microtype\mt-cmr.cfg
+INPUT D:\Program Files\MiKTeX\tex\latex\microtype\mt-cmr.cfg
+INPUT D:\Program Files\MiKTeX\tex\latex\microtype\mt-cmr.cfg
+INPUT D:\Program Files\MiKTeX\fonts\tfm\public\cm\cmr17.tfm
+INPUT D:\Program Files\MiKTeX\fonts\tfm\public\cm\cmr17.tfm
+INPUT D:\Program Files\MiKTeX\fonts\tfm\public\cm\cmr12.tfm
+INPUT D:\Program Files\MiKTeX\fonts\tfm\public\cm\cmmi12.tfm
+INPUT D:\Program Files\MiKTeX\fonts\tfm\public\cm\cmsy10.tfm
+OUTPUT interview_questions.pdf
+INPUT C:\Users\surre\AppData\Local\MiKTeX\fonts\map\pdftex\pdftex.map
+INPUT interview_questions.aux
+INPUT D:\Program Files\MiKTeX\fonts\type1\public\amsfonts\cm\cmr12.pfb
+INPUT D:\Program Files\MiKTeX\fonts\type1\public\amsfonts\cm\cmr12.pfb
+INPUT D:\Program Files\MiKTeX\fonts\type1\public\amsfonts\cm\cmr17.pfb
+INPUT D:\Program Files\MiKTeX\fonts\type1\public\amsfonts\cm\cmr17.pfb
