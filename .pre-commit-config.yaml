@@ -7,6 +7,8 @@
 # Do not fear, you can largely ignore this!
 # it's just for me :)
 #
+
+fail_fast: true
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v3.2.0
