@@ -1,0 +1,123 @@
+\documentclass[a4paper, 11pt]{report}
+
+
+%────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+%
+%   PACKAGES
+%
+%────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+\usepackage{microtype}
+\usepackage{hyperref}
+\usepackage[dvipsnames,table]{xcolor}
+% remove the outline of the links
+
+\hypersetup{
+    colorlinks,
+    linkcolor={black},
+    citecolor={black},
+    urlcolor={black}
+}
+
+\usepackage[scale=0.70]{geometry}
+\usepackage{graphicx}
+\usepackage{lipsum}
+
+
+\usepackage[utf8]{inputenc} % Required for inputting international characters
+\usepackage[T1]{fontenc} % Output font encoding for international characters
+
+\usepackage{kpfonts,baskervald}
+
+
+
+\usepackage{cleveref}
+
+\author{Martina Doku \and Giuseppina Iannotti \and Dennis Locatelli \and Elena Muià \and Dario Loi \and Davide Marincione}
+
+\title{\Huge Report for HCI} % to be changed
+
+\begin{document}
+
+\begin{titlepage} % Suppresses displaying the page number on the title page and the subsequent page counts as page 1
+    \newcommand{\HRule}{\rule{\linewidth}{0.5mm}} % Defines a new command for horizontal lines, change thickness here
+
+    \center % Centre everything on the page
+
+    %------------------------------------------------
+    %   Headings
+    %------------------------------------------------
+
+    \textsc{\LARGE Sapienza University of Rome}\\[1.5cm] % Main heading such as the name of your university/college
+
+    \textsc{\Large Human Computer Interaction}\\[0.5cm] % Major heading such as course name
+
+    \textsc{\large Applied Computer Science and Artificial Intelligence}\\[0.5cm] % Minor heading such as course title
+
+    %------------------------------------------------
+    %   Title
+    %------------------------------------------------
+
+    \HRule\\[0.4cm]
+
+    {\huge\bfseries A Crowd-Sourced Mobility Application}\\[0.4cm] % Title of your document
+
+    \HRule\\[1.5cm]
+
+    %------------------------------------------------
+    %   Author(s)
+    %------------------------------------------------
+
+    \begin{minipage}{0.4\textwidth}
+        \begin{flushleft}
+            \large
+            \textit{Authors:}\\[3pt]\hspace{2pt} % insert a 2pt indentation
+            Doku \textsc{Martina}\\[1pt]\hspace{2pt}
+            Iannotti \textsc{Giuseppina}\\[1pt]\hspace{2pt}
+            Locatelli \textsc{Dennis}\\[1pt]\hspace{2pt}
+            Muià \textsc{Elena}\\[1pt]\hspace{2pt}
+            Loi \textsc{Dario}\\[1pt]\hspace{2pt}
+            Marincione \textsc{Davide}
+        \end{flushleft}
+    \end{minipage}
+    \begin{minipage}{0.4\textwidth}
+        \begin{flushright}
+        \end{flushright}
+    \end{minipage}
+
+    % If you don't want a supervisor, uncomment the two lines below and comment the code above
+    %{\large\textit{Author}}\\
+    %John \textsc{Smith} % Your name
+
+    %------------------------------------------------
+    %   Date
+    %------------------------------------------------
+
+    \vfill\vfill\vfill % Position the date 3/4 down the remaining page
+
+    {\large May 2, 2023} % Date, change the \today to a set date if you want to be precise
+
+    %------------------------------------------------
+    %   Logo
+    %------------------------------------------------
+
+    %\vfill\vfill
+    %\includegraphics[width=0.2\textwidth]{placeholder.jpg}\\[1cm] % Include a department/university logo - this will require the graphicx package
+
+    %----------------------------------------------------------------------------------------
+
+    \vfill % Push the date up 1/4 of the remaining page
+
+\end{titlepage}
+
+\tableofcontents
+
+\chapter{Introduction}
+%Decide if we want to scale back to section, find a way to
+% suppress the numbering of the chapter so that first section is
+% 1.0 and not 0.1
+
+% remove lipsum if writing actual content
+\lipsum[1-2]
+
+\end{document}
