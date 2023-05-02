@@ -124,18 +124,21 @@ Furthermore, all the users will collect some credits for every contribution, whi
 
 \paragraph{Google Maps:} It is one of Italy's most frequently used mobility applications. It is a web service that provides detailed information about geographical regions and sites worldwide. In addition to conventional road maps, Google Maps offers aerial and satellite views of many locations. It works both for public transportation and private ones.
 \begin{itemize}
-	\item \textbf{Pros:} It is very intuitive and offers many fundamental features. It delivers information about possible paths to reach the destination with their duration and arrival time. It specifies the possible expenses needed for every choice taken.
-	\item \textbf{Cons:} The path duration is not defined by crowdsourced information or GPS tracking applications. It is based totally on statistical inferences which means that is almost never precise.
+  \item \textbf{Pros:} It is very intuitive and offers many fundamental features. It delivers information about possible paths to reach the destination with their duration and arrival time. It specifies the possible expenses needed for every choice taken.
+  \item \textbf{Cons:} The path duration is not defined by crowdsourced information or GPS tracking applications. It is based totally on statistical inferences which means that is almost never precise.
 \end{itemize}
 
+
 \paragraph{Moovit:}  It is one of the main mobility applications for public transportation only. It provides information about the statistically best path to reach a destination point. Describing when and where to take the transportation means in order to reach the destination as fast as possible.
+
 
 \begin{itemize}
 	\item \textbf{Pros:} More reliable than Google Maps (based on users' interviews), the interface is very intuitive.
 	\item \textbf{Cons:} Too many ads, the defined timing is almost never correct.
 \end{itemize}
 
-\paragraph{Probus:}The application is designed for Android only and it only works with buses. It informs the user about the waiting time of a certain bus line and the fastest path to reach a destination.
+
+\paragraph{Probu}The application is designed for Android only and it only works with buses. It informs the user about the waiting time of a certain bus line and the fastest path to reach a destination.
 
 \begin{itemize}
 	\item \textbf{Pros:} Useful because it is focused only on the waiting time of the bus.
