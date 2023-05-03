@@ -29,6 +29,29 @@
 
 \usepackage{kpfonts,baskervald}
 
+\usepackage{parskip}
+\usepackage{tcolorbox}
+
+\newtcolorbox{basecolorbox}[1][]{%
+  colback=gray!25, colframe=gray!25,
+  coltitle=black, fonttitle=\Large\bfseries,
+  rounded corners,
+  width = (\linewidth-30pt),
+  title=#1}
+
+\newenvironment{titlebox}[1][]{%
+  \centering
+  \basecolorbox[#1]%
+}{%
+  \endbasecolorbox%
+}
+
+\newenvironment{inlinebox}[1][]{%
+  \titlebox%
+  {\upshape\bfseries #1}%
+}{%
+  \endbasecolorbox%
+}
 
 
 \usepackage{cleveref}
@@ -50,7 +73,7 @@
 
 	\textsc{\LARGE Sapienza University of Rome}\\[1.5cm] % Main heading such as the name of your university/college
 
-	\textsc{\Large Human Computer Interaction}\\[0.5cm] % Major heading such as course name
+	\textsc{\Large Human Computer Interaction -- A.Y 2022/2023}\\[0.5cm] % Major heading such as course name
 
 	\textsc{\large Applied Computer Science and Artificial Intelligence}\\[0.5cm] % Minor heading such as course title
 
@@ -70,7 +93,7 @@
 
 	\begin{minipage}{0.4\textwidth}
 		\begin{flushleft}
-			\large
+			\Large
 			\textit{Authors:}\\[3pt]\hspace{2pt} % insert a 2pt indentation
 			Doku \textsc{Martina}\\[1pt]\hspace{2pt}
 			Iannotti \textsc{Giuseppina}\\[1pt]\hspace{2pt}
@@ -153,15 +176,51 @@ Furthermore, all the users will collect some credits for every contribution, whi
 
 
 \begin{itemize}
-	\item \textbf{\text} {Pros:} GPS tracking of public transportation in real-time, crowdsource support (tracking the user location when they use the app as a navigator), information about all the surrounding bus stops and possible paths to the destination.
+	\item \textbf{Pros:} GPS tracking of public transportation in real-time, crowdsource support (tracking the user location when they use the app as a navigator), information about all the surrounding bus stops and possible paths to the destination.
 	\item \textbf{Cons:} Many useful services are not free, it does not work very well in Italy.
 \end{itemize}
 
+\section{Need Finding}\label{sec:need-finding}
 
+\paragraph{The Interviews} 
 
+In order to better understand what our users want, we first conducted a round of interviews,
+these allowed us to interact colloquially with our potential users and to gauge what they think 
+are the major discomforts of public transportation. We also wanted to understand their approach 
+to personal privacy and community-driven applications. We used this data as a guide for our 
+next steps in the design process.
 
+\subsection{Our Questions}\label{subsec:our-questions}
 
+Our interviews were standardized around a set of ten questions that we designed, as a group, 
+to be as open-ended as possible. We wanted to avoid leading the interviewees to answer in a
+particular way, have them act as designers, or figure out the specific purpose of the 
+survey until later on, when the general questions were answered.\\[2pt]
 
+\begin{titlebox}[The Questions:]
+	\begin{enumerate}
+		\item Did you commute via public transport in the last week? If so, what type?
+		\item What criteria do you consider when choosing your means of transportation?
+		\item What are some frustrating aspects about public transportation? 
+		\item Do you use mobility apps (like Google Maps) while commuting? If so, which
+		functionalities? 
+		\item How much do you trust the information given by your app of choice? 
+		\item Do you worry about giving authorizations to apps? Are there some you are more willing to share? 
+		\item Are you concerned about organizations distributing your location based data to third parties? 
+		\item Would you trust mobility info more if it were crowd-sourced? Would you participate 
+		in such a program? 
+		\item Would a honor system, rewarding you based on the credibility of
+		your contributions, incentivize you to participate more? 
+		\item In a community-driven app, how interested are you in customizing and showing your
+		profile?
+	\end{enumerate}
+\end{titlebox}
+
+\paragraph{The Outcomes}
+
+To carry out the interviews, we split our groups into 3 teams of 2 people each. Each of those 
+teams had a target of 10 interviews to reach, which was achieved in a few days (with 
+some extra interviews to spare).
 
 
 \end{document}
