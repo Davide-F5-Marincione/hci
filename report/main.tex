@@ -32,6 +32,8 @@
 \usepackage{parskip}
 \usepackage{tcolorbox}
 
+\usepackage{subfig}
+
 \newtcolorbox{basecolorbox}[1][]{%
   colback=gray!25, colframe=gray!25,
   coltitle=black, fonttitle=\Large\bfseries,
@@ -181,7 +183,7 @@ Furthermore, all the users will collect some credits for every contribution, whi
 
 \section{Need Finding}\label{sec:need-finding}
 
-\paragraph{The Interviews}
+\subsection{The Interviews}\label{ssec:the-interviews}
 
 In order to better understand what our users want, we first conducted a round of interviews,
 these allowed us to interact colloquially with our potential users and to gauge what they think
@@ -189,7 +191,7 @@ are the major discomforts of public transportation. We also wanted to understand
 to personal privacy and community-driven applications. We used data we obtained as a guide for our
 next steps in the design process.
 
-\subsection{Our Questions}\label{ssec:our-questions}
+\paragraph{Our Questions}
 
 Our interviews were standardized around a set of ten questions that we designed, as a group,
 to be as open-ended as possible. We wanted to avoid leading the interviewees to answer in a
@@ -247,5 +249,81 @@ Overall, if we look at the general trends, we can draw the following conclusions
 	      the possibility of devolving their rewards to charity.
 \end{itemize}
 
+\subsection{Questionnaire}\label{ssec:questionnaire}
+
+After the interviews, we had obtained an initial set of knowledge on the needs and wants of
+our userbase. We used this knowledge to produce a new set of focused questions that aimed
+to capture the opinions of a wider group, we then distributed the questions through
+Google Forms to various online groups, obtaining a sample size of $\approx150$ answers.
+
+\paragraph{Questionnaire Structure}
+
+
+The answers are difficult to provide as a transcript, since we made use of Google Forms
+features to provide a slightly different questionnaire to users based on their ongoing answers.
+The single greates use of this feature was to not collect informations of users who did not
+utilize public transport recently, in order to avoid pollution of our dataset.\@ in
+general, we can give an outline of the structure of our questionnaire:
+
+\begin{enumerate}
+	\item Introductory questions -- Age group, frequency of use of public transport, device brand
+	\item General questions on transit -- Principal frustrations, interest in a crowd source system, etc\dots
+	\item Opinions on reward systems -- Whether they prefer customization, charity, honor systems, etc\dots\@ as
+	      forms of reward to their contributions
+\end{enumerate}
+
+\paragraph{Conclusions}
+We performed some descriptive statistics on our dataset in order to draw more informed conclusions,
+this consisted mostly of the production of a series of graphs that aimed to quantitatively
+describe certain metrics (\emph{e.g:} preference for a certain reward system) while categorizing
+our samples in different groups (\emph{e.g:} by age, device, etc\dots).
+
+
+
+%────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+%
+% THIS SECTION HAS TO BE EXPANDED A BIT
+% Mainly by including graphs, figures, etc...
+%
+%────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+\section{Storyboarding}\label{sec:storyboarding}
+
+\paragraph{The Tasks}
+
+After our questionnaires, we wanted to clearly identify a set of tasks that should be
+supported by the application. These tasks include:
+
+\begin{itemize}\label{list:tasks}
+	\item Reporting public transport delays to other users
+	\item Reporting overcrowding in a public transport to other users
+	\item Spending points for a donation to a non-profit organization
+	\item Looking for a route to a destination
+\end{itemize}
+
+For each of those we then proceeded to produce a storyboard detailing the sequence of
+interactions that a user must perform in order to complete the task.
+
+
+\begin{figure}[!h]
+	\subfloat[Reporting Delays]{%
+		\includegraphics[width=.55\linewidth]{img/storyboards/storyboard_reporting_delays.png}%
+		\label{subfig:a}%
+	}\hfill
+	\subfloat[Reporting Overcrowding]{%
+		\includegraphics[width=.55\linewidth]{img/storyboards/storyboard_overcrowding.png}%
+		\label{subfig:b}%
+	}\\
+	\subfloat[Donating to a non-profit]{%
+		\includegraphics[width=.55\linewidth]{img/storyboards/storyboard_donations.png}%
+		\label{subfig:c}%
+	}\hfill
+	\subfloat[Searching for routes]{%
+		\includegraphics[width=.55\linewidth]{img/storyboards/storyboard_searching_routes_and_checking_delays.png}%
+		\label{subfig:d}%
+	}
+	\caption{The storyboards for our main tasks (\cref{list:tasks}), each was drawn by a different member of
+		our group, hence the diverse styles.}\label{fig:fig}
+\end{figure}
 
 \end{document}
