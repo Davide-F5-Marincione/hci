@@ -288,6 +288,20 @@ as to test whether everything was alright. This let us spot two problems:
 	shadow those questions in case of such an occurrence.
 \end{enumerate}
 
+Unfortunately this testing phase didn't let us catch another small problem (albeit one nonetheless),
+when prompted to share their age bracket, people were shown the following:
+\begin{itemize}
+	\item $18>$
+	\item $18-25$
+	\item $25-35$
+	\item \dots
+\end{itemize}
+
+What we didn't realize is that there is no guidance on how the extremes of these ranges should be considered!
+Therefore, without further instructions, the ranges could be considered in different ways, some such that
+the ranges would be overlapping.
+Fortunately, this was not a real problem as this question wasn't really fundamental to our analysis.
+
 \paragraph{Conclusions}
 We performed some descriptive statistics on our dataset in order to draw more informed conclusions,
 this consisted mostly of the production of a series of graphs that aimed to quantitatively
