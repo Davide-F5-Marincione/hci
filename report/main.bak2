@@ -202,16 +202,16 @@ survey until later on, when the general questions were answered.\\[2pt]
 		\item What criteria do you consider when choosing your means of transportation?
 		\item What are some frustrating aspects about public transportation?
 		\item Do you use mobility apps (like Google Maps) while commuting? If so, which
-		      functionalities?
+		functionalities?
 		\item How much do you trust the information given by your app of choice?
 		\item Do you worry about giving authorizations to apps? Are there some you are more willing to share?
 		\item Are you concerned about organizations distributing your location based data to third parties?
 		\item Would you trust mobility info more if it were crowd-sourced? Would you participate
-		      in such a program?
+		in such a program?
 		\item Would a honor system, rewarding you based on the credibility of
-		      your contributions, incentivize you to participate more?
+		your contributions, incentivize you to participate more?
 		\item In a community-driven app, how interested are you in customizing and showing your
-		      profile?
+		profile?
 	\end{enumerate}
 \end{titlebox}
 
@@ -224,27 +224,27 @@ some extra interviews to spare).
 Overall, if we look at the general trends, we can draw the following conclusions:
 
 \begin{itemize}
-	\item A majority of our interviewees use public transportation on a daily basis, and most of
-	      them commute via bus or metro.
-	\item All of the interviewees use mobility apps, with Google Maps being the most popular,
-	      usually paired with an app such as Moovit to provide more accurate information.
-	\item Most of the interviewees find frustration in three things:
-	      \begin{enumerate}
-		      \item Overcrowding of the vehicles
-		      \item Lack of punctuality
-		      \item Unreliability of bus rides (which are often late or do not show up at all)
-	      \end{enumerate}
-	\item Users are generally willing to share data that is required for the functioning of the app,
-	      and are only really concerned about their privacy if the issue is brought up.
-	\item Users enjoy the prospect of a community-driven application, and would be willing to
-	      participate in such a program, especially if it were to improve the quality of the service.
-	\item Users are generally not interested in customizing their profile, \emph{especially}
-	      in the context of a mobility app, this varies from person to person, and seems to correlate
-	      with the person's technical knowledge, but the general trend shows that the feature is not
-	      very popular.
-	\item In a similar fashion, users seem not to be interested by a gamification system, rather
-	      seeming to prefer more direct rewards, either monetary, in the form of a better service, or through
-	      the possibility of devolving their rewards to charity.
+  \item A majority of our interviewees use public transportation on a daily basis, and most of
+  them commute via bus or metro.
+  \item All of the interviewees use mobility apps, with Google Maps being the most popular,
+  usually paired with an app such as Moovit to provide more accurate information.
+  \item Most of the interviewees find frustration in three things:
+  \begin{enumerate}
+	\item Overcrowding of the vehicles
+	\item Lack of punctuality
+	\item Unreliability of bus rides (which are often late or do not show up at all)
+  \end{enumerate}
+  \item Users are generally willing to share data that is required for the functioning of the app,
+  and are only really concerned about their privacy if the issue is brought up.
+  \item Users enjoy the prospect of a community-driven application, and would be willing to
+  participate in such a program, especially if it were to improve the quality of the service.
+  \item Users are generally not interested in customizing their profile, \emph{especially}
+  in the context of a mobility app, this varies from person to person, and seems to correlate
+  with the person's technical knowledge, but the general trend shows that the feature is not
+  very popular.
+  \item In a similar fashion, users seem not to be interested by a gamification system, rather
+  seeming to prefer more direct rewards, either monetary, in the form of a better service, or through
+  the possibility of devolving their rewards to charity.
 \end{itemize}
 
 
