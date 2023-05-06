@@ -23,6 +23,8 @@
 \usepackage{graphicx}
 \usepackage{lipsum}
 
+\mathchardef\mhyphen="2D
+
 
 \usepackage[utf8]{inputenc} % Required for inputting international characters
 \usepackage[T1]{fontenc} % Output font encoding for international characters
@@ -68,7 +70,7 @@
 \begin{titlepage} % Suppresses displaying the page number on the title page and the subsequent page counts as page 1
 	\newcommand{\HRule}{\rule{\linewidth}{0.5mm}} % Defines a new command for horizontal lines, change thickness here
 
-	\center % Centre everything on the page
+	\center% Centre everything on the page
 
 	%------------------------------------------------
 	%   Headings
@@ -258,7 +260,7 @@ After the interviews, we had obtained an initial set of knowledge on the needs a
 our userbase. We used this knowledge to produce a new set of focused questions that aimed
 to capture the opinions of a wider group. Firstly, we sent a test sample to 10 of our friends
 and relatives and we used their answers to retrieve information on how to refine our questionnaire.
-Then, we distributed the questions through Google Forms to various online groups, 
+Then, we distributed the questions through Google Forms to various online groups,
 obtaining a sample size of $\approx150$ answers.
 
 \paragraph{Questionnaire Structure}
@@ -281,20 +283,20 @@ Before sharing our form with multiple people we first gave it to a number of acq
 as to test whether everything was alright. This let us spot two problems:
 \begin{enumerate}
 	\item When asked \emph{In which \textbf{city} do you use public transit?}, some answered
-	with lesser towns such as Fisciano or Monterotondo -- This prompted us to change the
-	question into \emph{In which \textbf{province} do you use public transit?}.
+	      with lesser towns such as Fisciano or Monterotondo -- This prompted us to change the
+	      question into \emph{In which \textbf{province} do you use public transit?}.
 	\item Some were baffled by the presence of further questions on the sharing of data after
-	they had already answered \textbf{No} to the question \emph{Would you like to share
-	(anonimously), your position to help the app inform others?} -- Therefore we made sure to
-	shadow those questions in case of such an occurrence.
+	      they had already answered \textbf{No} to the question \emph{Would you like to share
+		      (anonymously), your position to help the app inform others?} -- Therefore we made sure to
+	      shadow those questions in case of such an occurrence.
 \end{enumerate}
 
 Unfortunately this testing phase didn't let us catch another small problem (albeit one nonetheless),
 when prompted to share their age bracket, people were shown the following:
 \begin{itemize}
-	\item $18>$
-	\item $18-25$
-	\item $25-35$
+	\item $< 18$
+	\item $18 \mhyphen 25$
+	\item $25 \mhyphen 35$
 	\item \dots
 \end{itemize}
 
@@ -314,65 +316,65 @@ First thing first, let's check the age distribution of those who answered our fo
 
 \begin{figure}[H]
 	\centering
- 	\includegraphics[width=.5\textwidth]{img/analysis/age_distribution.png}
- 	\caption{Age distribution of our respondents}
+	\includegraphics[width=.5\textwidth]{img/analysis/age_distribution.png}
+	\caption{Age distribution of our respondents}
 \end{figure}
 
-Nearly 77\% of our respondents are of ages $18-25$, followed by those under 18 years (15\%). The remaining 8\% is distributed across people aged 
-$25-35$ and $>55$, with only a single respondent of age $35-55$. 
+Nearly 77\% of our respondents are of ages $18 \mhyphen 25$, followed by those under 18 years (15\%). The remaining 8\% is distributed across people aged
+$25 \mhyphen 35$ and $>55$, with only a single respondent of age $35 \mhyphen 55$.
 
 About the main province in which the respondents take public transport:
 
 \begin{figure}[H]
 	\centering
- 	\includegraphics[width=.8\textwidth]{img/analysis/public_transport_usage_per_province.png}
- 	\caption{Public transport usage per province}
+	\includegraphics[width=.8\textwidth]{img/analysis/public_transport_usage_per_province.png}
+	\caption{Public transport usage per province}
 \end{figure}
 
-As we can see, the majority uses public transport in Rome, with a minority in Milan and Naples. These results were obtained after having modified 
-the questionnaire. As explained above, initially, we were asking for the city and not the province. 
+As we can see, the majority uses public transport in Rome, with a minority in Milan and Naples. These results were obtained after having modified
+the questionnaire. As explained above, initially, we were asking for the city and not the province.
 
 
-% ----- 
-% metterei le seguenti due domande alla fine.. dopo aver analizzato tutte queste cose, vediamo il most used os e decidiamo di fare un Android app 
-We are also interested in the most used operating system among the respondents: 
+% -----
+% metterei le seguenti due domande alla fine.. dopo aver analizzato tutte queste cose, vediamo il most used os e decidiamo di fare un Android app
+We are also interested in the most used operating system among the respondents:
 \begin{figure}[H]
 	\centering
- 	\includegraphics[width=.5\textwidth]{img/analysis/android_v_ios.png}
- 	\caption{Android VS iOS}
+	\includegraphics[width=.5\textwidth]{img/analysis/android_v_ios.png}
+	\caption{Android VS iOS}
 \end{figure}
 
-Wondering for a more noticeable difference, the statistic shows that the obtained results are similar: 52\% Android users and 48\% iOS users.  
+Wondering for a more noticeable difference, the statistic shows that the obtained results are similar: 52\% Android users and 48\% iOS users.
 We have decided to implement an Android application.
 
 As follows, we show the number of public transport users by their device's operating system
 \begin{figure}[H]
 	\centering
- 	\includegraphics[width=.5\textwidth]{img/analysis/users_by_means_of_transport_by_device.png}
- 	\caption{Users by means of transport by device}
+	\includegraphics[width=.5\textwidth]{img/analysis/users_by_means_of_transport_by_device.png}
+	\caption{Users by means of transport by device}
 \end{figure}
-% ------ 
+% ------
 
-Let's look at the number of public transport users by province: 
+Let's look at the number of public transport users by province:
 \begin{figure}[H]
 	\centering
- 	\includegraphics[width=.5\textwidth]{img/analysis/users_by_means_of_transport_by_province.png}
- 	\caption{Users by means of transport by province}
+	\includegraphics[width=.5\textwidth]{img/analysis/users_by_means_of_transport_by_province.png}
+	\caption{Users by means of transport by province}
 \end{figure}
 
-Since the majority of the respondents use public transport in Rome, Naples and Milan, we have collected the statistics of other provinces in the "Other" column.
-Moreover, we have not included "train" in our analysis, focusing our attention on the other means of transport. 
-It is evident that, in each province,users take the metro and the bus mostly.  
+Since the majority of the respondents use public transport in Rome, Naples and Milan, we have collected the statistics of other provinces in the `Other' column.
+Moreover, we have not included `train' in our analysis, focusing our attention on the other means of transport.
+It is evident that, in each province,users take the metro and the bus mostly.
 
 
-At the basis of our reasoning, the most frequent disservices caused by public transport are: 
+At the basis of our reasoning, the most frequent disservices caused by public transport are:
 \begin{figure}[H]
 	\centering
- 	\includegraphics[width=.5\textwidth]{img/analysis/disservices_reports.png}
- 	\caption{Disservices reports}
+	\includegraphics[width=.5\textwidth]{img/analysis/disservices_reports.png}
+	\caption{Disservices reports}
 \end{figure}
 
-This analysis is fundamental to our project. It highlights the most frustrating aspects of public transport. 
+This analysis is fundamental to our project. It highlights the most frustrating aspects of public transport.
 Those are the ones on which we should focus, in order to improve people's experience while using public transport.
 As shown, the majority of the respondents report about delays and overcrowding. The obtained results give us a further confirmation of our objective.
 
@@ -385,17 +387,20 @@ As shown, the majority of the respondents report about delays and overcrowding. 
 %────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 \section{Storyboarding}\label{sec:storyboarding}
 
-\paragraph{The Tasks}
+\paragraph{Tasks}
 
-After our questionnaires, we wanted to clearly identify a set of tasks that should be
-supported by the application. These tasks include:
+After our questionnaires, we wanted to clearly identify a set of \emph{core} tasks that should be
+supported by the application.
 
-\begin{itemize}\label{list:tasks}
-	\item Reporting public transport delays to other users
-	\item Reporting overcrowding in a public transport to other users
-	\item Spending points for a donation to a non-profit organization
-	\item Looking for a route to a destination
-\end{itemize}
+\begin{titlebox}[The Tasks:]
+	\begin{itemize}\label{list:tasks}
+		\item Reporting public transport delays to other users
+		\item Reporting overcrowding in a public transport to other users
+		\item Spending points for a donation to a non-profit organization
+		\item Looking for a route to a destination
+	\end{itemize}
+\end{titlebox}
+
 
 For each of those we then proceeded to produce a storyboard detailing the sequence of
 interactions that a user must perform in order to complete the task.
