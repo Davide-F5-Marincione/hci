@@ -266,7 +266,7 @@ obtaining a sample size of $\approx150$ answers.
 The answers are difficult to provide as a transcript, since we made use of Google Forms
 features to provide a slightly different questionnaire to users based on their ongoing answers.
 The single greates use of this feature was to not collect informations of users who did not
-utilize public transport recently, in order to avoid pollution of our dataset.\@ in
+utilize public transport recently, in order to avoid pollution of our dataset.\@ In
 general, we can give an outline of the structure of our questionnaire:
 
 \begin{enumerate}
@@ -310,15 +310,71 @@ describe certain metrics (\emph{e.g:} preference for a certain reward system) wh
 our samples in different groups (\emph{e.g:} by age, device, etc\dots).
 
 
-%% Something like this maybe?
-% First thing first let's check the age distribution of those who answered our forms:
+First thing first, let's check the age distribution of those who answered our form:
 
-% \begin{figure}[H]
-% 	\centering
-% 	\includegraphics[width=.8\textwidth]{img/analysis/age_distribution.png}
-% 	\caption{Age distribution of our respondents}
-% \end{figure}
+\begin{figure}[H]
+	\centering
+ 	\includegraphics[width=.8\textwidth]{img/analysis/age_distribution.png}
+ 	\caption{Age distribution of our respondents}
+\end{figure}
 
+Nearly 77\% of our respondents are of ages $18-25$, followed by those under 18 years (15\%). The remaining 8\% is distributed across people aged 
+$25-35$ and $>55$, with only a single respondent of age $35-55$. 
+
+About the main province in which the respondents take public transport:
+
+\begin{figure}[H]
+	\centering
+ 	\includegraphics[width=.8\textwidth]{img/analysis/public_transport_usage_per_province.png}
+ 	\caption{Public transport usage per province}
+\end{figure}
+
+As we can see, the majority uses public transport in Rome, with a minority in Milan and Naples. These results were obtained after having modified 
+the questionnaire. As explained above, initially, we were asking for the city and not the province. 
+
+
+% ----- 
+% metterei le seguenti due domande alla fine.. dopo aver analizzato tutte queste cose, vediamo il most used os e decidiamo di fare un Android app 
+We are also interested in the most used operating system among the respondents: 
+\begin{figure}[H]
+	\centering
+ 	\includegraphics[width=.8\textwidth]{img/analysis/android_v_ios.png}
+ 	\caption{Android VS iOS}
+\end{figure}
+
+Wondering for a more noticeable difference, the statistic shows that the obtained results are similar: 52\% Android users and 48\% iOS users.  
+We have decided to implement an Android application.
+
+As follows, we show the number of public transport users by their device's operating system
+\begin{figure}[H]
+	\centering
+ 	\includegraphics[width=.8\textwidth]{img/analysis/users_by_means_of_transport_by_device.png}
+ 	\caption{Users by means of transport by device}
+\end{figure}
+% ------ 
+
+Let's look at the number of public transport users by province: 
+\begin{figure}[H]
+	\centering
+ 	\includegraphics[width=.8\textwidth]{img/analysis/users_by_means_of_transport_by_province.png}
+ 	\caption{Users by means of transport by province}
+\end{figure}
+
+Since the majority of the respondents use public transport in Rome, Naples and Milan, we have collected the statistics of other provinces in the "Other" column.
+Moreover, we have not included "train" in our analysis, focusing our attention on the other means of transport. 
+It is evident that, in each province,users take the metro and the bus mostly.  
+
+
+At the basis of our reasoning, the most frequent disservices caused by public transport are: 
+\begin{figure}[H]
+	\centering
+ 	\includegraphics[width=.8\textwidth]{img/analysis/disservices_reports.png}
+ 	\caption{Disservices reports}
+\end{figure}
+
+This analysis is fundamental to our project. It highlights the most frustrating aspects of public transport. 
+Those are the ones on which we should focus, in order to improve people's experience while using public transport.
+As shown, the majority of the respondents report about delays and overcrowding. The obtained results give us a further confirmation of our objective.
 
 
 %────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
