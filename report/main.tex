@@ -385,7 +385,6 @@ As shown, the majority of the respondents report about delays and overcrowding. 
 % Mainly by including graphs, figures, etc...
 %
 %────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-
 \section{Storyboarding}\label{sec:storyboarding}
 
 \paragraph{Tasks}
@@ -407,25 +406,58 @@ For each of those we then proceeded to produce a storyboard detailing the sequen
 interactions that a user must perform in order to complete the task.
 
 
-\begin{figure}[!h]
-	\subfloat[Reporting Delays]{%
-		\includegraphics[width=.55\linewidth]{img/storyboards/storyboard_reporting_delays.png}%
-		\label{subfig:a}%
-	}\hfill
-	\subfloat[Reporting Overcrowding]{%
-		\includegraphics[width=.55\linewidth]{img/storyboards/storyboard_overcrowding.png}%
-		\label{subfig:b}%
-	}\\
-	\subfloat[Donating to a non-profit]{%
-		\includegraphics[width=.55\linewidth]{img/storyboards/storyboard_donations.png}%
-		\label{subfig:c}%
-	}\hfill
-	\subfloat[Searching for routes]{%
-		\includegraphics[width=.55\linewidth]{img/storyboards/storyboard_searching_routes_and_checking_delays.png}%
-		\label{subfig:d}%
-	}
-	\caption{The storyboards for our main tasks (\cref{list:tasks}), each was drawn by a different member of
-		our group, hence the diverse styles.}\label{fig:fig}
+\begin{figure}[H]
+	\centering	
+	\includegraphics[width=.5\textwidth]{img/storyboards/storyboard_searching_routes.png}
+	\caption{Searching for routes}
+	\label{fig:a}
+\end{figure}	
+\textbf{Scenario Description:} Imagine being a tourist trying to reach Colosseum,
+ due to the ZTL the car is out of the question. So you want to find the fastest
+  path to reach your destination. Thus you open our app to find the route to be followed and any reported delays.    \\
+\textbf{Task Description:} Open the app, type your destination point,
+ and find the available routes. For every available route, you will also find any certified delays
+ reported by one or more users.\\
+\begin{figure}[H]	 
+	\centering
+	\includegraphics [width=.5\textwidth]{img/storyboards/storyboard_reporting_delays.png}
+	\caption{Reporting Delays}
+	\label{fig:b}
 \end{figure}
+
+\textbf{Scenario Description:} Imagine that you have been waiting
+for a bus in the center of Rome for 10 minutes. Your mobility application tells you
+ that the next bus should have already passed two minutes ago.
+  Thus when the bus passes, you can inform the app of the real timing and it will recalculate the actual
+   delay based on your personal experience.    \\
+\textbf{Task Description:} Open the app, type the bus you are taking, and click the proper button
+ to report the actual time at which you got on the bus and this, as a consequence,
+  will inform the other users of any possible delay.\\
+
+\begin{figure}[H]
+	\centering	 
+	\includegraphics[width=.5\textwidth]{img/storyboards/storyboard_overcrowding.png}
+	\caption{Reporting Overcrowding }
+	\label{fig:c}
+\end{figure}
+\textbf{Scenario Description:} Imagine that you are willing to take a bus in the center of Rome,
+ you know that it may be full, thus your waiting time may be longer than the one you expected. When the bus arrives,
+  you may check if it is too full to enter and you may report it to the other users, who may benefit from this information.\\
+\textbf{Task Description:} Open the app, and use the button to report that the bus you are taking is overcrowded.
+ The other users will have this information reported near the one on the waiting time of that bus.\\
+
+\begin{figure}[H]
+	\centering	
+	\includegraphics [width=.5\textwidth]{img/storyboards/storyboard_donations.png}
+	\caption{Donating to a non-profit}
+	\label{fig:d}
+\end{figure}
+\textbf{Scenario Description:} Imagine that for every departure reported, you get to store a certain amount of credits.
+ After x report, you can devolve your credits into charity in one of the NGOs chosen by the user, 
+ among those proposed by the application. Thus every free contribution to the application service
+  leads to the help of other people in need.\\
+\textbf{Task Description:} Open the app, check on your profile the number of accumulated credits
+ (and the respective correspondence in the local currency), open the page with the list of charity options,
+  and choose the one you prefer.\\
 
 \end{document}
