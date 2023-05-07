@@ -373,47 +373,51 @@ in our idea.
 Crowdsourcing is at the basis of our application. Retrieving information, about possible delays or 
 transport overcrowding, directly from the community of users will make transportation more efficient. 
 But, are users willing to partecipate? If so, would they be more incentivized having some kind of reward (e.g. charity,features and customization unlocking)?
-Let's look at some statistics 
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=.5\textwidth]{img/analysis/interest_app_functionalities.pdf}
-	\caption{Interest app functionalities}
-\end{figure}
-The graphic above shows the various preferences by age. 
+Let's look at some statistics\dots
 
-
-Since the majority of the respondents are of ages $18 \mhyphen 25$, let's look at their statistics deeply:  
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=.9\textwidth]{img/analysis/interest_app_functionalities_18_25.pdf}
-	\caption{Interest app functionalities $18 \mhyphen 25$}
-\end{figure}
-
-Being more specific, without considering the age of the respondents 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=.9\textwidth]{img/analysis/distribution_of_scores_for_each_metric.pdf}
-	\caption{Distribution of scores for each metric}
+	\caption{Overall distribution of respondents' interest}
 \end{figure}
+\noindent Without considering the age of the respondents we can see that the
+overall interest in a crowdsourced app and the willingness to participate in
+it is fairly high. For the functionalities, on the other hand, the opinions are mixed if not negative
+to everything except the idea of charity.
 
-For each metric,a violinplot, with the distribution of the scores for each age group, is shown 
+Let's look at these same statistics broken down by age ranges (there were not enough respondents in the $35 \mhyphen 55$ gap, thus a plot was unfeasible).
 \begin{figure}[H]
 	\centering
+	\includegraphics[width=.8\textwidth]{img/analysis/interest_app_functionalities.pdf}\\
 	\includegraphics[width=.9\textwidth]{img/analysis/score_distribution_by_age.pdf}
-	\caption{Score distribution by age}
+	\caption{Respondents' interest by age}
+\end{figure}
+From this breakdown we can see that both the willingness to participate and the interest in the offered functionalities is slightly higher in the younger population, strengthening our interest in that target.
+Indeed, here's a focus on the $18 \mhyphen 25$ gap:  
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=.9\textwidth]{img/analysis/interest_app_functionalities_18_25.pdf}
+	\caption{Interest in app functionalities $18 \mhyphen 25$}
 \end{figure}
 
-Now, let's look at numbers! 
+Now, to draw some conclusions, we arbitrarily set a threshold for \emph{interested}/\emph{not interested} respondents to each metric at a score of $3$. 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=.5\textwidth]{img/analysis/interested_users_per_metric.pdf}
 	\caption{Interested users per metric}
 \end{figure}
 As we can see, the majority is not interested in a leaderboard of the users who have reported the greatest number of 
-information (e.g. delays, overcrowding). As reward systems, features and costumization unlocking have not captured the attention of the 
+information (e.g. delays, overcrowding). In the same fashion, reward systems such as features and costumization unlocking have not captured the attention of the 
 respondents. However, their crowdsource interest and willingness to partecipate in such a community give us a positive feedback. 
-Chiarity donations incentivize them more. 
+Charity donations incentivize them more.
 
+Lastly, but not in terms of importance, let's check how the users would like to report the vehicles they are currently on.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=.5\textwidth]{img/analysis/most_preferred_method_to_report.pdf}
+	\caption{Most preferred method to report vehicles}
+\end{figure}
+From this, we deduce (since the GPS method is probably the most intrusive one), that the best course of action would be to create a system without geolocalization but that would also be as simple and annoyance-free as possible.
 
 \section{Storyboarding}\label{sec:storyboarding}
 
