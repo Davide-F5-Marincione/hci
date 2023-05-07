@@ -313,24 +313,20 @@ our samples in different groups (\emph{e.g:} by age, device, etc\dots).
 
 
 First thing first, let's check the age distribution of those who answered our form:
-
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=.5\textwidth]{img/analysis/age_distribution.pdf}
 	\caption{Age distribution of our respondents}
 \end{figure}
-
 Nearly 77\% of our respondents are of ages $18 \mhyphen 25$, followed by those under 18 years (15\%). The remaining 8\% is distributed across people aged
 $25 \mhyphen 35$ and $>55$, with only a single respondent of age $35 \mhyphen 55$.
 
 About the main province in which the respondents take public transport:
-
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=.8\textwidth]{img/analysis/public_transport_usage_per_province.pdf}
 	\caption{Public transport usage per province}
 \end{figure}
-
 As we can see, the majority uses public transport in Rome, with a minority in Milan and Naples. These results were obtained after having modified
 the questionnaire. As explained above, initially, we were asking for the city and not the province.
 
@@ -344,7 +340,7 @@ We are also interested in the most used operating system among the respondents:
 	\caption{Android VS iOS}
 \end{figure}
 
-Wondering for a more noticeable difference, the statistic shows that the obtained results are similar: 52\% Android users and 48\% iOS users.
+Hoping for a more noticeable difference, the statistic shows that the obtained results are similar: 52\% Android users and 48\% iOS users.
 We have decided to implement an Android application.
 
 As follows, we show the number of public transport users by their device's operating system
@@ -361,11 +357,8 @@ Let's look at the number of public transport users by province:
 	\includegraphics[width=.5\textwidth]{img/analysis/users_by_means_of_transport_by_province.pdf}
 	\caption{Users by means of transport by province}
 \end{figure}
-
 Since the majority of the respondents use public transport in Rome, Naples and Milan, we have collected the statistics of other provinces in the `Other' column.
-Moreover, we have not included `train' in our analysis, focusing our attention on the other means of transport.
 It is evident that, in each province, users take the metro and the bus mostly.
-
 
 At the basis of our reasoning, the most frequent disservices caused by public transport are:
 \begin{figure}[H]
@@ -373,18 +366,58 @@ At the basis of our reasoning, the most frequent disservices caused by public tr
 	\includegraphics[width=.5\textwidth]{img/analysis/disservices_reports.pdf}
 	\caption{Disservices reports}
 \end{figure}
-
 This analysis is fundamental to our project. It highlights the most frustrating aspects of public transport.
 Those are the ones on which we should focus, in order to improve people's experience while using public transport.
 As shown, the majority of the respondents report about delays and overcrowding. The obtained results give us a further confirmation of our objective.
 
 
-%────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-%
-% THIS SECTION HAS TO BE EXPANDED A BIT
-% Mainly by including graphs, figures, etc...
-%
-%────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+In the form, we ask some questions in order to understand users preferences and how they would be interested 
+in our idea. 
+Crowdsourcing is at the basis of our application. Retrieving information, about possible delays or 
+transport overcrowding, directly from the community of users will make transportation more efficient. 
+But, are users willing to partecipate? If so, would they be more incentivized having some kind of reward (e.g. charity,features and customization unlocking)?
+Let's look at some statistics 
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=.5\textwidth]{img/analysis/interest_app_functionalities.pdf}
+	\caption{Interest app functionalities}
+\end{figure}
+The graphic above shows the various preferences by age. 
+
+
+Since the majority of the respondents are of ages $18 \mhyphen 25$, let's look at their statistics deeply:  
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=.9\textwidth]{img/analysis/interest_app_functionalities_18_25.pdf}
+	\caption{Interest app functionalities $18 \mhyphen 25$}
+\end{figure}
+
+Being more specific, without considering the age of the respondents 
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=.9\textwidth]{img/analysis/distribution_of_scores_for_each_metric.pdf}
+	\caption{Distribution of scores for each metric}
+\end{figure}
+
+For each metric,a violinplot, with the distribution of the scores for each age group, is shown 
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=.9\textwidth]{img/analysis/score_distribution_by_age.pdf}
+	\caption{Score distribution by age}
+\end{figure}
+
+Now, let's look at numbers! 
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=.5\textwidth]{img/analysis/interested_users_per_metric.pdf}
+	\caption{Interested users per metric}
+\end{figure}
+As we can see, the majority is not interested in a leaderboard of the users who have reported the greatest number of 
+information (e.g. delays, overcrowding). As reward systems, features and costumization unlocking have not captured the attention of the 
+respondents. However, their crowdsource interest and willingness to partecipate in such a community give us a positive feedback. 
+Chiarity donations incentivize them more. 
+
+
 \section{Storyboarding}\label{sec:storyboarding}
 
 \paragraph{Tasks}
