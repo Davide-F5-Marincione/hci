@@ -16,7 +16,7 @@
     colorlinks,
     linkcolor={black},
     citecolor={black},
-    urlcolor={black}
+    urlcolor={blue}
 }
 
 \usepackage[scale=0.70]{geometry}
@@ -254,7 +254,6 @@ Overall, if we look at the general trends, we can draw the following conclusions
 
 \subsection{Questionnaire}\label{ssec:questionnaire}
 
-\url{https://forms.gle/ipkEswPH1cex8mFdA}
 
 After the interviews, we had obtained an initial set of knowledge on the needs and wants of
 our userbase. We used this knowledge to produce a new set of focused questions that aimed
@@ -263,6 +262,12 @@ and relatives and we used their answers to retrieve information on how to refine
 Then, we distributed the questions through Google Forms to various online groups,
 obtaining a sample size of $\approx150$ answers.
 
+\begin{center}
+	\begin{inlinebox}[Questionnaire URL:]
+		\centering
+		\url{https://forms.gle/ipkEswPH1cex8mFdA}
+	\end{inlinebox}
+\end{center}
 \paragraph{Questionnaire Structure}
 
 The answers are difficult to provide as a transcript, since we made use of Google Forms
@@ -333,7 +338,7 @@ the questionnaire. As explained above, initially, we were asking for the city an
 We are also interested in the most used operating system among the respondents:
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=.5\textwidth]{img/analysis/android_v_ios.pdf}
+	\includegraphics[width=.5\textwidth]{img/analysis/android_v_ios.pdf}leads to the
 	\caption{Android VS iOS}
 \end{figure}
 
@@ -368,11 +373,11 @@ Those are the ones on which we should focus, in order to improve people's experi
 As shown, the majority of the respondents report about delays and overcrowding. The obtained results give us a further confirmation of our objective.
 
 
-In the form, we ask some questions in order to understand users preferences and how they would be interested 
-in our idea. 
-Crowdsourcing is at the basis of our application. Retrieving information, about possible delays or 
-transport overcrowding, directly from the community of users will make transportation more efficient. 
-But, are users willing to partecipate? If so, would they be more incentivized having some kind of reward (e.g. charity,features and customization unlocking)?
+In the form, we ask some questions in order to understand users preferences and how they would be interested
+in our idea.
+Crowdsourcing is at the basis of our application. Retrieving information, about possible delays or
+transport overcrowding, directly from the community of users will make transportation more efficient.
+But, are users willing to partecipate? If so, would they be more incentivized having some kind of reward (e.g., charity, features and customization unlocking)?
 Let's look at some statistics\dots
 
 \begin{figure}[H]
@@ -388,27 +393,27 @@ to everything except the idea of charity.
 Let's look at these same statistics broken down by age ranges (there were not enough respondents in the $35 \mhyphen 55$ gap, thus a plot was unfeasible).
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=.8\textwidth]{img/analysis/interest_app_functionalities.pdf}\\
+	\includegraphics[width=.9\textwidth]{img/analysis/interest_app_functionalities.pdf}\\
 	\includegraphics[width=.9\textwidth]{img/analysis/score_distribution_by_age.pdf}
 	\caption{Respondents' interest by age}
 \end{figure}
 From this breakdown we can see that both the willingness to participate and the interest in the offered functionalities is slightly higher in the younger population, strengthening our interest in that target.
-Indeed, here's a focus on the $18 \mhyphen 25$ gap:  
+Indeed, here's a focus on the $18 \mhyphen 25$ gap:
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=.9\textwidth]{img/analysis/interest_app_functionalities_18_25.pdf}
+	\includegraphics[width=.95\textwidth, height=.95\textheight, keepaspectratio]{img/analysis/interest_app_functionalities_18_25.pdf}
 	\caption{Interest in app functionalities $18 \mhyphen 25$}
 \end{figure}
 
-Now, to draw some conclusions, we arbitrarily set a threshold for \emph{interested}/\emph{not interested} respondents to each metric at a score of $3$. 
+Now, to draw some conclusions, we arbitrarily set a threshold for \emph{interested}/\emph{not interested} respondents to each metric at a score of $3$.
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=.5\textwidth]{img/analysis/interested_users_per_metric.pdf}
 	\caption{Interested users per metric}
 \end{figure}
-As we can see, the majority is not interested in a leaderboard of the users who have reported the greatest number of 
-information (e.g. delays, overcrowding). In the same fashion, reward systems such as features and costumization unlocking have not captured the attention of the 
-respondents. However, their crowdsource interest and willingness to partecipate in such a community give us a positive feedback. 
+As we can see, the majority is not interested in a leaderboard of the users who have reported the greatest number of
+information (e.g., delays, overcrowding). In the same fashion, reward systems such as features and costumization unlocking have not captured the attention of the
+respondents. However, their crowdsource interest and willingness to partecipate in such a community give us a positive feedback.
 Charity donations incentivize them more.
 
 Lastly, but not in terms of importance, let's check how the users would like to report the vehicles they are currently on.
@@ -441,44 +446,40 @@ interactions that a user must perform in order to complete the task.
 
 
 \begin{figure}[H]
-	\centering	
+	\centering
 	\includegraphics[width=.5\textwidth]{img/storyboards/storyboard_searching_routes.png}
 	\caption{Imagine being a tourist trying to reach Colosseum,
-	due to the ZTL the car is out of the question. So you want to find the fastest
-	 path to reach your destination. Thus you open our app to find the route to be followed and any reported delays.}
-	\label{fig:a}
-\end{figure}	
+		due to the ZTL the car is out of the question. So you want to find the fastest
+		path to reach your destination. Thus you open our app to find the route to be followed and any reported delays.}\label{fig:a}
+\end{figure}
 
-\begin{figure}[H]	 
+\begin{figure}[H]
 	\centering
-	\includegraphics [width=.5\textwidth]{img/storyboards/storyboard_reporting_delays.png}
+	\includegraphics [width=.5\textwidth]{img/storyboards/storyboard_reporting_delays.png}%
 	\caption{Imagine that you have been waiting
-	for a bus in the center of Rome for 10 minutes. Your mobility application tells you
-	 that the next bus should have already passed two minutes ago.
-	  Thus when the bus passes, you can inform the app of the real timing and it will recalculate the actual
-	   delay based on your personal experience.}
-	\label{fig:b}
+		for a bus in the center of Rome for 10 minutes. Your mobility application tells you
+		that the next bus should have already passed two minutes ago.
+		Thus when the bus passes, you can inform the app of the real timing and it will recalculate the actual
+		delay based on your personal experience.}\label{fig:b}
 \end{figure}
 
 
 
 \begin{figure}[H]
-	\centering	 
+	\centering
 	\includegraphics[width=.5\textwidth]{img/storyboards/storyboard_overcrowding.png}
 	\caption{Imagine that you are willing to take a bus in the center of Rome,
-	you know that it may be full, thus your waiting time may be longer than the one you expected. When the bus arrives,
-	 you may check if it is too full to enter and you may report it to the other users, who may benefit from this information.}
-	\label{fig:c}
+		you know that it may be full, thus your waiting time may be longer than the one you expected. When the bus arrives,
+		you may check if it is too full to enter and you may report it to the other users, who may benefit from this information.}\label{fig:c}
 \end{figure}
 
 
 \begin{figure}[H]
-	\centering	
-	\includegraphics [width=.5\textwidth]{img/storyboards/storyboard_donations.png}
+	\centering
+	\includegraphics [width=.5\textwidth]{img/storyboards/storyboard_donations.png}%
 	\caption{Imagine that for every departure reported, you get to store a certain amount of credits.
-	After x report, you can devolve your credits into charity in one of the NGOs chosen by the user, 
-	among those proposed by the application. Thus every free contribution to the application service
-	 leads to the help of other people in need.}
+		After $n$ reports, you can devolve your credits as charity to one of the NGOs proposed by the application. Thus every free contribution to the application service
+		helps other people in need.}
 	\label{fig:d}
 \end{figure}
 
