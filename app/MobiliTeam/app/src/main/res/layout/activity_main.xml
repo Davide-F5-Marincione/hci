@@ -18,6 +18,7 @@
             android:layout_height="wrap_content">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/textIn"
                 android:layout_width="375dp"
                 android:layout_height="wrap_content"
                 android:background="@drawable/round_edittext"
@@ -28,9 +29,9 @@
 
     <ListView
         style="@android:style/Widget.Holo.Light.ListView"
+        android:id="@+id/listOut"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:entries="@android:array/emailAddressTypes">
+        android:layout_height="match_parent">
     </ListView>
 
 </LinearLayout>
