@@ -10,20 +10,6 @@ components:
       description: |-
         The server encountered an internal error.
   schemas:
-    mydatetime:
-      title: Ubiquitous date time
-      description: |-
-        Since even the ISO8601 format may be misleading 
-        with regards on how the date time is represented,
-        and since the user is not giving the server any
-        date time, we hereby declare that the server will only
-        serve datetimes in the 'YYYY-MM-DD hh:mm:ss' format on zulu time (+00:00),
-        the client will see (hopefully) their converted time of course.
-      type: string
-      format: date-time
-      minLength: 19
-      maxLength: 19
-
     lineinfo:
       title: Line info
       description: |-
@@ -129,5 +115,78 @@ paths:
           description: Request badly formed
         '404':
           description: Bus not found
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /users:
+    post:
+      summary: Create user
+      description: Creates a user
+      operationId: createUser
+      requestBody:
+        content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    description: User name
+      responses:
+        '204':
+          description: Successful operation
+        '400':
+          description: Request badly done
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /users/{user}:
+    parameters:
+      - in: path
+        name: user
+        schema:
+          type: string
+        required: true
+    get:
+      summary: Get credits
+      description: Returns user's credits
+      operationId: getUserCredits
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  credits:
+                    type: integer
+                    description: User's credits
+        '404':
+          description: User not found
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      summary: Spend credits
+      description: Spends credits to donate to a specific org
+      operationId: spendCredits
+      requestBody:
+        content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ong:
+                    description: Which ong to donate to
+                    type: string
+                  credits:
+                    description: Amount donated
+                    type: integer
+        required: true
+      responses:
+        '204':
+          description: Successful operation
+        '400':
+          description: Request badly formed
+        '404':
+          description: User not found
         '500':
           $ref: '#/components/responses/InternalServerError'
