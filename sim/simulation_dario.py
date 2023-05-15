@@ -1,11 +1,19 @@
 import simpy
 import networkx as nx
-import random
 import matplotlib.pyplot as plt
 from dataclasses import dataclass
 from typing import List, Dict, Tuple, Callable, Optional
 from itertools import chain
+import numpy as np
 
+def simplex_noise(seed):
+    np.random.seed(seed)
+    vals = np.random.rand(3) * 15 + 10
+    vals = vals * [np.sqrt(2), np.exp(1), np.pi] / vals.sum()
+    i = 0
+    while True:
+        i += 1
+        yield 1/6 * np.sin(vals * i).sum() + .5
 
 @dataclass
 class BusStop:
@@ -38,7 +46,7 @@ class Route:
     name: str
     stops: List[BusStop]
 
-    def to_edges(self) -> List[Tuple[BusStop, BusStop]]:
+    def to_edges(self, seed=None) -> List[Tuple[BusStop, BusStop, dict]]:
         """`to_edges` Converts the route to a list of edges (BusStop, BusStop)
 
         Returns
@@ -46,9 +54,12 @@ class Route:
         List[Tuple[BusStop, BusStop]]
             List of edges (BusStop, BusStop)
         """
+        if seed is not None:
+            np.random.seed(seed)
+        
         edges = []
         for i in range(len(self.stops) - 1):
-            edges.append((self.stops[i], self.stops[i + 1]))
+            edges.append((self.stops[i], self.stops[i + 1], {"traffic": simplex_noise(np.random.randint(0, 2**16))}))
         return edges
 
 

@@ -5,7 +5,13 @@ info:
     The title says it all
   version: 1.0.0
 components:
+  securitySchemes:
+    bearerAuth: # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
   responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid
     InternalServerError:
       description: |-
         The server encountered an internal error.
@@ -48,7 +54,7 @@ components:
         expected_time_left:
           description: Expected time left to get to next stop
           type: integer
-      
+
     route:
       title: Route
       description: |-
@@ -58,7 +64,7 @@ components:
         type: object
         properties:
           bus:
-            $ref: '#/components/schemas/businfo'
+            $ref: "#/components/schemas/businfo"
           line:
             type: string
             description: Line of the bus
@@ -84,16 +90,16 @@ paths:
       description: Returns all of a line's info, including stops and buses currently travelling on the line
       operationId: getLineInfo
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/lineinfo'
-        '404':
+                $ref: "#/components/schemas/lineinfo"
+        "404":
           description: Line not found
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /buses/{bus}:
     parameters:
       - in: path
@@ -106,42 +112,44 @@ paths:
       description: Returns as specific bus's info
       operationId: getBusInfo
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/businfo'
-        '404':
+                $ref: "#/components/schemas/businfo"
+        "404":
           description: Bus not found
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+        "500":
+          $ref: "#/components/responses/InternalServerError"
     put:
+      security:
+      - bearerAuth: []
       summary: Board/overcrowd bus
       description: Sets a specific bus's info
       operationId: setBusInfo
       requestBody:
         content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  overcrowded:
-                    description: Whether the bus is currently overcrowded
-                    type: boolean
-                  boardedat:
-                    description: Where the bus was boarded
-                    type: string
+          application/json:
+            schema:
+              type: object
+              properties:
+                overcrowded:
+                  description: Whether the bus is currently overcrowded
+                  type: boolean
+                boardedat:
+                  description: Where the bus was boarded
+                  type: string
         required: true
       responses:
-        '204':
+        "204":
           description: Successful operation
-        '400':
+        "400":
           description: Request badly formed
-        '404':
+        "404":
           description: Bus not found
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /route:
     put:
       summary: Request route
@@ -149,31 +157,31 @@ paths:
       operationId: reqRoute
       requestBody:
         content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  from:
-                    type: string
-                    description: starting stop
-                  to:
-                    type: string
-                    description: ending stop
+          application/json:
+            schema:
+              type: object
+              properties:
+                from:
+                  type: string
+                  description: starting stop
+                to:
+                  type: string
+                  description: ending stop
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/route'
-        '400':
+                  $ref: "#/components/schemas/route"
+        "400":
           description: Request badly formed
-        '404':
+        "404":
           description: Stops not found
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /users:
     post:
       summary: Create user
@@ -181,20 +189,30 @@ paths:
       operationId: createUser
       requestBody:
         content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: User name
+      responses:
+        "200":
+          description: User log-in action successful
+          content:
             application/json:
               schema:
-                type: object
-                properties:
-                  name:
-                    type: string
-                    description: User name
-      responses:
-        '204':
-          description: Successful operation
-        '400':
-          description: Request badly done
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+                type: string
+        "201":
+          description: User log-in (registration) action successful
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          description: Unacceptable username
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /users/{user}:
     parameters:
       - in: path
@@ -203,11 +221,13 @@ paths:
           type: string
         required: true
     get:
+      security:
+      - bearerAuth: []
       summary: Get credits
       description: Returns user's credits
       operationId: getUserCredits
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
@@ -217,33 +237,35 @@ paths:
                   credits:
                     type: integer
                     description: User's credits
-        '404':
+        "404":
           description: User not found
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+        "500":
+          $ref: "#/components/responses/InternalServerError"
     put:
+      security:
+      - bearerAuth: []
       summary: Spend credits
       description: Spends credits to donate to a specific org
       operationId: spendCredits
       requestBody:
         content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  ong:
-                    description: Which ong to donate to
-                    type: string
-                  credits:
-                    description: Amount donated
-                    type: integer
+          application/json:
+            schema:
+              type: object
+              properties:
+                ong:
+                  description: Which ong to donate to
+                  type: string
+                credits:
+                  description: Amount donated
+                  type: integer
         required: true
       responses:
-        '204':
+        "204":
           description: Successful operation
-        '400':
+        "400":
           description: Request badly formed
-        '404':
+        "404":
           description: User not found
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+        "500":
+          $ref: "#/components/responses/InternalServerError"
