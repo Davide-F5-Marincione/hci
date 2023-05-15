@@ -44,5 +44,6 @@ def handle_users(user):
 if __name__ == "__main__":
     con = sqlite3.connect("tutorial.db")
     con.execute("CREATE TABLE IF NOT EXISTS users(name TEXT PRIMARY KEY, credits INTEGER NOT NULL CHECK (credits >= 0) DEFAULT 0)")
+    #con.execute("CREATE TABLE IF NOT EXISTS buses(name TEXT PRIMARY KEY, last_seen TEXT NOT NULL, time_ago DATETIME NOT NULL, should_be TEXT NOT NULL, distance INTEGER NOT NULL)")
     con.commit()
     app.run(debug=False, threaded=False)

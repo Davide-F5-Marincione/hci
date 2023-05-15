@@ -21,31 +21,56 @@ components:
           type: array
           items:
             type: string
-          minItems: 2
-          maxItems: 64
         buses:
           description: List of buses servicing the line
           type: array
           items:
             type: string
-          minItems: 1
-          maxItems: 64
-      
+
     businfo:
       title: Bus info
       description: |-
         This object contains all of a bus's info at a certain point in time
       type: object
       properties:
-        timeleft:
-          description: Expected time before arriving to the next stop
-          type: integer
-        laststop:
-          description: Last stop done by the bus
+        line:
+          type: string
+          description: Line of the bus
+        last_seen:
+          description: Last time the bus has been signaled
           type: string
         overcrowded:
-          description: Whether the bus is currently overcrowded
+          description: Whether the bus was overcrowded
           type: boolean
+        expected_position:
+          description: The last stop where the bus should be
+          type: string
+        expected_time_left:
+          description: Expected time left to get to next stop
+          type: integer
+      
+    route:
+      title: Route
+      description: |-
+        This object contains all of the info for a possible route
+      type: array
+      items:
+        type: object
+        properties:
+          bus:
+            $ref: '#/components/schemas/businfo'
+          line:
+            type: string
+            description: Line of the bus
+          stops:
+            type: array
+            items:
+              type: object
+              properties:
+                stop-name:
+                  type: string
+                time:
+                  type: string
 paths:
   /lines/{line}:
     parameters:
@@ -115,6 +140,38 @@ paths:
           description: Request badly formed
         '404':
           description: Bus not found
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /route:
+    put:
+      summary: Request route
+      description: Returns possible routes from one stop to another
+      operationId: reqRoute
+      requestBody:
+        content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  from:
+                    type: string
+                    description: starting stop
+                  to:
+                    type: string
+                    description: ending stop
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/route'
+        '400':
+          description: Request badly formed
+        '404':
+          description: Stops not found
         '500':
           $ref: '#/components/responses/InternalServerError'
   /users:
