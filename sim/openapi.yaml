@@ -5,25 +5,17 @@ info:
     The title says it all
   version: 1.0.0
 components:
+  securitySchemes:
+    bearerAuth: # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
   responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid
     InternalServerError:
       description: |-
         The server encountered an internal error.
   schemas:
-    mydatetime:
-      title: Ubiquitous date time
-      description: |-
-        Since even the ISO8601 format may be misleading 
-        with regards on how the date time is represented,
-        and since the user is not giving the server any
-        date time, we hereby declare that the server will only
-        serve datetimes in the 'YYYY-MM-DD hh:mm:ss' format on zulu time (+00:00),
-        the client will see (hopefully) their converted time of course.
-      type: string
-      format: date-time
-      minLength: 19
-      maxLength: 19
-
     lineinfo:
       title: Line info
       description: |-
@@ -35,31 +27,56 @@ components:
           type: array
           items:
             type: string
-          minItems: 2
-          maxItems: 64
         buses:
           description: List of buses servicing the line
           type: array
           items:
             type: string
-          minItems: 1
-          maxItems: 64
-      
+
     businfo:
       title: Bus info
       description: |-
         This object contains all of a bus's info at a certain point in time
       type: object
       properties:
-        timeleft:
-          description: Expected time before arriving to the next stop
-          type: integer
-        laststop:
-          description: Last stop done by the bus
+        line:
+          type: string
+          description: Line of the bus
+        last_seen:
+          description: Last time the bus has been signaled
           type: string
         overcrowded:
-          description: Whether the bus is currently overcrowded
+          description: Whether the bus was overcrowded
           type: boolean
+        expected_position:
+          description: The last stop where the bus should be
+          type: string
+        expected_time_left:
+          description: Expected time left to get to next stop
+          type: integer
+
+    route:
+      title: Route
+      description: |-
+        This object contains all of the info for a possible route
+      type: array
+      items:
+        type: object
+        properties:
+          bus:
+            $ref: "#/components/schemas/businfo"
+          line:
+            type: string
+            description: Line of the bus
+          stops:
+            type: array
+            items:
+              type: object
+              properties:
+                stop-name:
+                  type: string
+                time:
+                  type: string
 paths:
   /lines/{line}:
     parameters:
@@ -73,16 +90,16 @@ paths:
       description: Returns all of a line's info, including stops and buses currently travelling on the line
       operationId: getLineInfo
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/lineinfo'
-        '404':
+                $ref: "#/components/schemas/lineinfo"
+        "404":
           description: Line not found
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /buses/{bus}:
     parameters:
       - in: path
@@ -95,39 +112,160 @@ paths:
       description: Returns as specific bus's info
       operationId: getBusInfo
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/businfo'
-        '404':
+                $ref: "#/components/schemas/businfo"
+        "404":
           description: Bus not found
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+        "500":
+          $ref: "#/components/responses/InternalServerError"
     put:
+      security:
+      - bearerAuth: []
       summary: Board/overcrowd bus
       description: Sets a specific bus's info
       operationId: setBusInfo
       requestBody:
         content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                overcrowded:
+                  description: Whether the bus is currently overcrowded
+                  type: boolean
+                boardedat:
+                  description: Where the bus was boarded
+                  type: string
+        required: true
+      responses:
+        "204":
+          description: Successful operation
+        "400":
+          description: Request badly formed
+        "404":
+          description: Bus not found
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /route:
+    put:
+      summary: Request route
+      description: Returns possible routes from one stop to another
+      operationId: reqRoute
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                from:
+                  type: string
+                  description: starting stop
+                to:
+                  type: string
+                  description: ending stop
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/route"
+        "400":
+          description: Request badly formed
+        "404":
+          description: Stops not found
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /users:
+    post:
+      summary: Create user
+      description: Creates a user
+      operationId: createUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: User name
+      responses:
+        "200":
+          description: User log-in action successful
+          content:
+            application/json:
+              schema:
+                type: string
+        "201":
+          description: User log-in (registration) action successful
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          description: Unacceptable username
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /users/{user}:
+    parameters:
+      - in: path
+        name: user
+        schema:
+          type: string
+        required: true
+    get:
+      security:
+      - bearerAuth: []
+      summary: Get credits
+      description: Returns user's credits
+      operationId: getUserCredits
+      responses:
+        "200":
+          description: Successful operation
+          content:
             application/json:
               schema:
                 type: object
                 properties:
-                  overcrowded:
-                    description: Whether the bus is currently overcrowded
-                    type: boolean
-                  boardedat:
-                    description: Where the bus was boarded
-                    type: string
+                  credits:
+                    type: integer
+                    description: User's credits
+        "404":
+          description: User not found
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    put:
+      security:
+      - bearerAuth: []
+      summary: Spend credits
+      description: Spends credits to donate to a specific org
+      operationId: spendCredits
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ong:
+                  description: Which ong to donate to
+                  type: string
+                credits:
+                  description: Amount donated
+                  type: integer
         required: true
       responses:
-        '204':
+        "204":
           description: Successful operation
-        '400':
+        "400":
           description: Request badly formed
-        '404':
-          description: Bus not found
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+        "404":
+          description: User not found
+        "500":
+          $ref: "#/components/responses/InternalServerError"
