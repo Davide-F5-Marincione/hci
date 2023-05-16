@@ -188,7 +188,6 @@ async def simulate_bus(bus: tds.Bus, env: SimulationEnv):
                 board()
 
                 # Wait at stop
-
                 unboard()
 
                 logging.info(f"Bus {bus.name} is waiting at {place.name}")
@@ -222,6 +221,14 @@ async def simulate_bus(bus: tds.Bus, env: SimulationEnv):
                     board()
 
                 place.buses.remove(bus)
+
+                # prendere passeggeri
+                # TODO: 1. settare un timestamp di partenza
+                # TODO: 2. setti una flag che abilità la segnalazione
+
+
+
+
                 await asyncio.sleep(1) # yield control to the event loop
 
                 # leave stop

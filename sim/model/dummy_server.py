@@ -1,31 +1,25 @@
-from flask import Flask, request, jsonify, Response
+from quart import Quart
 import asyncio
 
-app = Flask(__name__)
+app = Quart(__name__)
 
-@app.route("/buses/<bus>", methods=["POST"])
-def bus_put_data(bus):
+@app.route('/')
+async def hello_api():
+    return 'hello'
 
-    data = request.get_json()
 
-    # turn to dict
+async def hello():
+    while True:
 
-    data_dict = {k: v for k, v in data.items()}
+        await asyncio.sleep(1)
+        print("hello")
 
-    if data_dict["overcrowded"]:
+async def main():
 
-        print(f"Bus {bus} is overcrowded!")
-        return Response(status=200)
-
-    elif data_dict["boarded"]:
-
-        print(f"A passenger has boarded at {data_dict['boardedat']}")
-        return Response(status=200)
-
-    else:
-        print(f"invalid request")
-        # 400 Bad Request
-        return Response(status=400)
+    await asyncio.gather(
+        hello(),
+        app.run_task()
+    )
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    asyncio.run(main())
