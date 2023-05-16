@@ -339,7 +339,7 @@ async def simulate_passenger(passenger: tds.Passenger, env: SimulationEnv):
                     })
 
                 else:
-                    passenger.reporting_prob /= 1.5 # he forgets about it, but he might remember later, maybe...
+                    passenger.boarding_report_prob /= 1.5 # he forgets about it, but he might remember later, maybe...
         elif passenger.arrived:
 
             # nice!
