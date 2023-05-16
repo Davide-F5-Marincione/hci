@@ -336,6 +336,11 @@ class Passenger:
     reported_boarding: bool = False
     boarding_report_prob: float = 0.8
 
+    departure_time: Optional[float] = None
+    last_location: Optional[BusStop] = None
+    can_report: bool = False
+
+
     def __hash__(self):
         return hash(self.__repr__())
 

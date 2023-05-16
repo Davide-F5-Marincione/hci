@@ -19,8 +19,7 @@ handlers = [file_handler, stdout_handler]
 
 logging.basicConfig(format='%(asctime)s,%(msecs)03d %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s',
     datefmt='%Y-%m-%d:%H:%M:%S',
-    level=logging.INFO, handlers=handlers,
-    filemode='w')
+    level=logging.INFO, handlers=handlers)
 
 
 OVERCROWDING_THRESHOLD = 0.8
@@ -170,6 +169,13 @@ async def simulate_bus(bus: tds.Bus, env: SimulationEnv):
                 logging.info(f"Passenger {passenger_out.name} {passenger_out.surname} left bus {bus.name}")
         bus.on_board.difference_update(to_remove)
 
+    def reset_pass_flags():
+
+        for passenger in bus.on_board:
+            passenger.departure_time = None
+            passenger.last_location = None
+            passenger.can_report = False
+
     while env.time < STOP_AT:
         for idx, place in enumerate(cycle_path):
 
@@ -226,8 +232,10 @@ async def simulate_bus(bus: tds.Bus, env: SimulationEnv):
                 # TODO: 1. settare un timestamp di partenza
                 # TODO: 2. setti una flag che abilità la segnalazione
 
-
-
+                for passenger in bus.on_board:
+                    passenger.departure_time = env.time
+                    passenger.last_location = bus.curr_pos
+                    passenger.can_report = True
 
                 await asyncio.sleep(1) # yield control to the event loop
 
@@ -258,8 +266,6 @@ async def simulate_bus(bus: tds.Bus, env: SimulationEnv):
                     await asyncio.sleep(effective_distance / bus.speed) # d / m / v = t -> d = v * t * m
 
                 await asyncio.sleep(1)  # yield control to the event loop
-
-
         await asyncio.sleep(1)  # yield control to the event loop
 
 
@@ -332,7 +338,7 @@ async def simulate_passenger(passenger: tds.Passenger, env: SimulationEnv):
                         "overcrowded": True
                     })
 
-            if passenger.uses_our_app and not passenger.reported_boarding:
+            if passenger.uses_our_app and passenger.can_report and not passenger.reported_boarding:
 
                 if random.random() < passenger.boarding_report_prob:
 
@@ -341,8 +347,8 @@ async def simulate_passenger(passenger: tds.Passenger, env: SimulationEnv):
                     passenger.reported_boarding = True
 
                     requests.post(f"http://localhost:5000/buses/{passenger.bus_he_is_on.name}", json={
-                        "boardedat": env.time,
-                        "place": passenger.bus_he_is_on.curr_pos.name
+                        "boardedat": passenger.departure_time,
+                        "place": passenger.last_location.name
                     })
 
                 else:
@@ -356,7 +362,7 @@ async def simulate_passenger(passenger: tds.Passenger, env: SimulationEnv):
             env.passengers.remove(passenger)
 
             break # despawn
-        await asyncio.sleep(10+random.random()) # scrambling the wait to avoid huge chunks of work at once
+        await asyncio.sleep(5+random.random()) # scrambling the wait to avoid huge chunks of work at once
 
 # tells us what's going on in the simulation every 5 minutes
 async def env_dumper(env: SimulationEnv):
