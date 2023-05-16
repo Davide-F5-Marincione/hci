@@ -240,7 +240,7 @@ async def simulate_bus(bus: tds.Bus, env: SimulationEnv):
 
                     # travel in increments of 0.1, keep account of traffic
                     to_travel = tenth if distance_left > tenth else distance_left
-                    effective_distance = (to_travel / place.trafficFunc(env.time))
+                    effective_distance = (to_travel / place.trafficFunc(env.time)) # d / m
 
                     distance_left -= to_travel
 
@@ -248,7 +248,7 @@ async def simulate_bus(bus: tds.Bus, env: SimulationEnv):
                                  f" {distance_left:.1f}m left, ETA: {(distance_left / bus.speed):.2f}s {1 / place.trafficFunc(env.time):.2f}"
                                  f" inverse traffic factor at {place.name}")
 
-                    await asyncio.sleep(effective_distance / bus.speed)
+                    await asyncio.sleep(effective_distance / bus.speed) # d / m / v = t -> d = v * t * m
 
                 await asyncio.sleep(1)  # yield control to the event loop
 
@@ -322,8 +322,7 @@ async def simulate_passenger(passenger: tds.Passenger, env: SimulationEnv):
                     passenger.reported_overcrowding = True
                     logging.warning(f"Passenger {passenger.name} {passenger.surname} reports overcrowding on bus {passenger.bus_he_is_on.name}")
                     requests.post(f"http://localhost:5000/buses/{passenger.bus_he_is_on.name}", json={
-                        "overcrowded": True,
-                        "boardedat": None
+                        "overcrowded": True
                     })
 
             if passenger.uses_our_app and not passenger.reported_boarding:
@@ -335,8 +334,8 @@ async def simulate_passenger(passenger: tds.Passenger, env: SimulationEnv):
                     passenger.reported_boarding = True
 
                     requests.post(f"http://localhost:5000/buses/{passenger.bus_he_is_on.name}", json={
-                        "overcrowded": False,
-                        "boardedat": env.time
+                        "boardedat": env.time,
+                        "place": passenger.bus_he_is_on.curr_pos.name
                     })
 
                 else:

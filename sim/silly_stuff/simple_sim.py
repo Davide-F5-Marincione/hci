@@ -48,7 +48,7 @@ class Edge:
         return ((self.a.x - self.b.x) ** 2 + (self.a.y - self.b.y) ** 2) ** 0.5
 
     def expected_steps(self):
-        return self.length() // ((MAX + MIN) / 2 + ADD) + 1
+        return self.length() / ((MAX + MIN) / 2 * SPEED)
 
     def step(self):
         self.curr_traffic = next(self.traffic_update)
