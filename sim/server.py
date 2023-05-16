@@ -72,7 +72,7 @@ def bus_put_data(bus):
     data_dict = {k: v for k, v in data.items()}
 
     if data_dict.get("overcrowded", None) is not None:
-
+        
         if (a:=v_buses.get(bus, None)) is not None:
             a.overcrowd()
             return Response(status=200)
@@ -84,7 +84,9 @@ def bus_put_data(bus):
         print(data_dict["place"])
 
         if (a:=v_buses.get(bus, None)) is not None:
+            lock.acquire()
             a.board_signal(data_dict["place"], routes, data_dict["boardedat"])
+            lock.release()
             return Response(status=200)
         else:
             return Response(status=404)
@@ -118,7 +120,7 @@ def sim():
             cv2.line(buff_img, (int((prev.x + 5000) / 7000 * 800 + 100), int((prev.y + 1000) / 5000 * 800 + 100)), (int((start.x + 5000) / 7000 * 800 + 100), int((start.y + 1000) / 5000 * 800 + 100)), route.color, 3)
 
         for node in graph.stops.values():
-            cv2.putText(buff_img, node.name, (int((node.x + 5000) / 7000 * 800 + 100), int((node.y + 1000) / 5000 * 800 + 100)), fontFace=0, fontScale=.4, color=(12,12,12))
+            cv2.putText(buff_img, node.name, (int((node.x + 5000) / 7000 * 800 + 100) + 10, int((node.y + 1000) / 5000 * 800 + 100)), fontFace=0, fontScale=.4, color=(12,12,12))
             cv2.circle(buff_img, (int((node.x + 5000) / 7000 * 800 + 100), int((node.y + 1000) / 5000 * 800 + 100)), 5, (12,12,12), 3)
 
         v_buff_img = buff_img.copy()
@@ -150,8 +152,10 @@ def sim():
 
         last_time = time_now
 
+        lock.acquire()
         for bus in v_buses.values():
             bus.step(graph, v_buses, routes, time_delta)
+        lock.release()
 
     cv2.destroyAllWindows()
 
@@ -183,6 +187,8 @@ if __name__ == "__main__":
         graph.add_edge(prev, curr)
         prev = curr
     graph.add_edge(prev, first)
+
+    lock = threading.Lock()
 
     t1 = threading.Thread(target=sim, args=())
 

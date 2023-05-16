@@ -12,7 +12,9 @@ ADD = 0
 WAITING_SECONDS = 5
 MORE_WAITING = 20
 SIGN_PROB = 0.5
+PROB_USER = 0.01
 GRANULARITY = 50
+SPEED = 1
 MAX_OVERCROWD_TIME_AGO = 1024
 OVERCROWD_THRESHOLD = .8
 MIN_OVERCROWD_PROB = .4
@@ -66,7 +68,7 @@ class VirtualBus:
     overcrowded: int = MAX_OVERCROWD_TIME_AGO
     speed: float = (MAX + MIN) / 2 + ADD
 
-    def board_signal(self, prev_node, next_node, ago=0):
+    def board_signal(self, prev_node, next_node, graph, ago=0):
         if TELEPORT:
             self.waiting = 0
             self.steps_run = ago
@@ -87,7 +89,7 @@ class VirtualBus:
     def overcrowd(self):
         self.overcrowded = 0
 
-    def step(self, delta_t=1):
+    def step(self, graph, routes, v_buses, delta_t=1):
         self.overcrowded = min(self.overcrowded + 1, MAX_OVERCROWD_TIME_AGO)
         if self.waiting > 0:  # Just wait
             self.waiting -= delta_t
@@ -147,14 +149,18 @@ class TrueBus:
     curr_signaled: bool = False
     boarded: bool = False
 
-    def step(self, delta_t=1):
+    def step(self, graph, routes, buses, v_buses, delta_t=1):
         if self.waiting > delta_t:  # Just wait
             self.waiting -= delta_t
         else:  # Board calc
             if not self.boarded:
                 max_board = self.max_capacity - self.fill
                 general_board = random.randint(0, max_board)
-                users_board = random.randint(0, general_board)
+                users_board = 0
+                for _ in range(general_board):
+                    if np.random.rand() < PROB_USER:
+                        users_board += 1
+
                 self.fill += general_board
                 self.users += users_board
                 self.waiting = 0.0
@@ -162,7 +168,7 @@ class TrueBus:
                 p = SIGN_PROB**self.users
                 n = np.random.rand()
                 if n > p:
-                    v_buses[self.name].board_signal(self.prev_node, self.next_node)
+                    v_buses[self.name].board_signal(self.prev_node, self.next_node, graph)
                     self.curr_signaled = True
 
                 if self.fill >= OVERCROWD_THRESHOLD * self.max_capacity:
@@ -276,172 +282,172 @@ class Graph:
             self.edges[(a, b)] = edge
             return edge
 
+if __name__ == "__main__":
+    random.seed(42)
+    stops = ["A", "B", "C", "D", "E", "F", "G"]
+    graph = Graph(dict(), dict())
+    graph.startup(stops)
+    graph.stops["A"].x = 300
+    graph.stops["A"].y = 300
+    graph.stops["B"].x = 400
+    graph.stops["B"].y = 300
+    graph.stops["C"].x = 400
+    graph.stops["C"].y = 400
+    graph.stops["D"].x = 300
+    graph.stops["D"].y = 400
+    graph.stops["E"].x = 450
+    graph.stops["E"].y = 475
+    graph.stops["F"].x = 350
+    graph.stops["F"].y = 475
+    graph.stops["G"].x = 250
+    graph.stops["G"].y = 475
 
-random.seed(42)
-stops = ["A", "B", "C", "D", "E", "F", "G"]
-graph = Graph(dict(), dict())
-graph.startup(stops)
-graph.stops["A"].x = 300
-graph.stops["A"].y = 300
-graph.stops["B"].x = 400
-graph.stops["B"].y = 300
-graph.stops["C"].x = 400
-graph.stops["C"].y = 400
-graph.stops["D"].x = 300
-graph.stops["D"].y = 400
-graph.stops["E"].x = 450
-graph.stops["E"].y = 475
-graph.stops["F"].x = 350
-graph.stops["F"].y = 475
-graph.stops["G"].x = 250
-graph.stops["G"].y = 475
+    routes_def = [
+        ("Prime", (255, 0, 0), ["A", "B", "C", "D"], 3),
+        ("Secundus", (0, 255, 0), ["C", "E", "F"], 2),
+        ("Tertius", (0, 0, 255), ["D", "G", "F"], 2),
+    ]
+    buses = dict()
+    v_buses = dict()
+    routes = dict()
 
-routes_def = [
-    ("Prime", (255, 0, 0), ["A", "B", "C", "D"], 3),
-    ("Secundus", (0, 255, 0), ["C", "E", "F"], 2),
-    ("Tertius", (0, 0, 255), ["D", "G", "F"], 2),
-]
-buses = dict()
-v_buses = dict()
-routes = dict()
+    random.seed(42)
 
-random.seed(42)
+    with open("sim/silly_stuff/names.pickle", "+rb") as file:
+        bus_names = pickle.load(file)
 
-with open("sim/names.pickle", "+rb") as file:
-    bus_names = pickle.load(file)
+    tot_buses = 0
 
-tot_buses = 0
+    for _, _, _, buses_num in routes_def:
+        tot_buses += buses_num
 
-for _, _, _, buses_num in routes_def:
-    tot_buses += buses_num
+    assert tot_buses <= len(bus_names)
 
-assert tot_buses <= len(bus_names)
+    random.shuffle(bus_names)
+    i = 0
+    for route_name, color, nodes, buses_num in routes_def:
+        this_buses = []
 
-random.shuffle(bus_names)
-i = 0
-for route_name, color, nodes, buses_num in routes_def:
-    this_buses = []
-
-    first = prev = nodes[0]
-    for curr in nodes[1:]:
-        graph.add_edge(prev, curr)
-        prev = curr
-    graph.add_edge(prev, first)
-
-    t = 0
-    for _ in range(buses_num):
-        v_bus = VirtualBus(
-            bus_names[i],
-            route_name,
-            nodes[len(nodes) // buses_num * t],
-            nodes[(len(nodes) // buses_num * t + 1) % len(nodes)],
-        )
-        bus = TrueBus(
-            bus_names[i],
-            route_name,
-            nodes[len(nodes) // buses_num * t],
-            nodes[(len(nodes) // buses_num * t + 1) % len(nodes)],
-        )
-        buses[bus_names[i]] = bus
-        v_buses[bus_names[i]] = v_bus
-        i += 1
-        t += 1
-
-    routes[route_name] = Route(route_name, color, nodes)
-
-# print(routes)
-# print(graph)
-# print(buses)
-
-# for i in range(1000):
-#     print(i)
-#     for bus in buses.values():
-#         bus.step()
-#         print(f"{bus.name}: {bus.prev_node}->{bus.next_node}, dist={bus.distance_travelled:.2f}, waiting={bus.waiting}, fill={bus.fill}, users={bus.users}")
-
-#     for edge in graph.edges.values():
-#         edge.step()
-
-
-title = "Simulation"
-v_title = "Virtual buses"
-
-img = np.ones((800, 800, 3), dtype=np.uint8) * 255
-
-run = True
-
-cv2.namedWindow(title)
-cv2.namedWindow(v_title)
-
-last_time = time.time()
-
-while run:
-    buff_img = img.copy()
-
-    for route in routes.values():
-        start = prev = graph.stops[route.circuit[0]]
-
-        for curr in route.circuit[1:]:
-            curr = graph.stops[curr]
-            cv2.line(buff_img, (prev.x, prev.y), (curr.x, curr.y), route.color, 3)
+        first = prev = nodes[0]
+        for curr in nodes[1:]:
+            graph.add_edge(prev, curr)
             prev = curr
-        cv2.line(buff_img, (prev.x, prev.y), (start.x, start.y), route.color, 3)
+        graph.add_edge(prev, first)
 
-    for node in graph.stops.values():
-        cv2.circle(buff_img, (node.x, node.y), 5, (12,12,12), 3)
+        t = 0
+        for _ in range(buses_num):
+            v_bus = VirtualBus(
+                bus_names[i],
+                route_name,
+                nodes[len(nodes) // buses_num * t],
+                nodes[(len(nodes) // buses_num * t + 1) % len(nodes)],
+            )
+            bus = TrueBus(
+                bus_names[i],
+                route_name,
+                nodes[len(nodes) // buses_num * t],
+                nodes[(len(nodes) // buses_num * t + 1) % len(nodes)],
+            )
+            buses[bus_names[i]] = bus
+            v_buses[bus_names[i]] = v_bus
+            i += 1
+            t += 1
 
-    v_buff_img = buff_img.copy()
+        routes[route_name] = Route(route_name, color, nodes)
 
-    for bus in buses.values():
-        start = graph.stops[bus.prev_node]
-        stop = graph.stops[bus.next_node]
-        conn = graph.get_edge(bus.prev_node, bus.next_node)
-        l = conn.length()
-        dir_x = (stop.x - start.x) / l * bus.distance_travelled
-        dir_y = (stop.y - start.y) / l * bus.distance_travelled
-        pos_x = dir_x + start.x
-        pos_y = dir_y + start.y
+    # print(routes)
+    # print(graph)
+    # print(buses)
 
-        col = routes[bus.route].color
+    # for i in range(1000):
+    #     print(i)
+    #     for bus in buses.values():
+    #         bus.step()
+    #         print(f"{bus.name}: {bus.prev_node}->{bus.next_node}, dist={bus.distance_travelled:.2f}, waiting={bus.waiting}, fill={bus.fill}, users={bus.users}")
 
-        cv2.circle(buff_img, (int(pos_x), int(pos_y)), 5, col, -1)
-        cv2.putText(buff_img, bus.name, (int(pos_x) + 5, int(pos_y)), fontFace=0, fontScale=.4, color=(12,12,12))
+    #     for edge in graph.edges.values():
+    #         edge.step()
 
-    for bus in v_buses.values():
-        start = graph.stops[bus.prev_node]
-        stop = graph.stops[bus.next_node]
-        conn = graph.get_edge(bus.prev_node, bus.next_node)
-        l = conn.length()
-        dir_x = (stop.x - start.x) / l * bus.distance_travelled
-        dir_y = (stop.y - start.y) / l * bus.distance_travelled
-        pos_x = dir_x + start.x
-        pos_y = dir_y + start.y
 
-        col = routes[bus.route].color
+    title = "Simulation"
+    v_title = "Virtual buses"
 
-        cv2.circle(v_buff_img, (int(pos_x), int(pos_y)), 5, col, -1)
-        cv2.putText(v_buff_img, bus.name, (int(pos_x) + 5, int(pos_y)), fontFace=0, fontScale=.4, color=(12,12,12))
+    img = np.ones((800, 800, 3), dtype=np.uint8) * 255
 
-    cv2.imshow(title, buff_img)
-    cv2.imshow(v_title, v_buff_img)
+    run = True
 
-    key = cv2.waitKey(10)
+    cv2.namedWindow(title)
+    cv2.namedWindow(v_title)
 
-    if key == ord("q"):
-        run = False
+    last_time = time.time()
 
-    time_now = time.time()
-    time_delta = time_now - last_time
+    while run:
+        buff_img = img.copy()
 
-    last_time = time_now
+        for route in routes.values():
+            start = prev = graph.stops[route.circuit[0]]
 
-    for bus in buses.values():
-        bus.step(time_delta)
+            for curr in route.circuit[1:]:
+                curr = graph.stops[curr]
+                cv2.line(buff_img, (prev.x, prev.y), (curr.x, curr.y), route.color, 3)
+                prev = curr
+            cv2.line(buff_img, (prev.x, prev.y), (start.x, start.y), route.color, 3)
 
-    for edge in graph.edges.values():
-        edge.step()
+        for node in graph.stops.values():
+            cv2.circle(buff_img, (node.x, node.y), 5, (12,12,12), 3)
 
-    for bus in v_buses.values():
-        bus.step(time_delta)
+        v_buff_img = buff_img.copy()
 
-cv2.destroyAllWindows()
+        for bus in buses.values():
+            start = graph.stops[bus.prev_node]
+            stop = graph.stops[bus.next_node]
+            conn = graph.get_edge(bus.prev_node, bus.next_node)
+            l = conn.length()
+            dir_x = (stop.x - start.x) / l * bus.distance_travelled
+            dir_y = (stop.y - start.y) / l * bus.distance_travelled
+            pos_x = dir_x + start.x
+            pos_y = dir_y + start.y
+
+            col = routes[bus.route].color
+
+            cv2.circle(buff_img, (int(pos_x), int(pos_y)), 5, col, -1)
+            cv2.putText(buff_img, bus.name, (int(pos_x) + 5, int(pos_y)), fontFace=0, fontScale=.4, color=(12,12,12))
+
+        for bus in v_buses.values():
+            start = graph.stops[bus.prev_node]
+            stop = graph.stops[bus.next_node]
+            conn = graph.get_edge(bus.prev_node, bus.next_node)
+            l = conn.length()
+            dir_x = (stop.x - start.x) / l * bus.distance_travelled
+            dir_y = (stop.y - start.y) / l * bus.distance_travelled
+            pos_x = dir_x + start.x
+            pos_y = dir_y + start.y
+
+            col = routes[bus.route].color
+
+            cv2.circle(v_buff_img, (int(pos_x), int(pos_y)), 5, col, -1)
+            cv2.putText(v_buff_img, bus.name, (int(pos_x) + 5, int(pos_y)), fontFace=0, fontScale=.4, color=(12,12,12))
+
+        cv2.imshow(title, buff_img)
+        cv2.imshow(v_title, v_buff_img)
+
+        key = cv2.waitKey(10)
+
+        if key == ord("q"):
+            run = False
+
+        time_now = time.time()
+        time_delta = time_now - last_time
+
+        last_time = time_now
+
+        for bus in buses.values():
+            bus.step(graph, routes, buses, v_buses, time_delta)
+
+        for edge in graph.edges.values():
+            edge.step()
+
+        for bus in v_buses.values():
+            bus.step(graph, routes, v_buses, time_delta)
+
+    cv2.destroyAllWindows()
