@@ -23,6 +23,7 @@ logging.basicConfig(format='%(asctime)s,%(msecs)03d %(levelname)-8s [%(filename)
 
 OVERCROWDING_THRESHOLD = 0.8
 MAX_PASSENGERS_IN_SIM = 256
+PROB_TO_USE_APP = 0.1
 
 ###
 #
@@ -54,10 +55,10 @@ class SimulationEnv:
 # bus stops
 
 bus_stops = [
-    tds.BusStop(2000.0, -1000.0, "A", []),
-    tds.BusStop(1000.5, 4000.0, "B", []),
-    tds.BusStop(-5000, 1000.0, "C", []),
-    tds.BusStop(-2000.0, 1050., "D", []),
+    tds.BusStop(2000.0, -1000.0, "A", set()),
+    tds.BusStop(1000.5, 4000.0, "B", set()),
+    tds.BusStop(-5000, 1000.0, "C", set()),
+    tds.BusStop(-2000.0, 1050., "D", set()),
 ]
 
 # bus routes
@@ -129,31 +130,36 @@ async def simulate_bus(bus: tds.Bus, env: SimulationEnv):
     logging.info(f"Bus {bus.name} starting simulation")
 
     def board():
+        to_remove = set()
+
         for passenger_in in bus.curr_pos.waiting:
             # this has scary performance implications...
             if passenger_in.planned_trip.to in bus.route:
+                to_remove.add(passenger_in)
 
-                bus.curr_pos.waiting.remove(passenger_in)
                 passenger_in.on_bus = True
-                bus.on_board.append(passenger_in)
+                bus.on_board.add(passenger_in)
                 passenger_in.bus_he_is_on = bus
 
                 logging.info(f"Passenger {passenger_in.name} {passenger_in.surname} boarded bus {bus.name}")
+        
+        bus.curr_pos.waiting.difference_update(to_remove)
 
     def unboard():
+        to_remove = set()
         for passenger_out in bus.on_board:
 
             if passenger_out.planned_trip.to == bus.curr_pos:
-
-                bus.on_board.remove(passenger_out)
+                
+                to_remove.add(passenger_out)
                 passenger_out.on_bus = False
                 passenger_out.arrived = True
                 passenger_out.curr_stop = bus.curr_pos
-                bus.curr_pos.waiting.append(passenger_out)
+                bus.curr_pos.waiting.add(passenger_out)
                 passenger_out.bus_he_is_on = None
 
                 logging.info(f"Passenger {passenger_out.name} {passenger_out.surname} left bus {bus.name}")
-
+        bus.on_board.difference_update(to_remove)
 
     while env.time < STOP_AT:
         for place in stops_to_traverse:
@@ -201,7 +207,10 @@ async def simulate_bus(bus: tds.Bus, env: SimulationEnv):
                     distance_left -= to_travel
 
                     # if you know how to break up a string into multiple lines please do, I can't be bothered to look it up.
-                    logging.info(f"Bus {bus.name} is travelling {effective_distance:.1f}m to {place.name}, {distance_left:.1f}m left, ETA: {(distance_left / bus.speed):.2f}s {1 / place.trafficFunc(env.time):.2f} traffic at {place.name}")
+                    # Gotchu fam.
+                    logging.info(f"Bus {bus.name} is travelling {effective_distance:.1f}m to {place.name},\
+                                 {distance_left:.1f}m left, ETA: {(distance_left / bus.speed):.2f}s {1 / place.trafficFunc(env.time):.2f}\
+                                 traffic at {place.name}")
 
                     await asyncio.sleep(effective_distance / bus.speed)
 
@@ -217,7 +226,7 @@ async def passenger_spawner(env: SimulationEnv):
         passenger = tds.Passenger(
             name = names.get_first_name(),
             surname = names.get_last_name(),
-            uses_our_app = random.random() < 0.5,
+            uses_our_app = random.random() < PROB_TO_USE_APP,
             on_bus = False,
             planned_trip=None,
             coawaited = False,
@@ -262,7 +271,7 @@ async def passenger_spawner(env: SimulationEnv):
 
 
 async def simulate_passenger(passenger: tds.Passenger, env: SimulationEnv):
-    passenger.planned_trip.start.waiting.append(passenger)
+    passenger.planned_trip.start.waiting.add(passenger)
 
     while env.time < STOP_AT:
 
@@ -273,8 +282,8 @@ async def simulate_passenger(passenger: tds.Passenger, env: SimulationEnv):
 
         if passenger.on_bus:
 
-            if len(passenger.bus_he_is_on.on_board) >= (OVERCROWDING_THRESHOLD * passenger.bus_he_is_on.capacity):
-
+            if len(passenger.bus_he_is_on.on_board) >= (OVERCROWDING_THRESHOLD * passenger.bus_he_is_on.capacity) and not passenger.reported_overcrowding:
+                passenger.reported_overcrowding = True
                 logging.warning(f"Passenger {passenger.name} {passenger.surname} reports overcrowding on bus {passenger.bus_he_is_on.name}")
 
         elif passenger.arrived:

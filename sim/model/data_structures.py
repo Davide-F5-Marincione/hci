@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 from dataclasses import dataclass, field
-from typing import List, Dict, Tuple, Callable, Union, Any, Optional
+from typing import List, Dict, Tuple, Callable, Union, Any, Optional, Set
 import numpy as np
 import random
 import json
@@ -52,7 +52,7 @@ class SimplexNoiseTraffic:
         float
             a traffic coefficient, between 0. and 1.2
         """
-        if not t:
+        if t is None:
             retval = self.func(self.i)
             self.i += self.step
 
@@ -101,7 +101,7 @@ class SimplexNoiseBounded:
         Returns
         ------
         float
-            a traffic coefficient, between 0. and 1.2
+            a traffic coefficient, between 0. and 1.
         """
         if not t:
             retval = self.func(self.i)
@@ -121,7 +121,7 @@ class Position:
 @dataclass
 class BusStop(Position):
     name: str
-    waiting: List[Any]
+    waiting: Set[Any]
 
 
     def __hash__(self):
@@ -297,7 +297,7 @@ class Bus:
     route: Route
     curr_pos_idx: int
     curr_pos: Position = field(init=False, repr=False) # type: Union[BusStop, RoadConnection]
-    on_board: List[Any] = field(default_factory=list)
+    on_board: Set[Any] = field(default_factory=set)
 
     def __post_init__(self):
 
@@ -330,6 +330,7 @@ class Passenger:
     planned_trip: Optional[Trip] = None
 
     coawaited: bool = False
+    reported_overcrowding: bool = False
 
     def __hash__(self):
         return hash(self.__repr__())
@@ -341,10 +342,10 @@ class Passenger:
 if __name__ == "__main__":
 
     stops = [
-        BusStop(2.0, -1.0, "A", 0),
-        BusStop(1.5, 4.0, "B", 0),
-        BusStop(-0.5, 1.0, "C", 0),
-        BusStop(-2.0, 1.5, "D", 0),
+        BusStop(2.0, -1.0, "A", set()),
+        BusStop(1.5, 4.0, "B", set()),
+        BusStop(-0.5, 1.0, "C", set()),
+        BusStop(-2.0, 1.5, "D", set()),
     ]
 
     route = Route(
