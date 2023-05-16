@@ -122,6 +122,7 @@ class Position:
 class BusStop(Position):
     name: str
     waiting: Set[Any]
+    buses: Set[Any] = field(default_factory=set)
 
 
     def __hash__(self):
@@ -152,7 +153,7 @@ class RoadConnection(Position):
 
     def __post_init__(self):
         self.distance = distance_between_bus_stops(self.fromStop, self.toStop)
-        self.name = f"{self.fromStop.name} -> {self.toStop.name}"
+        self.name = f"{self.fromStop.name} <-> {self.toStop.name}"
 
         self.x = (self.fromStop.x + self.toStop.x) / 2
         self.y = (self.fromStop.y + self.toStop.y) / 2
@@ -298,12 +299,14 @@ class Bus:
     curr_pos_idx: int
     curr_pos: Position = field(init=False, repr=False) # type: Union[BusStop, RoadConnection]
     on_board: Set[Any] = field(default_factory=set)
+    next_idx: int = None
 
     def __post_init__(self):
 
         assert abs(self.curr_pos_idx) < len(self.route), "curr_pos_idx must be less than |len(route)|"
         assert self.capacity > 0, "capacity must be greater than 0"
         assert self.speed > 0, "speed must be greater than 0"
+        assert isinstance(self.route[self.curr_pos_idx], BusStop), f"curr_pos_idx must be a BusStop index, instead it is {type(self.route[self.curr_pos_idx])}"
 
 
     def __hash__(self):
@@ -323,7 +326,6 @@ class Passenger:
     name: str
     surname: str
     uses_our_app: bool
-    on_bus: bool = False
     arrived: bool = False
 
     bus_he_is_on: Optional[Bus] = None

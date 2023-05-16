@@ -11,6 +11,7 @@ import jsonpickle
 import names
 import sys
 import logging
+import requests
 
 file_handler = logging.FileHandler(filename='sim.log')
 stdout_handler = logging.StreamHandler(stream=sys.stdout)
@@ -18,10 +19,12 @@ handlers = [file_handler, stdout_handler]
 
 logging.basicConfig(format='%(asctime)s,%(msecs)03d %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s',
     datefmt='%Y-%m-%d:%H:%M:%S',
-    level=logging.INFO, handlers=handlers)
+    level=logging.INFO, handlers=handlers,
+    filemode='w')
 
 
 OVERCROWDING_THRESHOLD = 0.8
+PROB_TO_REPORT_OVERCROWDING = 0.25
 MAX_PASSENGERS_IN_SIM = 256
 PROB_TO_USE_APP = 0.1
 
@@ -125,24 +128,33 @@ async def tick_time(env: SimulationEnv):
 
 async def simulate_bus(bus: tds.Bus, env: SimulationEnv):
     # create a list of stops to traverse that start with the original position
-    stops_to_traverse = bus.route[bus.curr_pos_idx :] + bus.route[: bus.curr_pos_idx]
+
+    starting_idx = bus.curr_pos_idx
+
+    #concat three lists so that the bus goes back and forth correctly
+    cycle_path = bus.route[starting_idx:] + bus.route[-2::-1] + bus.route[1:starting_idx]
+
+    if cycle_path[0] == cycle_path[-1]:
+        cycle_path = cycle_path[:-1] # i'm tired, boss.
+
+    bus.next_idx = (starting_idx + 1) % len(bus.route)
 
     logging.info(f"Bus {bus.name} starting simulation")
+    logging.info(f"Bus {bus.name} will traverse {cycle_path}")
 
     def board():
         to_remove = set()
 
         for passenger_in in bus.curr_pos.waiting:
             # this has scary performance implications...
-            if passenger_in.planned_trip.to in bus.route:
+            if len(bus.on_board) < bus.capacity and passenger_in.planned_trip.to in bus.route:
                 to_remove.add(passenger_in)
 
-                passenger_in.on_bus = True
-                bus.on_board.add(passenger_in)
                 passenger_in.bus_he_is_on = bus
+                bus.on_board.add(passenger_in)
 
                 logging.info(f"Passenger {passenger_in.name} {passenger_in.surname} boarded bus {bus.name}")
-        
+
         bus.curr_pos.waiting.difference_update(to_remove)
 
     def unboard():
@@ -150,32 +162,32 @@ async def simulate_bus(bus: tds.Bus, env: SimulationEnv):
         for passenger_out in bus.on_board:
 
             if passenger_out.planned_trip.to == bus.curr_pos:
-                
+
                 to_remove.add(passenger_out)
-                passenger_out.on_bus = False
                 passenger_out.arrived = True
-                passenger_out.curr_stop = bus.curr_pos
-                bus.curr_pos.waiting.add(passenger_out)
                 passenger_out.bus_he_is_on = None
 
                 logging.info(f"Passenger {passenger_out.name} {passenger_out.surname} left bus {bus.name}")
         bus.on_board.difference_update(to_remove)
 
     while env.time < STOP_AT:
-        for place in stops_to_traverse:
+        for idx, place in enumerate(cycle_path):
 
             if env.time >= STOP_AT:
                 break
 
             if isinstance(place, tds.BusStop):
                 bus.curr_pos = place
+                bus.curr_pos_idx = idx
+                bus.next_idx = (idx + 1) % len(cycle_path)
 
-                ## Arrives at stop
+                # Arrives at stop
+                place.buses.add(bus)
                 logging.info(f"Bus {bus.name} is arriving at {place.name}")
 
                 board()
 
-                # wait at stop
+                # Wait at stop
 
                 unboard()
 
@@ -185,14 +197,40 @@ async def simulate_bus(bus: tds.Bus, env: SimulationEnv):
                     await asyncio.sleep(15)
                     board()
 
+                # By the topology, this is guaranteed to be a bus stop
+                # so the one we are checking 2 ahead is also a bus stop
 
-                await asyncio.sleep(1)
-                logging.info(f"Bus {bus.name} is leaving {place.name}")
+                next_idx = (idx + 2) % len(cycle_path)
+
+                next_place = cycle_path[next_idx]
+
+                # pre-emptively wait for the next bus to go away
+                # from the next stop
+                # this is hacky but improves the simulation's traffic flow
+
+                while len(next_place.buses) > 0 and any(next_bus.next_idx == bus.curr_pos_idx in
+                                                        next_place.buses for next_bus in next_place.buses):
+
+                    # we should divide by the speed of the OTHER bus, not this one
+                    # but they are likely to be the same, so it's fine.
+                    time_to_wait = tds.distance_between_bus_stops(place, next_place) / bus.speed
+                    time_to_wait *= 0.75
+
+                    logging.info((f"Bus {bus.name} is waiting {time_to_wait:.2f}s for a bus to leave {next_place.name} "
+                                  f"Current next bus is {next_place.buses}, next hop is {cycle_path[next_idx].name}"))
+                    await asyncio.sleep(time_to_wait)
+                    board()
+
+                place.buses.remove(bus)
+                await asyncio.sleep(1) # yield control to the event loop
 
                 # leave stop
             elif isinstance(place, tds.RoadConnection):
                 # it should get here without awaiting
                 bus.curr_pos = place
+                bus.curr_pos_idx = idx
+                bus.next_idx = (idx + 1) % len(cycle_path)
+
                 distance_left = place.distance
                 tenth = distance_left / 10
 
@@ -206,19 +244,16 @@ async def simulate_bus(bus: tds.Bus, env: SimulationEnv):
 
                     distance_left -= to_travel
 
-                    # if you know how to break up a string into multiple lines please do, I can't be bothered to look it up.
-                    # Gotchu fam.
-                    logging.info(f"Bus {bus.name} is travelling {effective_distance:.1f}m to {place.name},\
-                                 {distance_left:.1f}m left, ETA: {(distance_left / bus.speed):.2f}s {1 / place.trafficFunc(env.time):.2f}\
-                                 traffic at {place.name}")
+                    logging.info(f"Bus {bus.name} is travelling {effective_distance:.1f}m to {place.name},"
+                                 f" {distance_left:.1f}m left, ETA: {(distance_left / bus.speed):.2f}s {1 / place.trafficFunc(env.time):.2f}"
+                                 f" inverse traffic factor at {place.name}")
 
                     await asyncio.sleep(effective_distance / bus.speed)
 
-                await asyncio.sleep(1)
+                await asyncio.sleep(1)  # yield control to the event loop
 
-        stops_to_traverse.reverse()
 
-        await asyncio.sleep(1)
+        await asyncio.sleep(1)  # yield control to the event loop
 
 
 async def passenger_spawner(env: SimulationEnv):
@@ -227,7 +262,6 @@ async def passenger_spawner(env: SimulationEnv):
             name = names.get_first_name(),
             surname = names.get_last_name(),
             uses_our_app = random.random() < PROB_TO_USE_APP,
-            on_bus = False,
             planned_trip=None,
             coawaited = False,
         )
@@ -253,7 +287,7 @@ async def passenger_spawner(env: SimulationEnv):
         if random.random() < SPAWN_PROBABILITY:
 
             SPAWN_PROBABILITY = 0.25 # first wave always spawns
-            new_passengers = [spawn() for _ in range(random.randint(10, 150))]
+            new_passengers = [spawn() for _ in range(random.randint(10, 100))]
 
             if len(env.passengers) + len(new_passengers) < MAX_PASSENGERS_IN_SIM:
                 env.passengers.extend(new_passengers)
@@ -280,12 +314,17 @@ async def simulate_passenger(passenger: tds.Passenger, env: SimulationEnv):
         # by themselves, but they might perform some actions when they
         # tick, such as reporting or despawning
 
-        if passenger.on_bus:
+        if passenger.bus_he_is_on:
 
-            if len(passenger.bus_he_is_on.on_board) >= (OVERCROWDING_THRESHOLD * passenger.bus_he_is_on.capacity) and not passenger.reported_overcrowding:
-                passenger.reported_overcrowding = True
-                logging.warning(f"Passenger {passenger.name} {passenger.surname} reports overcrowding on bus {passenger.bus_he_is_on.name}")
+            if passenger.uses_our_app and len(passenger.bus_he_is_on.on_board) >= (OVERCROWDING_THRESHOLD * passenger.bus_he_is_on.capacity) and not passenger.reported_overcrowding:
 
+                if random.random() < PROB_TO_REPORT_OVERCROWDING:
+                    passenger.reported_overcrowding = True
+                    logging.warning(f"Passenger {passenger.name} {passenger.surname} reports overcrowding on bus {passenger.bus_he_is_on.name}")
+                    requests.post(f"http://localhost:5000/buses/{passenger.bus_he_is_on.name}", json={
+                        "overcrowded": True,
+                        "boardedat": None
+                    })
         elif passenger.arrived:
 
             # nice!
@@ -295,13 +334,31 @@ async def simulate_passenger(passenger: tds.Passenger, env: SimulationEnv):
             env.passengers.remove(passenger)
 
             break # despawn
-        await asyncio.sleep(15+random.random()) # scrambling the wait to avoid huge chunks of work at once
+        await asyncio.sleep(10+random.random()) # scrambling the wait to avoid huge chunks of work at once
+
+# tells us what's going on in the simulation every 5 minutes
+async def env_dumper(env: SimulationEnv):
+    while env.time < STOP_AT:
+
+        logging.info((f"ENVDUMP:\n\tCurrent time: {env.time}\n\tTotal passengers: {len(env.passengers)}\n\t"))
+
+        await asyncio.sleep(300)
 
 
 async def main():
     buses = [
-        tds.Bus("A-1", 15, 80, routes[0], 0),
-        tds.Bus("B-1", 15, 80, routes[0], -1),
+        tds.Bus(
+        name = "A-1",
+        capacity = 15,
+        speed= 200,
+        route = routes[0],
+        curr_pos_idx = 0),
+        tds.Bus(
+        name = "B-1",
+        capacity = 15,
+        speed= 200,
+        route = routes[0],
+        curr_pos_idx = -1),
     ]
 
     env = SimulationEnv(bus_stops, routes, buses, [])
@@ -310,6 +367,7 @@ async def main():
         tick_time(env),
         passenger_spawner(env),
         *[simulate_bus(bus, env) for bus in buses],
+        env_dumper(env)
     )
 
     #env.save("sim.json")

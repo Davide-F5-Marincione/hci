@@ -124,7 +124,7 @@ paths:
           $ref: "#/components/responses/InternalServerError"
     put:
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       summary: Board/overcrowd bus
       description: Sets a specific bus's info
       operationId: setBusInfo
@@ -222,7 +222,7 @@ paths:
         required: true
     get:
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       summary: Get credits
       description: Returns user's credits
       operationId: getUserCredits
@@ -243,7 +243,7 @@ paths:
           $ref: "#/components/responses/InternalServerError"
     put:
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       summary: Spend credits
       description: Spends credits to donate to a specific org
       operationId: spendCredits

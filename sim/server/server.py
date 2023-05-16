@@ -1,7 +1,4 @@
-from flask import Flask
-from flask import request
-from flask import Response
-from flask import json
+from flask import Flask, request, Response, json
 from dataclasses import dataclass
 import sqlite3
 import random
@@ -48,7 +45,7 @@ def handle_users(user):
     con.commit()
     if a is None:
         return "User not found", 404
-    
+
     user, _, credits = a
 
     if request.method == "GET":
