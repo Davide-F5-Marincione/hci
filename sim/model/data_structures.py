@@ -300,6 +300,13 @@ class Bus:
     curr_pos: Position = field(init=False, repr=False) # type: Union[BusStop, RoadConnection]
     on_board: Set[Any] = field(default_factory=set)
     next_idx: int = None
+    # Fastfix
+    fill: int = 0
+    users: int = 0
+    last_stop: str = ""
+    next_stop: str = ""
+    curr_signaled: bool = False
+    over_signaled: bool = False
 
     def __post_init__(self):
 

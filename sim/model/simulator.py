@@ -25,7 +25,12 @@ logging.basicConfig(format='%(asctime)s,%(msecs)03d %(levelname)-8s [%(filename)
 OVERCROWDING_THRESHOLD = 0.8
 PROB_TO_REPORT_OVERCROWDING = 0.25
 MAX_PASSENGERS_IN_SIM = 256
-PROB_TO_USE_APP = 0.1
+PROB_TO_USE_APP = 0.2
+SIGN_PROB = 0.5
+MAX_OVERCROWD_TIME_AGO = 1024
+OVERCROWD_THRESHOLD = .8
+MIN_OVERCROWD_PROB = .4
+MAX_OVERCROWD_PROB = .8
 
 ###
 #
@@ -174,6 +179,7 @@ async def simulate_bus(bus: tds.Bus, env: SimulationEnv):
         for passenger in bus.on_board:
             passenger.departure_time = None
             passenger.last_location = None
+            passenger.next_location = None
             passenger.can_report = False
 
     while env.time < STOP_AT:
@@ -191,10 +197,9 @@ async def simulate_bus(bus: tds.Bus, env: SimulationEnv):
                 place.buses.add(bus)
                 logging.info(f"Bus {bus.name} is arriving at {place.name}")
 
-                board()
-
-                # Wait at stop
                 unboard()
+
+                board()
 
                 logging.info(f"Bus {bus.name} is waiting at {place.name}")
                 for _ in range (4): # wait for 1 minute, board 2 times
@@ -232,9 +237,57 @@ async def simulate_bus(bus: tds.Bus, env: SimulationEnv):
                 # TODO: 1. settare un timestamp di partenza
                 # TODO: 2. setti una flag che abilità la segnalazione
 
+                # Fastfix
+
+                general_unload = random.randint(0, bus.fill)
+                users_unload = random.randint(
+                    max(0, general_unload - (bus.fill - bus.users)),
+                    min(general_unload, bus.users),
+                )
+                bus.fill -= general_unload
+                bus.users -= users_unload
+
+
+
+                bus.last_stop = bus.curr_pos
+                bus.next_stop = next_place
+                bus.curr_signaled = False
+                bus.over_signaled = False
+
+
+                max_board = bus.capacity - bus.fill
+                general_board = random.randint(0, max_board)
+                users_board = 0
+                for _ in range(general_board):
+                    if np.random.rand() < PROB_TO_USE_APP:
+                        users_board += 1
+
+                bus.fill += general_board
+                bus.users += users_board
+                bus.waiting = 0.0
+
+                p = 1 - (1 - SIGN_PROB)**bus.users
+                if np.random.rand() < p:
+                    requests.put(f"http://localhost:5000/buses/{bus.name}", json={
+                        "boardedat": 0.0,
+                        "from": bus.last_stop.name,
+                        "to": bus.next_stop.name
+                    })
+                    bus.curr_signaled = True
+
+                if bus.fill >= OVERCROWD_THRESHOLD * bus.capacity and not bus.over_signaled:
+                    p = (bus.fill / bus.capacity - OVERCROWD_THRESHOLD) / (1 - OVERCROWD_THRESHOLD) * (MAX_OVERCROWD_PROB - MIN_OVERCROWD_PROB) + MIN_OVERCROWD_PROB
+                    p = 1 - (1 - p)**bus.users
+                    if np.random.rand() < p:
+                        requests.put(f"http://localhost:5000/buses/{bus.name}", json={
+                            "overcrowded": True
+                        })
+                        bus.over_signaled = True
+
                 for passenger in bus.on_board:
                     passenger.departure_time = env.time
                     passenger.last_location = bus.curr_pos
+                    passenger.next_location = next_place
                     passenger.can_report = True
 
                 await asyncio.sleep(1) # yield control to the event loop
@@ -251,19 +304,45 @@ async def simulate_bus(bus: tds.Bus, env: SimulationEnv):
 
                 logging.info(f"Bus {bus.name} is travelling to {place.name}")
 
+                last_dist = 0.0
+
                 while distance_left > 0:
 
-                    # travel in increments of 0.1, keep account of traffic
-                    to_travel = tenth if distance_left > tenth else distance_left
-                    effective_distance = (to_travel / place.trafficFunc(env.time)) # d / m
+                    trav = bus.speed * place.trafficFunc(env.time)
+                    last_dist += trav
+                    distance_left -= trav
 
-                    distance_left -= to_travel
+                    if last_dist >= tenth:
+                        logging.info(f"Bus {bus.name} is travelling {tenth:.1f}m to {place.name},"
+                                    f" {distance_left:.1f}m left, ETA: {(distance_left / bus.speed / .7):.2f}s {place.trafficFunc(env.time):.2f}"
+                                    f" traffic factor at {place.name}")
+                        last_dist -= tenth
 
-                    logging.info(f"Bus {bus.name} is travelling {effective_distance:.1f}m to {place.name},"
-                                 f" {distance_left:.1f}m left, ETA: {(distance_left / bus.speed):.2f}s {1 / place.trafficFunc(env.time):.2f}"
-                                 f" inverse traffic factor at {place.name}")
+                    
+                    # Fastfix
 
-                    await asyncio.sleep(effective_distance / bus.speed) # d / m / v = t -> d = v * t * m
+                    if bus.curr_signaled is False:
+                        p = distance_left / place.distance * SIGN_PROB
+                        p = 1 - (1 - p)**bus.users
+                        if np.random.rand() < p:
+                            requests.put(f"http://localhost:5000/buses/{bus.name}", json={
+                                "boardedat": 0.0,
+                                "from": bus.last_stop.name,
+                                "to": bus.next_stop.name
+                            })
+                            bus.curr_signaled = True
+                        
+                    if bus.fill >= OVERCROWD_THRESHOLD * bus.capacity and not bus.over_signaled:
+                        p = (bus.fill / bus.capacity - OVERCROWD_THRESHOLD) / (1 - OVERCROWD_THRESHOLD) * (MAX_OVERCROWD_PROB - MIN_OVERCROWD_PROB) + MIN_OVERCROWD_PROB
+                        p = distance_left / place.distance * p
+                        p = 1 - (1 - p)**bus.users
+                        if np.random.rand() > p:
+                            requests.put(f"http://localhost:5000/buses/{bus.name}", json={
+                                "overcrowded": True
+                            })
+                            bus.over_signaled = True
+
+                    await asyncio.sleep(1) # d / m / v = t -> d = v * t * m
 
                 await asyncio.sleep(1)  # yield control to the event loop
         await asyncio.sleep(1)  # yield control to the event loop
@@ -334,9 +413,9 @@ async def simulate_passenger(passenger: tds.Passenger, env: SimulationEnv):
                 if random.random() < PROB_TO_REPORT_OVERCROWDING:
                     passenger.reported_overcrowding = True
                     logging.warning(f"Passenger {passenger.name} {passenger.surname} reports overcrowding on bus {passenger.bus_he_is_on.name}")
-                    requests.post(f"http://localhost:5000/buses/{passenger.bus_he_is_on.name}", json={
-                        "overcrowded": True
-                    })
+                    # requests.post(f"http://localhost:5000/buses/{passenger.bus_he_is_on.name}", json={
+                    #     "overcrowded": True
+                    # })
 
             if passenger.uses_our_app and passenger.can_report and not passenger.reported_boarding:
 
@@ -346,10 +425,11 @@ async def simulate_passenger(passenger: tds.Passenger, env: SimulationEnv):
 
                     passenger.reported_boarding = True
 
-                    requests.post(f"http://localhost:5000/buses/{passenger.bus_he_is_on.name}", json={
-                        "boardedat": passenger.departure_time,
-                        "place": passenger.last_location.name
-                    })
+                    # requests.post(f"http://localhost:5000/buses/{passenger.bus_he_is_on.name}", json={
+                    #     "boardedat": env.time - passenger.departure_time,
+                    #     "from": passenger.last_location.name,
+                    #     "to": passenger.next_location.name
+                    # })
 
                 else:
                     passenger.boarding_report_prob /= 1.5 # he forgets about it, but he might remember later, maybe...

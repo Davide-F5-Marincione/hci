@@ -1,17 +1,17 @@
-from flask import Flask, request, Response, json
 from dataclasses import dataclass
 import sqlite3
 import random
-import threading
+from quart import Quart, request, Response, json
+import asyncio
 import model.virtual_sim as vsim
 import time
 import numpy as np
 import cv2
 
-app = Flask(__name__)
+app = Quart(__name__)
 
 @app.route("/users", methods=["POST"])
-def create_user():
+async def create_user():
     if request.method == "POST":
         r = request.get_json()
 
@@ -41,7 +41,7 @@ def create_user():
 
 
 @app.route("/users/<user>", methods=["GET", "PUT"])
-def handle_users(user):
+async def handle_users(user):
     headers = request.headers
     auth = headers.get('Authorization')
     cur = con.execute("SELECT * FROM users WHERE name = ? AND auth = ?", [user, auth])
@@ -64,10 +64,10 @@ def handle_users(user):
         return "Successful operation", 204
     return "Internal Server Error", 500
 
-@app.route("/buses/<bus>", methods=["POST"])
-def bus_put_data(bus):
+@app.route("/buses/<bus>", methods=["put"])
+async def bus_put_data(bus):
 
-    data = request.get_json()
+    data = await request.get_json()
 
     data_dict = {k: v for k, v in data.items()}
 
@@ -81,12 +81,11 @@ def bus_put_data(bus):
 
     elif data_dict.get("boardedat", None) is not None:
         print(data_dict["boardedat"])
-        print(data_dict["place"])
+        print(data_dict["from"])
+        print(data_dict["to"])
 
         if (a:=v_buses.get(bus, None)) is not None:
-            lock.acquire()
-            a.board_signal(data_dict["place"], routes, data_dict["boardedat"])
-            lock.release()
+            a.board_signal(data_dict["from"], data_dict["to"], graph, data_dict["boardedat"])
             return Response(status=200)
         else:
             return Response(status=404)
@@ -96,7 +95,7 @@ def bus_put_data(bus):
         # 400 Bad Request
         return Response(status=400)
 
-def sim():
+async def sim():
     v_title = "Virtual buses"
 
     img = np.ones((1000, 1000, 3), dtype=np.uint8) * 255
@@ -108,6 +107,7 @@ def sim():
     last_time = time.time()
 
     while run:
+        await asyncio.sleep(5e-3)
         buff_img = img.copy()
 
         for route in routes.values():
@@ -135,14 +135,14 @@ def sim():
             pos_x = dir_x + start.x
             pos_y = dir_y + start.y
 
-            col = routes[bus.route].color
+            col = (255, 255, 0)
 
             cv2.circle(v_buff_img, (int((pos_x + 5000) / 7000 * 800 + 100), int((pos_y + 1000) / 5000 * 800 + 100)), 5, col, -1)
             cv2.putText(v_buff_img, bus.name, (int((pos_x + 5000) / 7000 * 800 + 100) + 10, int((pos_y + 1000) / 5000 * 800 + 100)), fontFace=0, fontScale=.4, color=(12,12,12))
 
         cv2.imshow(v_title, v_buff_img)
 
-        key = cv2.waitKey(10)
+        key = cv2.waitKey(5)
 
         if key == ord("q"):
             run = False
@@ -152,12 +152,17 @@ def sim():
 
         last_time = time_now
 
-        lock.acquire()
         for bus in v_buses.values():
-            bus.step(graph, v_buses, routes, time_delta)
-        lock.release()
+            bus.step(graph, v_buses, time_delta)
+        
 
     cv2.destroyAllWindows()
+
+async def main():
+    await asyncio.gather(
+        sim(),
+        app.run_task()
+    )
 
 if __name__ == "__main__":
 
@@ -174,9 +179,8 @@ if __name__ == "__main__":
     graph.stops["D"].x = -2000
     graph.stops["D"].y = 1050
 
-    v_buses = { "A-1": vsim.VirtualBus("A-1", "A", "A", "B"),
-            "B-1": vsim.VirtualBus("B-1", "A", "D", "A")}
-
+    v_buses = { "A-1": vsim.VirtualBus("A-1", ["A", "B", "C", "D", "C", "B"], "A", "B"),
+            "B-1": vsim.VirtualBus("B-1", ["D", "C", "B", "A", "B", "C"], "D", "C")}
 
     routes = {"A":vsim.Route("A", (255, 0, 0), ["A", "B", "C", "D"])}
 
@@ -188,17 +192,11 @@ if __name__ == "__main__":
         prev = curr
     graph.add_edge(prev, first)
 
-    lock = threading.Lock()
-
-    t1 = threading.Thread(target=sim, args=())
-
-    t1.start()
-
 
     con = sqlite3.connect("tutorial.db")
     con.execute("CREATE TABLE IF NOT EXISTS users(name TEXT PRIMARY KEY, auth INTEGER UNIQUE NOT NULL, credits INTEGER NOT NULL CHECK (credits >= 0) DEFAULT 0)")
     #con.execute("CREATE TABLE IF NOT EXISTS buses(name TEXT PRIMARY KEY, last_seen TEXT NOT NULL, time_ago DATETIME NOT NULL, should_be TEXT NOT NULL, distance INTEGER NOT NULL)")
     con.commit()
-    app.run(debug=False, threaded=False)
 
-    t1.join(4)
+
+    asyncio.run(main())

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Tuple, Dict
+from typing import List, Tuple, Dict, Any
 import numpy as np
 import random
 import pickle
@@ -35,7 +35,7 @@ class Edge:
 @dataclass
 class VirtualBus:
     name: str
-    route: str
+    route: List[str]
     prev_node: str
     next_node: str
     distance_travelled: float = 0.0
@@ -44,19 +44,13 @@ class VirtualBus:
     overcrowded: float = MAX_OVERCROWD_TIME_AGO
     speed: float = (MAX + MIN) / 2 * SPEED
 
-    def board_signal(self, prev_node, routes, ago=0):
-        circ = routes[self.route].circuit
-        for i, place in enumerate(circ):
-            if place == prev_node:
-                i = (i + 1) % len(circ)
-        next_node = circ[i]
-
+    def board_signal(self, prev_node, next_node, graph, ago=0):
         if TELEPORT:
             self.waiting = 0
             self.steps_run = ago
             self.prev_node = prev_node
             self.next_node = next_node
-            self.distance_travelled = ago * ((MAX + MIN) / 2)
+            self.distance_travelled = ago * ((MAX + MIN) / 2) * SPEED
         else:
             if self.waiting > 0 or prev_node != self.prev_node:
                 self.waiting = 0
@@ -71,7 +65,7 @@ class VirtualBus:
     def overcrowd(self):
         self.overcrowded = 0
 
-    def step(self, graph, v_buses, routes, delta_t=1):
+    def step(self, graph, v_buses, delta_t=1):
         self.overcrowded = min(self.overcrowded + delta_t, MAX_OVERCROWD_TIME_AGO)
         if self.waiting > 0:  # Just wait
             self.waiting -= delta_t
@@ -88,14 +82,14 @@ class VirtualBus:
                 self.speed = ((MAX + MIN) / 2) * SPEED
 
                 # Prepare stop
-                self.prev_node = self.next_node
-                for i, node in enumerate(routes[self.route].circuit):
-                    if node == self.prev_node:
-                        if i == len(routes[self.route].circuit) - 1:
-                            self.next_node = routes[self.route].circuit[0]
-                        else:
-                            self.next_node = routes[self.route].circuit[i + 1]
+                next_i = 1
+                for i in range(len(self.route) - 1):
+                    if self.prev_node == self.route[i] and self.next_node == self.route[i+1]:
+                        next_i = (i+2) % len(self.route)
                         break
+
+                self.prev_node = self.next_node
+                self.next_node = self.route[next_i]
 
                 for bus in v_buses.values():
                     if (
@@ -139,6 +133,80 @@ class Graph:
             edge = Edge(self.stops[a], self.stops[b])
             self.edges[(a, b)] = edge
             return edge
+        
+@dataclass
+class SearchBus:
+    name: str
+    route: List[str]
+    prev_node: str
+    next_node: str
+    distance_travelled: float = 0.0
+    waiting: float = WAITING_SECONDS
+    steps_run: float = 0.0
+    speed: float = (MAX + MIN) / 2 * SPEED
+
+    def step(self, graph, other_buses):
+        if self.waiting > 0:  # Just wait
+            self.waiting -= 1
+        else:  # Move
+            conn = graph.get_edge(self.prev_node, self.next_node)
+            self.distance_travelled += self.speed
+            self.steps_run += 1
+
+            if self.distance_travelled >= conn.length():  # Arrived at next stop
+                # Reset
+                self.waiting = WAITING_SECONDS
+                self.distance_travelled = 0.0
+                self.steps_run = 0
+                self.speed = ((MAX + MIN) / 2) * SPEED
+
+                # Prepare stop
+                next_i = 1
+                for i in range(len(self.route) - 1):
+                    if self.prev_node == self.route[i] and self.next_node == self.route[i+1]:
+                        next_i = (i+2) % len(self.route)
+                        break
+
+                self.prev_node = self.next_node
+                self.next_node = self.route[next_i]
+
+                for bus in other_buses.values():
+                    if (
+                        bus.prev_node == self.prev_node
+                        and bus.next_node == self.next_node
+                    ):
+                        if bus.name != self.name and bus.waiting < self.waiting:
+                            self.waiting = graph.get_edge(
+                                    self.prev_node, self.next_node
+                                ).expected_steps() / 4 * 3
+                self.waiting -= 1
+
+@dataclass
+class AtStop:
+    name: str
+    time: int
+    children: List[Any]
+
+@dataclass
+class OnTravel:
+    name: str
+    time: str
+    children: List[AtStop]
+
+def astar(start, end, graph, vbuses):
+    # Deep-copy buses
+    buses = [SearchBus(bus.name, bus.route, bus.prev_node, bus.next_node, bus.distance_travelled, bus.waiting, bus.steps_run, bus.speed) for bus in vbuses]
+
+    seconds_passed = 0
+    ramifications = [None, None, start, seconds_passed, [[bus.name, bus.prev_node, bus.next_node, seconds_passed, []] for bus in buses if bus.prev_node == start and bus.waiting > 0]]
+    maximum = 3600
+    run = True
+    while seconds_passed < maximum and run:
+        for bus in buses:
+            bus.step()
+
+        seconds_passed += 1
+        
 
 # if __name__ == "__main__":
 #     stops = ["A", "B", "C", "D"]
