@@ -4,11 +4,12 @@ import numpy as np
 import random
 import pickle
 import cv2
+import time
 
-MIN = 0.01
-MAX = 0.5
-ADD = 0.01
-WAITING_STEPS = 5
+MIN = 5
+MAX = 20
+ADD = 0
+WAITING_SECONDS = 5
 MORE_WAITING = 20
 SIGN_PROB = 0.5
 GRANULARITY = 50
@@ -26,7 +27,7 @@ def simplex_noise(seed):
     i = 0
     while True:
         i += 1
-        yield (1 / 6 * np.sin(vals * i / GRANULARITY).sum() + 0.5) * (MAX - MIN) + MIN
+        yield (1 / 6 * np.sin(vals * i / GRANULARITY).sum() + 0.5)
 
 
 @dataclass
@@ -60,8 +61,8 @@ class VirtualBus:
     prev_node: str
     next_node: str
     distance_travelled: float = 0.0
-    waiting: int = WAITING_STEPS
-    steps_run: int = 0
+    waiting: float = WAITING_SECONDS
+    steps_run: float = 0.0
     overcrowded: int = MAX_OVERCROWD_TIME_AGO
     speed: float = (MAX + MIN) / 2 + ADD
 
@@ -86,19 +87,19 @@ class VirtualBus:
     def overcrowd(self):
         self.overcrowded = 0
 
-    def step(self):
+    def step(self, delta_t=1):
         self.overcrowded = min(self.overcrowded + 1, MAX_OVERCROWD_TIME_AGO)
         if self.waiting > 0:  # Just wait
-            self.waiting -= 1
+            self.waiting -= delta_t
         else:  # Move
             conn = graph.get_edge(self.prev_node, self.next_node)
-            self.distance_travelled += self.speed
-            self.steps_run += 1
+            self.distance_travelled += self.speed * delta_t
+            self.steps_run += delta_t
 
             if self.distance_travelled >= conn.length():  # Arrived at next stop
                 # Reset
                 self.waiting = max(
-                    WAITING_STEPS, conn.expected_steps() - self.steps_run
+                    WAITING_SECONDS, conn.expected_steps() - self.steps_run
                 )
                 self.distance_travelled = 0.0
                 self.steps_run = 0
@@ -119,7 +120,7 @@ class VirtualBus:
                         bus.prev_node == self.prev_node
                         and bus.next_node == self.next_node
                     ):
-                        if bus.name != self.name:
+                        if bus.name != self.name and bus.waiting < self.waiting:
                             self.waiting = max(
                                 self.waiting,
                                 graph.get_edge(
@@ -128,6 +129,7 @@ class VirtualBus:
                                 // 4
                                 * 3,
                             )
+                self.waiting -= delta_t
 
 
 @dataclass
@@ -140,37 +142,41 @@ class TrueBus:
     max_capacity: int = 50
     fill: int = 0
     users: int = 0
-    waiting: int = WAITING_STEPS
-    steps_run: int = 0
+    waiting: float = WAITING_SECONDS
+    steps_run: float = 0.0
     curr_signaled: bool = False
+    boarded: bool = False
 
-    def step(self):
-        if self.waiting > 1:  # Just wait
-            self.waiting -= 1
-        elif self.waiting == 1:  # Board calc
-            max_board = self.max_capacity - self.fill
-            general_board = random.randint(0, max_board)
-            users_board = random.randint(0, general_board)
-            self.fill += general_board
-            self.users += users_board
-            self.waiting -= 1
+    def step(self, delta_t=1):
+        if self.waiting > delta_t:  # Just wait
+            self.waiting -= delta_t
+        else:  # Board calc
+            if not self.boarded:
+                max_board = self.max_capacity - self.fill
+                general_board = random.randint(0, max_board)
+                users_board = random.randint(0, general_board)
+                self.fill += general_board
+                self.users += users_board
+                self.waiting = 0.0
 
-            p = SIGN_PROB**self.users
-            n = np.random.rand()
-            if n > p:
-                v_buses[self.name].board_signal(self.prev_node, self.next_node)
-                self.curr_signaled = True
-
-            if self.fill >= OVERCROWD_THRESHOLD * self.max_capacity:
-                p = (self.fill / self.max_capacity - OVERCROWD_THRESHOLD) / (1 - OVERCROWD_THRESHOLD) * (MAX_OVERCROWD_PROB - MIN_OVERCROWD_PROB) + MIN_OVERCROWD_PROB
-                p = p**self.users
+                p = SIGN_PROB**self.users
                 n = np.random.rand()
                 if n > p:
-                    v_buses[self.name].overcrowd()
-        else:  # Move
+                    v_buses[self.name].board_signal(self.prev_node, self.next_node)
+                    self.curr_signaled = True
+
+                if self.fill >= OVERCROWD_THRESHOLD * self.max_capacity:
+                    p = (self.fill / self.max_capacity - OVERCROWD_THRESHOLD) / (1 - OVERCROWD_THRESHOLD) * (MAX_OVERCROWD_PROB - MIN_OVERCROWD_PROB) + MIN_OVERCROWD_PROB
+                    p = p**self.users
+                    n = np.random.rand()
+                    if n > p:
+                        v_buses[self.name].overcrowd()
+                
+                self.boarded = True
+
             conn = graph.get_edge(self.prev_node, self.next_node)
-            self.distance_travelled += conn.curr_traffic
-            self.steps_run += 1
+            self.distance_travelled += (conn.curr_traffic * (MAX - MIN) + MIN) * delta_t
+            self.steps_run += delta_t
 
             if self.curr_signaled is False:
                 p = min(0, conn.length() - self.distance_travelled) * SIGN_PROB
@@ -193,11 +199,12 @@ class TrueBus:
             if self.distance_travelled >= conn.length():  # Arrived at next stop
                 # Reset
                 self.waiting = max(
-                    WAITING_STEPS, conn.expected_steps() - self.steps_run
+                    WAITING_SECONDS, conn.expected_steps() - self.steps_run
                 )
                 self.distance_travelled = 0.0
                 self.steps_run = 0
                 self.curr_signaled = False
+                self.boarded = False
 
                 # Unload passengers
                 general_unload = random.randint(0, self.fill)
@@ -223,7 +230,7 @@ class TrueBus:
                         bus.prev_node == self.prev_node
                         and bus.next_node == self.next_node
                     ):
-                        if bus.name != self.name:
+                        if bus.name != self.name and bus.waiting < self.waiting:
                             self.waiting = max(
                                 self.waiting,
                                 graph.get_edge(
@@ -232,6 +239,7 @@ class TrueBus:
                                 // 4
                                 * 3,
                             )
+                self.waiting -= 1
 
 
 @dataclass
@@ -289,7 +297,7 @@ graph.stops["G"].x = 250
 graph.stops["G"].y = 475
 
 routes_def = [
-    ("Prime", (255, 0, 0), ["A", "B", "C", "D"], 2),
+    ("Prime", (255, 0, 0), ["A", "B", "C", "D"], 3),
     ("Secundus", (0, 255, 0), ["C", "E", "F"], 2),
     ("Tertius", (0, 0, 255), ["D", "G", "F"], 2),
 ]
@@ -365,6 +373,8 @@ run = True
 cv2.namedWindow(title)
 cv2.namedWindow(v_title)
 
+last_time = time.time()
+
 while run:
     buff_img = img.copy()
 
@@ -420,13 +430,18 @@ while run:
     if key == ord("q"):
         run = False
 
+    time_now = time.time()
+    time_delta = time_now - last_time
+
+    last_time = time_now
+
     for bus in buses.values():
-        bus.step()
+        bus.step(time_delta)
 
     for edge in graph.edges.values():
         edge.step()
 
     for bus in v_buses.values():
-        bus.step()
+        bus.step(time_delta)
 
 cv2.destroyAllWindows()
