@@ -325,6 +325,22 @@ async def simulate_passenger(passenger: tds.Passenger, env: SimulationEnv):
                         "overcrowded": True,
                         "boardedat": None
                     })
+
+            if passenger.uses_our_app and not passenger.reported_boarding:
+
+                if random.random() < passenger.boarding_report_prob:
+
+                    logging.info(f"Passenger {passenger.name} {passenger.surname} reports boarding on bus {passenger.bus_he_is_on.name}")
+
+                    passenger.reported_boarding = True
+
+                    requests.post(f"http://localhost:5000/buses/{passenger.bus_he_is_on.name}", json={
+                        "overcrowded": False,
+                        "boardedat": env.time
+                    })
+
+                else:
+                    passenger.reporting_prob /= 1.5 # he forgets about it, but he might remember later, maybe...
         elif passenger.arrived:
 
             # nice!

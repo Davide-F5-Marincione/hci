@@ -333,6 +333,8 @@ class Passenger:
 
     coawaited: bool = False
     reported_overcrowding: bool = False
+    reported_boarding: bool = False
+    boarding_report_prob: float = 0.8
 
     def __hash__(self):
         return hash(self.__repr__())
