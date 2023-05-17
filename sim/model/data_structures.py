@@ -301,12 +301,9 @@ class Bus:
     on_board: Set[Any] = field(default_factory=set)
     next_idx: int = None
     # Fastfix
-    fill: int = 0
-    users: int = 0
     last_stop: str = ""
     next_stop: str = ""
-    curr_signaled: bool = False
-    over_signaled: bool = False
+    departure_time: float = 0.0
 
     def __post_init__(self):
 
@@ -333,19 +330,12 @@ class Passenger:
     name: str
     surname: str
     uses_our_app: bool
-    arrived: bool = False
 
     bus_he_is_on: Optional[Bus] = None
-    planned_trip: Optional[Trip] = None
-
-    coawaited: bool = False
     reported_overcrowding: bool = False
     reported_boarding: bool = False
-    boarding_report_prob: float = 0.8
-
-    departure_time: Optional[float] = None
-    last_location: Optional[BusStop] = None
     can_report: bool = False
+    arrived: bool = False
 
 
     def __hash__(self):
