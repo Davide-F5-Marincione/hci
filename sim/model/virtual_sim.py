@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Tuple, Dict, Any
+from typing import List, Tuple, Dict, Any, Optional
 import numpy as np
 import random
 import pickle
@@ -170,7 +170,7 @@ class SearchBus:
                 self.prev_node = self.next_node
                 self.next_node = self.route[next_i]
 
-                for bus in other_buses.values():
+                for bus in other_buses:
                     if (
                         bus.prev_node == self.prev_node
                         and bus.next_node == self.next_node
@@ -186,111 +186,64 @@ class AtStop:
     name: str
     time: int
     children: List[Any]
+    parent: Optional[Any]
 
+    def check(self, graph, buses, reached, time):
+
+        for child in self.children:
+            child.check(graph, buses, reached, time)
+
+        for bus in buses:
+            if reached["bus-" + bus.name] is None and bus.waiting > 0 and bus.prev_node == self.name:
+                child = OnTravel(bus.name, time, bus, [], self)
+                self.children.append(child)
+                reached["bus-" + bus.name] = child
 @dataclass
 class OnTravel:
     name: str
     time: str
+    bus: SearchBus
     children: List[AtStop]
+    parent: AtStop
 
-def astar(start, end, graph, vbuses):
+    def check(self, graph, buses, reached, time):
+        for child in self.children:
+            child.check(graph, buses, reached, time)
+
+        if self.bus.waiting > 0 and reached["stop-" + self.bus.prev_node] is None:
+            child = AtStop(self.bus.prev_node, time, [], self)
+            self.children.append(child)
+            reached["stop-" + self.bus.prev_node] = child
+
+def directions(start, end, graph, vbuses):
     # Deep-copy buses
-    buses = [SearchBus(bus.name, bus.route, bus.prev_node, bus.next_node, bus.distance_travelled, bus.waiting, bus.steps_run, bus.speed) for bus in vbuses]
-
+    buses = [SearchBus(bus.name, bus.route, bus.prev_node, bus.next_node, bus.distance_travelled, bus.waiting, bus.steps_run, bus.speed) for bus in vbuses.values()]
+    
     seconds_passed = 0
-    ramifications = [None, None, start, seconds_passed, [[bus.name, bus.prev_node, bus.next_node, seconds_passed, []] for bus in buses if bus.prev_node == start and bus.waiting > 0]]
-    maximum = 3600
+    tree = AtStop(start, seconds_passed, [], None)
+    reached = {"bus-" + bus.name: None for bus in buses}
+    reached.update({"stop-" + stop.name: None for stop in graph.stops.values()})
+    reached["stop-" + start] = tree
+
     run = True
-    while seconds_passed < maximum and run:
+    while seconds_passed < 3600 and run:
+        tree.check(graph, buses, reached, seconds_passed)
+
+        if reached["stop-" + end] is not None:
+            run = False
+
         for bus in buses:
-            bus.step()
+            bus.step(graph, buses)
 
         seconds_passed += 1
-        
 
-# if __name__ == "__main__":
-#     stops = ["A", "B", "C", "D"]
-#     graph = Graph(dict(), dict())
-#     graph.startup(stops)
-#     graph.stops["A"].x = 2000.0
-#     graph.stops["A"].y = -1000
-#     graph.stops["B"].x = 1000.5
-#     graph.stops["B"].y = 4000.0
-#     graph.stops["C"].x = -5000
-#     graph.stops["C"].y = 1000
-#     graph.stops["D"].x = -2000
-#     graph.stops["D"].y = 1050
+    if run:
+        print("Couldn't find route")
+    else:
+        unravel = []
+        elem = reached["stop-" + end]
+        while elem is not None:
+            unravel.append(elem)
+            elem = elem.parent
 
-#     v_buses = { "A-1": VirtualBus("A-1", "A", "A", "B"),
-#             "B-1": VirtualBus("B-1", "A", "D", "A")}
-
-
-#     routes = {"A":Route("A", (255, 0, 0), ["A", "B", "C", "D"])}
-
-#     nodes = ["A", "B", "C", "D"]
-
-#     first = prev = nodes[0]
-#     for curr in nodes[1:]:
-#         graph.add_edge(prev, curr)
-#         prev = curr
-#     graph.add_edge(prev, first)
-
-
-#     v_title = "Virtual buses"
-
-#     img = np.ones((1000, 1000, 3), dtype=np.uint8) * 255
-
-#     run = True
-
-#     cv2.namedWindow(v_title)
-
-#     last_time = time.time()
-
-#     while run:
-#         buff_img = img.copy()
-
-#         for route in routes.values():
-#             start = prev = graph.stops[route.circuit[0]]
-
-#             for curr in route.circuit[1:]:
-#                 curr = graph.stops[curr]
-#                 cv2.line(buff_img, (int((prev.x + 5000) / 7000 * 800 + 100), int((prev.y + 1000) / 5000 * 800 + 100)), (int((curr.x + 5000) / 7000 * 800 + 100), int((curr.y + 1000) / 5000 * 800 + 100)), route.color, 3)
-#                 prev = curr
-#             cv2.line(buff_img, (int((prev.x + 5000) / 7000 * 800 + 100), int((prev.y + 1000) / 5000 * 800 + 100)), (int((start.x + 5000) / 7000 * 800 + 100), int((start.y + 1000) / 5000 * 800 + 100)), route.color, 3)
-
-#         for node in graph.stops.values():
-#             cv2.circle(buff_img, (int((node.x + 5000) / 7000 * 800 + 100), int((node.y + 1000) / 5000 * 800 + 100)), 5, (12,12,12), 3)
-
-#         v_buff_img = buff_img.copy()
-
-#         for bus in v_buses.values():
-#             start = graph.stops[bus.prev_node]
-#             stop = graph.stops[bus.next_node]
-#             conn = graph.get_edge(bus.prev_node, bus.next_node)
-#             l = conn.length()
-#             dir_x = (stop.x - start.x) / l * bus.distance_travelled
-#             dir_y = (stop.y - start.y) / l * bus.distance_travelled
-#             pos_x = dir_x + start.x
-#             pos_y = dir_y + start.y
-
-#             col = routes[bus.route].color
-
-#             cv2.circle(v_buff_img, (int((pos_x + 5000) / 7000 * 800 + 100), int((pos_y + 1000) / 5000 * 800 + 100)), 5, col, -1)
-#             cv2.putText(v_buff_img, bus.name, (int((pos_x + 5000) / 7000 * 800 + 100) + 10, int((pos_y + 1000) / 5000 * 800 + 100)), fontFace=0, fontScale=.4, color=(12,12,12))
-
-#         cv2.imshow(v_title, v_buff_img)
-
-#         key = cv2.waitKey(10)
-
-#         if key == ord("q"):
-#             run = False
-
-#         time_now = time.time()
-#         time_delta = time_now - last_time
-
-#         last_time = time_now
-
-#         for bus in v_buses.values():
-#             bus.step(time_delta)
-
-#     cv2.destroyAllWindows()
+        print([(elem.name, elem.time) for elem in unravel[::-1]])

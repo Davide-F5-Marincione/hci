@@ -192,6 +192,8 @@ if __name__ == "__main__":
         prev = curr
     graph.add_edge(prev, first)
 
+    vsim.directions("B", "D", graph, v_buses)
+
 
     con = sqlite3.connect("tutorial.db")
     con.execute("CREATE TABLE IF NOT EXISTS users(name TEXT PRIMARY KEY, auth INTEGER UNIQUE NOT NULL, credits INTEGER NOT NULL CHECK (credits >= 0) DEFAULT 0)")
