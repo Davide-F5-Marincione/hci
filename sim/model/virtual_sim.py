@@ -74,7 +74,9 @@ class TrueBus:
     curr_signaled: bool = False
     boarded: bool = False
 
-    def step(self, graph, routes, buses, v_buses, delta_t=1):
+    retard: float = 0.0
+
+    def step(self, graph, routes, v_buses, delta_t=1):
         if self.waiting > delta_t:  # Just wait
             self.waiting -= delta_t
         else:  # Board calc
@@ -114,7 +116,11 @@ class TrueBus:
 
             if self.distance_travelled >= conn.length():  # Arrived at next stop
                 # Reset
-                self.waiting = WAITING_SECONDS
+                ahead = conn.expected_steps() - self.steps_run + WAITING_SECONDS
+                diff = max(0, ahead - WAITING_SECONDS)
+                self.waiting = WAITING_SECONDS + max(0, diff - self.retard)
+                self.retard = max(0, self.retard - diff)
+
                 self.distance_travelled = 0.0
                 self.steps_run = 0
                 self.curr_signaled = False
@@ -140,17 +146,7 @@ class TrueBus:
                             self.next_node = circ[i + 1]
                         break
 
-                for bus in buses.values():
-                    if (
-                        bus.prev_node == self.prev_node
-                        and bus.next_node == self.next_node
-                    ):
-                        if bus.name != self.name and bus.waiting < self.waiting:
-                            self.waiting = graph.get_edge(
-                                    self.prev_node, self.next_node
-                                ).expected_steps() // 4 * 3
-                self.waiting -= delta_t
-        v_buses[self.name].step(graph, routes, v_buses, delta_t)
+        v_buses[self.name].step(graph, routes, delta_t)
 
 
 @dataclass
@@ -165,15 +161,18 @@ class VirtualBus:
     steps_run: float = 0.0
     overcrowded: float = MAX_OVERCROWD_TIME_AGO
     speed: float = (MAX + MIN) / 2 * SPEED
+    delay: float = 0.0
 
     def board_signal(self, prev_node, next_node, graph, ago=0):
         if TELEPORT:
+            self.delay += self.steps_run - ago
             self.waiting = 0
             self.steps_run = ago
             self.prev_node = prev_node
             self.next_node = next_node
             self.distance_travelled = ago * ((MAX + MIN) / 2) * SPEED
         else:
+            self.delay += self.steps_run - ago
             if self.waiting > 0 or prev_node != self.prev_node:
                 self.waiting = 0
                 self.steps_run = 0
@@ -187,7 +186,7 @@ class VirtualBus:
     def overcrowd(self):
         self.overcrowded = 0
 
-    def step(self, graph, routes, v_buses, delta_t=1):
+    def step(self, graph, routes, delta_t=1):
         self.overcrowded = min(self.overcrowded + delta_t, MAX_OVERCROWD_TIME_AGO)
         if self.waiting > 0:  # Just wait
             self.waiting -= delta_t
@@ -198,7 +197,9 @@ class VirtualBus:
 
             if self.distance_travelled >= conn.length():  # Arrived at next stop
                 # Reset
-                self.waiting = WAITING_SECONDS
+                self.waiting = max(
+                    WAITING_SECONDS, conn.expected_steps() - self.steps_run
+                )
                 self.distance_travelled = 0.0
                 self.steps_run = 0
                 self.speed = ((MAX + MIN) / 2) * SPEED
@@ -213,17 +214,6 @@ class VirtualBus:
                         else:
                             self.next_node = circ[i + 1]
                         break
-
-                for bus in v_buses.values():
-                    if (
-                        bus.prev_node == self.prev_node
-                        and bus.next_node == self.next_node
-                    ):
-                        if bus.name != self.name and bus.waiting < self.waiting:
-                            self.waiting = graph.get_edge(
-                                    self.prev_node, self.next_node
-                                ).expected_steps() / 4 * 3
-                self.waiting -= delta_t
 
 @dataclass
 class Route:
@@ -271,7 +261,7 @@ class SearchBus:
     steps_run: float = 0.0
     speed: float = (MAX + MIN) / 2 * SPEED
 
-    def step(self, graph, routes, other_buses):
+    def step(self, graph, routes):
         if self.waiting > 0:  # Just wait
             self.waiting -= 1
         else:  # Move
@@ -281,7 +271,9 @@ class SearchBus:
 
             if self.distance_travelled >= conn.length():  # Arrived at next stop
                 # Reset
-                self.waiting = WAITING_SECONDS
+                self.waiting = max(
+                    WAITING_SECONDS, conn.expected_steps() - self.steps_run
+                )
                 self.distance_travelled = 0.0
                 self.steps_run = 0
                 self.speed = ((MAX + MIN) / 2) * SPEED
@@ -296,17 +288,6 @@ class SearchBus:
                         else:
                             self.next_node = circ[i + 1]
                         break
-
-                for bus in other_buses:
-                    if (
-                        bus.prev_node == self.prev_node
-                        and bus.next_node == self.next_node
-                    ):
-                        if bus.name != self.name and bus.waiting < self.waiting:
-                            self.waiting = graph.get_edge(
-                                    self.prev_node, self.next_node
-                                ).expected_steps() / 4 * 3
-                self.waiting -= 1
 
 @dataclass
 class AtStop:
@@ -365,7 +346,7 @@ def directions(start, end, graph, routes, vbuses):
             run = False
 
         for bus in buses:
-            bus.step(graph, routes, buses)
+            bus.step(graph, routes)
 
         seconds_passed += 1
 

@@ -80,7 +80,7 @@ async def request_directions():
     
     res = []
     for bus_name, stops in ret:
-        val = {"bus": bus_name, "stops": [{"stop-name": name, "time": (dt + timedelta(seconds=time)).isoformat()} for name, time in stops]}
+        val = {"bus": bus_name, "delay":v_buses[bus_name].delay, "stops": [{"stop-name": name, "time": (dt + timedelta(seconds=time)).isoformat()} for name, time in stops]}
         res.append(val)
 
     return Response(response=json.dumps(res), status=200, mimetype="application/json")
@@ -191,7 +191,7 @@ async def sim():
         last_time = time_now
 
         for bus in buses.values():
-            bus.step(graph, routes, buses, v_buses, time_delta)
+            bus.step(graph, routes, v_buses, time_delta)
 
         for edge in graph.edges.values():
             edge.step()
