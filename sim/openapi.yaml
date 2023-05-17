@@ -137,9 +137,16 @@ paths:
                 overcrowded:
                   description: Whether the bus is currently overcrowded
                   type: boolean
-                boardedat:
+                from:
                   description: Where the bus was boarded
                   type: string
+                to:
+                  description: Where the bus is heading
+                  type: string
+                boardedat:
+                  description: How much time ago the boarding happened
+                  type: number
+                  minimum: 0
         required: true
       responses:
         "204":

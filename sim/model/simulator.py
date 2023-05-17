@@ -66,16 +66,21 @@ class SimulationEnv:
 # bus stops
 
 bus_stops = [
-    tds.BusStop(2000.0, -1000.0, "A", set()),
-    tds.BusStop(1000.5, 4000.0, "B", set()),
-    tds.BusStop(-5000, 1000.0, "C", set()),
-    tds.BusStop(-2000.0, 1050., "D", set()),
+    tds.BusStop(3000.0, 3000.0, "A", set()),
+    tds.BusStop(4000.0, 3000.0, "B", set()),
+    tds.BusStop(4000, 4000.0, "C", set()),
+    tds.BusStop(3000.0, 4000., "D", set()),
+    tds.BusStop(4500.0, 4750.0, "E", set()),
+    tds.BusStop(3500, 4750.0, "F", set()),
+    tds.BusStop(2500, 4750.0, "G", set()),
 ]
 
 # bus routes
 
 routes = [
-    tds.Route("A", bus_stops),
+    tds.Route("A", bus_stops[:4]),
+    tds.Route("B", [bus_stops[2]] + bus_stops[4:6]),
+    tds.Route("C", [bus_stops[3], bus_stops[6], bus_stops[5]]),
 ]
 
 # time constants
@@ -150,36 +155,36 @@ async def simulate_bus(bus: tds.Bus, env: SimulationEnv):
     logging.info(f"Bus {bus.name} starting simulation")
     logging.info(f"Bus {bus.name} will traverse {cycle_path}")
 
-    def board():
-        new_passengers = []
-        for _ in range(random.randint(0, bus.capacity - len(bus.on_board))):
-            passenger = tds.Passenger(
-                name = names.get_first_name(),
-                surname = names.get_last_name(),
-                uses_our_app = random.random() < PROB_TO_USE_APP,
-                bus_he_is_on=bus
-            )
-            bus.on_board.add(passenger)
-            new_passengers.append(passenger)
-            logging.info(f"Passenger {passenger.name} {passenger.surname} boarded bus {bus.name}")
+    # def board():
+    #     new_passengers = []
+    #     for _ in range(random.randint(0, bus.capacity - len(bus.on_board))):
+    #         passenger = tds.Passenger(
+    #             name = names.get_first_name(),
+    #             surname = names.get_last_name(),
+    #             uses_our_app = random.random() < PROB_TO_USE_APP,
+    #             bus_he_is_on=bus
+    #         )
+    #         bus.on_board.add(passenger)
+    #         new_passengers.append(passenger)
+    #         logging.info(f"Passenger {passenger.name} {passenger.surname} boarded bus {bus.name}")
         
-        env.passengers.extend(new_passengers)
+    #     env.passengers.extend(new_passengers)
 
-        [  # spawn passenger coroutines, but don't await them (they will run in the background)
-            asyncio.create_task(simulate_passenger(passenger, env))
-            for passenger in new_passengers
-        ]
+    #     # [  # spawn passenger coroutines, but don't await them (they will run in the background)
+    #     #     asyncio.create_task(simulate_passenger(passenger, env))
+    #     #     for passenger in new_passengers
+        # ]
 
-    def unboard():
-        to_remove = set()
-        for passenger_out in bus.on_board:
-            if random.random() < PROB_TO_UNBOARD:
-                passenger_out.bus_he_is_on = None
-                passenger_out.arrived = True
-                to_remove.add(passenger_out)
+    # def unboard():
+    #     to_remove = set()
+    #     for passenger_out in bus.on_board:
+    #         if random.random() < PROB_TO_UNBOARD:
+    #             passenger_out.bus_he_is_on = None
+    #             passenger_out.arrived = True
+    #             to_remove.add(passenger_out)
 
-                logging.info(f"Passenger {passenger_out.name} {passenger_out.surname} left bus {bus.name}")
-        bus.on_board.difference_update(to_remove)
+    #             logging.info(f"Passenger {passenger_out.name} {passenger_out.surname} left bus {bus.name}")
+    #     bus.on_board.difference_update(to_remove)
 
 
     while env.time < STOP_AT:
@@ -197,15 +202,15 @@ async def simulate_bus(bus: tds.Bus, env: SimulationEnv):
                 place.buses.add(bus)
                 logging.info(f"Bus {bus.name} is arriving at {place.name}")
 
-                unboard()
+                #unboard()
 
-                board()
+                #board()
 
                 logging.info(f"Bus {bus.name} is waiting at {place.name}")
                 for _ in range (4): # wait for 1 minute, board 2 times
 
                     await asyncio.sleep(15)
-                    board()
+                    #board()
 
                 # By the topology, this is guaranteed to be a bus stop
                 # so the one we are checking 2 ahead is also a bus stop
@@ -229,7 +234,7 @@ async def simulate_bus(bus: tds.Bus, env: SimulationEnv):
                     logging.info((f"Bus {bus.name} is waiting {time_to_wait:.2f}s for a bus to leave {next_place.name} "
                                   f"Current next bus is {next_place.buses}, next hop is {cycle_path[next_idx].name}"))
                     await asyncio.sleep(time_to_wait)
-                    board()
+                    #board()
 
                 place.buses.remove(bus)
 
@@ -237,11 +242,33 @@ async def simulate_bus(bus: tds.Bus, env: SimulationEnv):
                 # TODO: 1. settare un timestamp di partenza
                 # TODO: 2. setti una flag che abilità la segnalazione
 
+                general_unload = random.randint(0, bus.fill)
+                users_unload = random.randint(
+                    max(0, general_unload - (bus.fill - bus.users)),
+                    min(general_unload, bus.users),
+                )
+                bus.fill -= general_unload
+                bus.users -= users_unload
+
+
+
                 bus.last_stop = bus.curr_pos
                 bus.next_stop = next_place
                 bus.departure_time = env.time
-                for passenger in bus.on_board:
-                    passenger.can_report = True
+                bus.curr_signaled = False
+                bus.over_signaled = False
+
+
+                max_board = bus.capacity - bus.fill
+                general_board = random.randint(0, max_board)
+                users_board = 0
+                for _ in range(general_board):
+                    if np.random.rand() < PROB_TO_USE_APP:
+                        users_board += 1
+
+                bus.fill += general_board
+                bus.users += users_board
+                bus.waiting = 0.0
 
                 await asyncio.sleep(1) # yield control to the event loop
 
@@ -264,10 +291,31 @@ async def simulate_bus(bus: tds.Bus, env: SimulationEnv):
                 last_time = env.time
 
                 while distance_left > 0:
-                    await asyncio.sleep(1)
-
                     curr_time = env.time
                     time_delta = curr_time - last_time
+
+                    time_departed = curr_time - bus.departure_time
+                    if not bus.curr_signaled:
+                        p = SIGN_PROB / (FALLOFF * time_departed + 1)
+                        p = 1 - (1 - p)**bus.users
+                        if np.random.rand() < p:
+                            requests.put(f"http://localhost:5000/buses/{bus.name}", json={
+                                "boardedat": 0.0,
+                                "from": bus.last_stop.name,
+                                "to": bus.next_stop.name
+                            })
+                            bus.curr_signaled = True
+
+                    if bus.fill >= OVERCROWDING_THRESHOLD * bus.capacity and not bus.over_signaled:
+                        p = (bus.fill / bus.capacity - OVERCROWDING_THRESHOLD) / (1 - OVERCROWDING_THRESHOLD) * (MAX_OVERCROWD_PROB - MIN_OVERCROWD_PROB) + MIN_OVERCROWD_PROB
+                        p = p / (FALLOFF * time_departed + 1)
+                        p = 1 - (1 - p)**bus.users
+                        if np.random.rand() < p:
+                            requests.put(f"http://localhost:5000/buses/{bus.name}", json={
+                                "overcrowded": True
+                            })
+                            bus.over_signaled = True
+                    await asyncio.sleep(5)
 
                     trav = bus.speed * time_delta * place.trafficFunc(env.time)
                     last_dist += trav
@@ -285,54 +333,54 @@ async def simulate_bus(bus: tds.Bus, env: SimulationEnv):
         await asyncio.sleep(1)  # yield control to the event loop
 
 
-async def simulate_passenger(passenger: tds.Passenger, env: SimulationEnv):
+# async def simulate_passenger(passenger: tds.Passenger, env: SimulationEnv):
 
-    while env.time < STOP_AT:
+#     while env.time < STOP_AT:
 
-        # passengers tick every 15 seconds, checking what their state is
-        # they get carried by the bus, so they don't need to do anything
-        # by themselves, but they might perform some actions when they
-        # tick, such as reporting or despawning
+#         # passengers tick every 15 seconds, checking what their state is
+#         # they get carried by the bus, so they don't need to do anything
+#         # by themselves, but they might perform some actions when they
+#         # tick, such as reporting or despawning
 
-        if passenger.bus_he_is_on is not None and passenger.uses_our_app and passenger.can_report:
+#         if passenger.bus_he_is_on is not None and passenger.uses_our_app and passenger.can_report:
 
-            bus = passenger.bus_he_is_on
-            time_departed = env.time - bus.departure_time
+#             bus = passenger.bus_he_is_on
+#             time_departed = env.time - bus.departure_time
 
-            if len(bus.on_board) >= (OVERCROWDING_THRESHOLD * bus.capacity) and not passenger.reported_overcrowding:
-                p = (len(bus.on_board) / bus.capacity - OVERCROWDING_THRESHOLD) / (1 - OVERCROWDING_THRESHOLD) * (MAX_OVERCROWD_PROB - MIN_OVERCROWD_PROB) + MIN_OVERCROWD_PROB
-                p = p / (FALLOFF * time_departed + 1)
-                if random.random() < p:
-                    passenger.reported_overcrowding = True
-                    logging.warning(f"Passenger {passenger.name} {passenger.surname} reports overcrowding on bus {bus.name}")
-                    requests.put(f"http://localhost:5000/buses/{bus.name}", json={
-                        "overcrowded": True
-                    })
+#             if len(bus.on_board) >= (OVERCROWDING_THRESHOLD * bus.capacity) and not passenger.reported_overcrowding:
+#                 p = (len(bus.on_board) / bus.capacity - OVERCROWDING_THRESHOLD) / (1 - OVERCROWDING_THRESHOLD) * (MAX_OVERCROWD_PROB - MIN_OVERCROWD_PROB) + MIN_OVERCROWD_PROB
+#                 p = p / (FALLOFF * time_departed + 1)
+#                 if random.random() < p:
+#                     passenger.reported_overcrowding = True
+#                     logging.warning(f"Passenger {passenger.name} {passenger.surname} reports overcrowding on bus {bus.name}")
+#                     requests.put(f"http://localhost:5000/buses/{bus.name}", json={
+#                         "overcrowded": True
+#                     })
 
-            if not passenger.reported_boarding:
-                p = SIGN_PROB / (FALLOFF * time_departed + 1)
-                if random.random() < p:
+#             if not passenger.reported_boarding:
+#                 p = SIGN_PROB / (FALLOFF * time_departed + 1)
+#                 if random.random() < p:
 
-                    logging.info(f"Passenger {passenger.name} {passenger.surname} reports boarding on bus {bus.name}")
+#                     logging.info(f"Passenger {passenger.name} {passenger.surname} reports boarding on bus {bus.name}")
 
-                    passenger.reported_boarding = True
+#                     passenger.reported_boarding = True
 
-                    requests.put(f"http://localhost:5000/buses/{bus.name}", json={
-                        "boardedat": 0.0,
-                        "from": bus.last_stop.name,
-                        "to": bus.next_stop.name
-                    })
+#                     requests.put(f"http://localhost:5000/buses/{bus.name}", json={
+#                         "boardedat": 0.0,
+#                         "from": bus.last_stop.name,
+#                         "to": bus.next_stop.name
+#                     })
 
-        elif passenger.arrived:
+#         elif passenger.arrived:
 
-            # nice!
+#             # nice!
 
-            logging.info(f"Passenger {passenger.name} {passenger.surname} leaves the simulation, say bye!")
+#             logging.info(f"Passenger {passenger.name} {passenger.surname} leaves the simulation, say bye!")
 
-            env.passengers.remove(passenger)
+#             env.passengers.remove(passenger)
 
-            break # despawn
-        await asyncio.sleep(5+random.random()) # scrambling the wait to avoid huge chunks of work at once
+#             break # despawn
+#         await asyncio.sleep(5+random.random()) # scrambling the wait to avoid huge chunks of work at once
 
 # tells us what's going on in the simulation every 5 minutes
 async def env_dumper(env: SimulationEnv):
@@ -346,17 +394,47 @@ async def env_dumper(env: SimulationEnv):
 async def main():
     buses = [
         tds.Bus(
-        name = "A-1",
+        name = "A1",
         capacity = CAPACITY,
         speed= SPEED,
         route = routes[0],
         curr_pos_idx = 0),
         tds.Bus(
-        name = "B-1",
+        name = "A2",
+        capacity = CAPACITY,
+        speed= SPEED,
+        route = routes[0],
+        curr_pos_idx = 4),
+        tds.Bus(
+        name = "1A",
         capacity = CAPACITY,
         speed= SPEED,
         route = routes[0],
         curr_pos_idx = -1),
+        tds.Bus(
+        name = "B1",
+        capacity = CAPACITY,
+        speed= SPEED,
+        route = routes[1],
+        curr_pos_idx = 0),
+        tds.Bus(
+        name = "1B",
+        capacity = CAPACITY,
+        speed= SPEED,
+        route = routes[1],
+        curr_pos_idx = -1),
+        tds.Bus(
+        name = "C1",
+        capacity = CAPACITY,
+        speed= SPEED,
+        route = routes[2],
+        curr_pos_idx = 0),
+        tds.Bus(
+        name = "1C",
+        capacity = CAPACITY,
+        speed= SPEED,
+        route = routes[2],
+        curr_pos_idx = -1)
     ]
 
     env = SimulationEnv(bus_stops, routes, buses, [])

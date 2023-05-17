@@ -286,25 +286,25 @@ if __name__ == "__main__":
     stops = ["A", "B", "C", "D", "E", "F", "G"]
     graph = Graph(dict(), dict())
     graph.startup(stops)
-    graph.stops["A"].x = 300
-    graph.stops["A"].y = 300
-    graph.stops["B"].x = 400
-    graph.stops["B"].y = 300
-    graph.stops["C"].x = 400
-    graph.stops["C"].y = 400
-    graph.stops["D"].x = 300
-    graph.stops["D"].y = 400
-    graph.stops["E"].x = 450
-    graph.stops["E"].y = 475
-    graph.stops["F"].x = 350
-    graph.stops["F"].y = 475
-    graph.stops["G"].x = 250
-    graph.stops["G"].y = 475
+    graph.stops["A"].x = 3000
+    graph.stops["A"].y = 3000
+    graph.stops["B"].x = 4000
+    graph.stops["B"].y = 3000
+    graph.stops["C"].x = 4000
+    graph.stops["C"].y = 4000
+    graph.stops["D"].x = 3000
+    graph.stops["D"].y = 4000
+    graph.stops["E"].x = 4500
+    graph.stops["E"].y = 4750
+    graph.stops["F"].x = 3500
+    graph.stops["F"].y = 4750
+    graph.stops["G"].x = 2500
+    graph.stops["G"].y = 4750
 
     routes_def = [
-        ("Prime", (255, 0, 0), ["A", "B", "C", "D"], 3),
-        ("Secundus", (0, 255, 0), ["C", "E", "F"], 2),
-        ("Tertius", (0, 0, 255), ["D", "G", "F"], 2),
+        ("A", (255, 0, 0), ["A", "B", "C", "D"], 3),
+        ("B", (0, 255, 0), ["C", "E", "F"], 2),
+        ("C", (0, 0, 255), ["D", "G", "F"], 2),
     ]
     buses = dict()
     v_buses = dict()

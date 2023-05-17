@@ -304,6 +304,10 @@ class Bus:
     last_stop: str = ""
     next_stop: str = ""
     departure_time: float = 0.0
+    fill: int = 0
+    users: int = 0
+    curr_signaled: bool = False
+    over_signaled: bool = False
 
     def __post_init__(self):
 
