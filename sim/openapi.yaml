@@ -65,9 +65,9 @@ components:
         properties:
           bus:
             $ref: "#/components/schemas/businfo"
-          line:
-            type: string
-            description: Line of the bus
+          # line:
+          #   type: string
+          #   description: Line of the bus
           stops:
             type: array
             items:

@@ -7,6 +7,7 @@ import model.virtual_sim as vsim
 import time
 import numpy as np
 import cv2
+from datetime import datetime, timedelta
 
 app = Quart(__name__)
 
@@ -71,12 +72,18 @@ async def request_directions():
 
     data_dict = {k: v for k, v in data.items()}
 
-    print(data_dict["from"])
-    print(data_dict["to"])
+    ret = vsim.directions(data_dict["from"], data_dict["to"], graph, routes, v_buses)
+    if ret is None:
+        return Response(status=404)
+    
+    dt = datetime.now()
+    
+    res = []
+    for bus_name, stops in ret:
+        val = {"bus": bus_name, "stops": [{"stop-name": name, "time": (dt + timedelta(seconds=time)).isoformat()} for name, time in stops]}
+        res.append(val)
 
-    print(vsim.directions(data_dict["from"], data_dict["to"], graph, v_buses))
-
-    return Response(status=200)
+    return Response(response=json.dumps(res), status=200, mimetype="application/json")
     
 @app.route("/buses/<bus>", methods=["put"])
 async def bus_put_data(bus):
@@ -94,9 +101,6 @@ async def bus_put_data(bus):
             return Response(status=404)
 
     elif data_dict.get("boardedat", None) is not None:
-        print(data_dict["boardedat"])
-        print(data_dict["from"])
-        print(data_dict["to"])
 
         if (a:=v_buses.get(bus, None)) is not None:
             a.board_signal(data_dict["from"], data_dict["to"], graph, data_dict["boardedat"])
@@ -187,7 +191,7 @@ async def sim():
         last_time = time_now
 
         for bus in buses.values():
-            bus.step(graph, buses, v_buses, time_delta)
+            bus.step(graph, routes, buses, v_buses, time_delta)
 
         for edge in graph.edges.values():
             edge.step()
@@ -223,21 +227,21 @@ if __name__ == "__main__":
     graph.stops["G"].x = 2500
     graph.stops["G"].y = 4750
 
-    v_buses = { "A1": vsim.VirtualBus("A1", ["A", "B", "C", "D", "C", "B"], "A", "B"),
-                "A3": vsim.VirtualBus("A3", ["C", "D", "C", "B", "A", "B"], "C", "D"),
-                "A2": vsim.VirtualBus("A2", ["D", "C", "B", "A", "B", "C"], "D", "C"),
-                "B1": vsim.VirtualBus("B1", ["C", "E", "F", "E"], "C", "E"),
-                "B2": vsim.VirtualBus("B2", ["F", "E", "C", "E"], "F", "E"),
-                "C1": vsim.VirtualBus("C1", ["D", "G", "F", "G"], "D", "G"),
-                "C2": vsim.VirtualBus("C2", ["F", "G", "D", "G"], "F", "G")}
+    v_buses = { "A1": vsim.VirtualBus("A1", "A", "A", "B"),
+                "A3": vsim.VirtualBus("A3", "A", "C", "D"),
+                "A2": vsim.VirtualBus("A2", "A", "D", "C", -1),
+                "B1": vsim.VirtualBus("B1", "B", "C", "E"),
+                "B2": vsim.VirtualBus("B2", "B", "F", "E", -1),
+                "C1": vsim.VirtualBus("C1", "C", "D", "G"),
+                "C2": vsim.VirtualBus("C2", "C", "F", "G", -1)}
 
-    buses = {   "A1": vsim.TrueBus("A1", ["A", "B", "C", "D", "C", "B"], "A", "B"),
-                "A3": vsim.TrueBus("A3", ["C", "D", "C", "B", "A", "B"], "C", "D"),
-                "A2": vsim.TrueBus("A2", ["D", "C", "B", "A", "B", "C"], "D", "C"),
-                "B1": vsim.TrueBus("B1", ["C", "E", "F", "E"], "C", "E"),
-                "B2": vsim.TrueBus("B2", ["F", "E", "C", "E"], "F", "E"),
-                "C1": vsim.TrueBus("C1", ["D", "G", "F", "G"], "D", "G"),
-                "C2": vsim.TrueBus("C2", ["F", "G", "D", "G"], "F", "G")}
+    buses = {   "A1": vsim.TrueBus("A1", "A", "A", "B"),
+                "A3": vsim.TrueBus("A3", "A", "C", "D"),
+                "A2": vsim.TrueBus("A2", "A", "D", "C", -1),
+                "B1": vsim.TrueBus("B1", "B", "C", "E"),
+                "B2": vsim.TrueBus("B2", "B", "F", "E", -1),
+                "C1": vsim.TrueBus("C1", "C", "D", "G"),
+                "C2": vsim.TrueBus("C2", "C", "F", "G", -1)}
 
     routes = {"A":vsim.Route("A", (255, 0, 0), ["A", "B", "C", "D"]),
                 "B":vsim.Route("B", (0, 255, 0), ["C", "E", "F"]),
