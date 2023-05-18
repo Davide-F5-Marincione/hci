@@ -1,31 +1,22 @@
-import os
-import asyncio
-import data_structures as tds
-from typing import Any, List, Tuple, Union
-import numpy as np
+from dataclasses import dataclass
+from typing import List, Tuple, Dict, Any, Optional
 import random
-import matplotlib.pyplot as plt
-from dataclasses import dataclass, asdict, field
 import time
-import jsonpickle
-import names
-import sys
-import logging
-import requests
+import numpy as np
+import cv2
 
-file_handler = logging.FileHandler(filename='sim.log')
-stdout_handler = logging.StreamHandler(stream=sys.stdout)
-handlers = [file_handler, stdout_handler]
+MIN = 0
+MAX = 1
+ADD = .1
+WAITING_SECONDS = 20
+SPEED = 200
+CAPACITY = 50
+MAX_OVERCROWD_TIME_AGO = 1024
+TELEPORT = True
 
-logging.basicConfig(format='%(asctime)s,%(msecs)03d %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s',
-    datefmt='%Y-%m-%d:%H:%M:%S',
-    level=logging.INFO, handlers=handlers)
+PROB_TO_USE_APP = .2
 
-
-PROB_TO_USE_APP = 0.2
-PROB_TO_UNBOARD = .3
-
-SIGN_PROB = 0.5
+SIGNAL_PROB = .5
 
 OVERCROWDING_THRESHOLD = 0.8
 MIN_OVERCROWD_PROB = .4
@@ -33,423 +24,498 @@ MAX_OVERCROWD_PROB = .8
 
 FALLOFF = 0.02
 
-SPEED = 200
-CAPACITY = 50
+EXPECTED_SPEED = ((MAX + MIN) / 2 + ADD) * SPEED
+AVG_SPEED = (MAX + MIN) / 2 * SPEED
 
-###
-#
-#   utility functions
-#
-###
-distance = lambda x, y: np.linalg.norm(x - y)
+def simplex_noise(seed):
+    np.random.seed(seed)
+    vals = np.random.rand(3) * 15 + 10
+    vals = vals * [np.sqrt(2), np.exp(1), np.pi] / vals.sum()
+    i = 0
+    while True:
+        i += 1
+        yield (1 / 6 * np.sin(vals * i / 50).sum() + 0.5)
 
-###
-#
-#   simulation data
-#
-###
+@dataclass
+class Node:
+    name: str
+    x: float
+    y: float
 
 
 @dataclass
-class SimulationEnv:
-    stops: List[tds.BusStop]
-    routes: List[tds.Route]
-    buses: List[tds.Bus]
-    passengers: List[tds.Passenger]
-    time: float = 0.0
+class Edge:
+    a: Node
+    b: Node
+    traffic_update: iter
+    curr_traffic: float = (MAX + MIN) / 2
 
-    def save(self, filepath: str, indent: int = 4):
-        with open(filepath, "w") as f:
-            f.write(jsonpickle.encode(self, indent=indent))
+    def length(self):
+        return ((self.a.x - self.b.x) ** 2 + (self.a.y - self.b.y) ** 2) ** 0.5
 
+    def expected_steps(self):
+        return self.length() / EXPECTED_SPEED
 
-# bus stops
+    def step(self):
+        self.curr_traffic = next(self.traffic_update)
+    
+@dataclass
+class TrueBus:
+    name: str
+    route: str
+    prev_node: str
+    next_node: str
+    dir: int = 1
+    distance_travelled: float = 0.0
+    capacity: int = CAPACITY
+    fill: int = 0
+    users: int = 0
+    waiting: float = WAITING_SECONDS
+    steps_run: float = 0.0
+    curr_signaled: bool = False
+    boarded: bool = False
 
-bus_stops = [
-    tds.BusStop(3000.0, 3000.0, "A", set()),
-    tds.BusStop(4000.0, 3000.0, "B", set()),
-    tds.BusStop(4000, 4000.0, "C", set()),
-    tds.BusStop(3000.0, 4000., "D", set()),
-    tds.BusStop(4500.0, 4750.0, "E", set()),
-    tds.BusStop(3500, 4750.0, "F", set()),
-    tds.BusStop(2500, 4750.0, "G", set()),
-]
+    retard: float = 0.0
 
-# bus routes
-
-routes = [
-    tds.Route("A", bus_stops[:4]),
-    tds.Route("B", [bus_stops[2]] + bus_stops[4:6]),
-    tds.Route("C", [bus_stops[3], bus_stops[6], bus_stops[5]]),
-]
-
-# time constants
-
-STOP_AT: float = 20000.0
-# negative value means run forever
-# coroutines still need to yield control to the event loop
-# so this is more of a suggestion than a hard stop
-# I am NOT going working with synchronization primitives here :)
-# (you're welcome to try though).
-
-
-###
-#
-#   simulation coroutine
-#
-###
-
-
-class Ticker:
-    def __init__(self):
-        self.last_time = time.time()
-
-    def __call__(self, env: SimulationEnv) -> Any:
-        # get time since program start
-
-        time_now = time.time()
-        time_delta = time_now - self.last_time
-
-        # update time
-        env.time += time_delta
-
-        # update last time
-        self.last_time = time_now
-
-
-async def tick_time(env: SimulationEnv):
-    # Everything is "tickless", this is only used for the simplex noise generator
-    # and to stop the simulation.
-
-    # change this to change the tick rate of the simulation
-    TICK_TIME = 0.1
-
-    logging.info("Simulation starting")
-
-    ticker = Ticker()
-
-    await asyncio.sleep(1) # sleep for 1 second to let the simulation start
-
-    while env.time < STOP_AT:
-        await asyncio.sleep(TICK_TIME)
-
-        ticker(env)
-
-    await asyncio.sleep(1)
-    logging.info("Simulation complete")
-
-
-async def simulate_bus(bus: tds.Bus, env: SimulationEnv):
-    # create a list of stops to traverse that start with the original position
-
-    starting_idx = bus.curr_pos_idx
-
-    #concat three lists so that the bus goes back and forth correctly
-    cycle_path = bus.route[starting_idx:] + bus.route[-2::-1] + bus.route[1:starting_idx]
-
-    if cycle_path[0] == cycle_path[-1]:
-        cycle_path = cycle_path[:-1] # i'm tired, boss.
-
-    bus.next_idx = (starting_idx + 1) % len(bus.route)
-
-    logging.info(f"Bus {bus.name} starting simulation")
-    logging.info(f"Bus {bus.name} will traverse {cycle_path}")
-
-    # def board():
-    #     new_passengers = []
-    #     for _ in range(random.randint(0, bus.capacity - len(bus.on_board))):
-    #         passenger = tds.Passenger(
-    #             name = names.get_first_name(),
-    #             surname = names.get_last_name(),
-    #             uses_our_app = random.random() < PROB_TO_USE_APP,
-    #             bus_he_is_on=bus
-    #         )
-    #         bus.on_board.add(passenger)
-    #         new_passengers.append(passenger)
-    #         logging.info(f"Passenger {passenger.name} {passenger.surname} boarded bus {bus.name}")
-        
-    #     env.passengers.extend(new_passengers)
-
-    #     # [  # spawn passenger coroutines, but don't await them (they will run in the background)
-    #     #     asyncio.create_task(simulate_passenger(passenger, env))
-    #     #     for passenger in new_passengers
-        # ]
-
-    # def unboard():
-    #     to_remove = set()
-    #     for passenger_out in bus.on_board:
-    #         if random.random() < PROB_TO_UNBOARD:
-    #             passenger_out.bus_he_is_on = None
-    #             passenger_out.arrived = True
-    #             to_remove.add(passenger_out)
-
-    #             logging.info(f"Passenger {passenger_out.name} {passenger_out.surname} left bus {bus.name}")
-    #     bus.on_board.difference_update(to_remove)
-
-
-    while env.time < STOP_AT:
-        for idx, place in enumerate(cycle_path):
-
-            if env.time >= STOP_AT:
-                break
-
-            if isinstance(place, tds.BusStop):
-                bus.curr_pos = place
-                bus.curr_pos_idx = idx
-                bus.next_idx = (idx + 1) % len(cycle_path)
-
-                # Arrives at stop
-                place.buses.add(bus)
-                logging.info(f"Bus {bus.name} is arriving at {place.name}")
-
-                #unboard()
-
-                #board()
-
-                logging.info(f"Bus {bus.name} is waiting at {place.name}")
-                for _ in range (4): # wait for 1 minute, board 2 times
-
-                    await asyncio.sleep(15)
-                    #board()
-
-                # By the topology, this is guaranteed to be a bus stop
-                # so the one we are checking 2 ahead is also a bus stop
-
-                next_idx = (idx + 2) % len(cycle_path)
-
-                next_place = cycle_path[next_idx]
-
-                # pre-emptively wait for the next bus to go away
-                # from the next stop
-                # this is hacky but improves the simulation's traffic flow
-
-                while len(next_place.buses) > 0 and any(next_bus.next_idx == bus.curr_pos_idx in
-                                                        next_place.buses for next_bus in next_place.buses):
-
-                    # we should divide by the speed of the OTHER bus, not this one
-                    # but they are likely to be the same, so it's fine.
-                    time_to_wait = tds.distance_between_bus_stops(place, next_place) / bus.speed
-                    time_to_wait *= 0.75
-
-                    logging.info((f"Bus {bus.name} is waiting {time_to_wait:.2f}s for a bus to leave {next_place.name} "
-                                  f"Current next bus is {next_place.buses}, next hop is {cycle_path[next_idx].name}"))
-                    await asyncio.sleep(time_to_wait)
-                    #board()
-
-                place.buses.remove(bus)
-
-                # prendere passeggeri
-                # TODO: 1. settare un timestamp di partenza
-                # TODO: 2. setti una flag che abilità la segnalazione
-
-                general_unload = random.randint(0, bus.fill)
-                users_unload = random.randint(
-                    max(0, general_unload - (bus.fill - bus.users)),
-                    min(general_unload, bus.users),
-                )
-                bus.fill -= general_unload
-                bus.users -= users_unload
-
-
-
-                bus.last_stop = bus.curr_pos
-                bus.next_stop = next_place
-                bus.departure_time = env.time
-                bus.curr_signaled = False
-                bus.over_signaled = False
-
-
-                max_board = bus.capacity - bus.fill
+    def step(self, graph, routes, v_buses, delta_t=1):
+        if self.waiting > delta_t:  # Just wait
+            self.waiting -= delta_t
+        else:  # Board calc
+            if not self.boarded:
+                max_board = self.capacity - self.fill
                 general_board = random.randint(0, max_board)
                 users_board = 0
                 for _ in range(general_board):
                     if np.random.rand() < PROB_TO_USE_APP:
                         users_board += 1
 
-                bus.fill += general_board
-                bus.users += users_board
-                bus.waiting = 0.0
+                self.fill += general_board
+                self.users += users_board
+                self.waiting = 0.0
+                
+                self.boarded = True
 
-                await asyncio.sleep(1) # yield control to the event loop
+            conn = graph.get_edge(self.prev_node, self.next_node)
+            self.distance_travelled += (conn.curr_traffic * (MAX - MIN) + MIN) * delta_t * SPEED
+            self.steps_run += delta_t
 
-                # leave stop
-            elif isinstance(place, tds.RoadConnection):
-                # it should get here without awaiting
-                bus.curr_pos = place
-                bus.curr_pos_idx = idx
-                bus.next_idx = (idx + 1) % len(cycle_path)
+            if self.curr_signaled is False:
+                p = SIGNAL_PROB / (FALLOFF * self.steps_run + 1)
+                p = 1 - (1 - p)**self.users
+                if np.random.rand() < p:
+                    v_buses[self.name].board_signal(
+                        self.prev_node, self.next_node, graph, self.steps_run
+                    )
+                    self.curr_signaled = True
+                
+            if self.fill >= OVERCROWDING_THRESHOLD * self.capacity:
+                p = (self.fill / self.capacity - OVERCROWDING_THRESHOLD) / (1 - OVERCROWDING_THRESHOLD) * (MAX_OVERCROWD_PROB - MIN_OVERCROWD_PROB) + MIN_OVERCROWD_PROB
+                p = p / (FALLOFF * self.steps_run + 1)
+                p = 1 - (1 - p)**self.users
+                if random.random() < p:
+                    v_buses[self.name].overcrowd()
 
-                distance_left = place.distance
-                tenth = distance_left / 10
+            if self.distance_travelled >= conn.length():  # Arrived at next stop
+                # Reset
+                ahead = conn.expected_steps() - self.steps_run + WAITING_SECONDS
+                diff = max(0, ahead - WAITING_SECONDS)
+                self.waiting = WAITING_SECONDS + max(0, diff - self.retard)
+                self.retard = max(0, self.retard - diff)
 
-                logging.info(f"Bus {bus.name} is travelling to {place.name}")
+                self.distance_travelled = 0.0
+                self.steps_run = 0
+                self.curr_signaled = False
+                self.boarded = False
 
-                for passenger in bus.on_board:
-                    passenger.can_report = False
+                # Unload passengers
+                general_unload = random.randint(0, self.fill)
+                users_unload = random.randint(
+                    max(0, general_unload - (self.fill - self.users)),
+                    min(general_unload, self.users),
+                )
+                self.fill -= general_unload
+                self.users -= users_unload
 
-                last_dist = 0.0
-                last_time = env.time
+                # Prepare stop
+                circ = routes[self.route].circuit[::self.dir]
+                self.prev_node = self.next_node
+                for i, node in enumerate(circ):
+                    if node == self.prev_node:
+                        if i == len(circ) - 1:
+                            self.next_node = circ[0]
+                        else:
+                            self.next_node = circ[i + 1]
+                        break
 
-                while distance_left > 0:
-                    curr_time = env.time
-                    time_delta = curr_time - last_time
-
-                    time_departed = curr_time - bus.departure_time
-                    if not bus.curr_signaled:
-                        p = SIGN_PROB / (FALLOFF * time_departed + 1)
-                        p = 1 - (1 - p)**bus.users
-                        if np.random.rand() < p:
-                            requests.put(f"http://localhost:5000/buses/{bus.name}", json={
-                                "boardedat": 0.0,
-                                "from": bus.last_stop.name,
-                                "to": bus.next_stop.name
-                            })
-                            bus.curr_signaled = True
-
-                    if bus.fill >= OVERCROWDING_THRESHOLD * bus.capacity and not bus.over_signaled:
-                        p = (bus.fill / bus.capacity - OVERCROWDING_THRESHOLD) / (1 - OVERCROWDING_THRESHOLD) * (MAX_OVERCROWD_PROB - MIN_OVERCROWD_PROB) + MIN_OVERCROWD_PROB
-                        p = p / (FALLOFF * time_departed + 1)
-                        p = 1 - (1 - p)**bus.users
-                        if np.random.rand() < p:
-                            requests.put(f"http://localhost:5000/buses/{bus.name}", json={
-                                "overcrowded": True
-                            })
-                            bus.over_signaled = True
-                    await asyncio.sleep(5)
-
-                    trav = bus.speed * time_delta * place.trafficFunc(env.time)
-                    last_dist += trav
-                    distance_left -= trav
-
-                    if last_dist >= tenth:
-                        logging.info(f"Bus {bus.name} is travelling {tenth:.1f}m to {place.name},"
-                                    f" {distance_left:.1f}m left, ETA: {(distance_left / bus.speed / .6):.2f}s {place.trafficFunc(env.time):.2f}"
-                                    f" traffic factor at {place.name}")
-                        last_dist -= tenth
-                    
-                    last_time = curr_time
-
-                await asyncio.sleep(1)  # yield control to the event loop
-        await asyncio.sleep(1)  # yield control to the event loop
+        v_buses[self.name].step(graph, routes, delta_t)
 
 
-# async def simulate_passenger(passenger: tds.Passenger, env: SimulationEnv):
+@dataclass
+class VirtualBus:
+    name: str
+    route: List[str]
+    prev_node: str
+    next_node: str
+    dir: int = 1
+    distance_travelled: float = 0.0
+    waiting: float = WAITING_SECONDS
+    steps_run: float = 0.0
+    overcrowded: float = MAX_OVERCROWD_TIME_AGO
+    speed: float = EXPECTED_SPEED
+    delay: float = 0.0
 
-#     while env.time < STOP_AT:
+    def board_signal(self, prev_node, next_node, graph, ago=0):
+        if TELEPORT:
+            self.delay += self.steps_run - ago
+            self.waiting = 0
+            self.steps_run = ago
+            self.prev_node = prev_node
+            self.next_node = next_node
+            self.distance_travelled = ago * AVG_SPEED
+        else:
+            self.delay += self.steps_run - ago
+            if self.waiting > 0 or prev_node != self.prev_node:
+                self.waiting = 0
+                self.steps_run = 0
+                self.prev_node = prev_node
+                self.next_node = next_node
+                self.distance_travelled = 0.0
+            conn = graph.get_edge(self.prev_node, self.next_node)
+            time = conn.expected_steps() - ago
+            self.speed = (conn.length() - self.distance_travelled) / time
+    
+    def overcrowd(self):
+        self.overcrowded = 0
 
-#         # passengers tick every 15 seconds, checking what their state is
-#         # they get carried by the bus, so they don't need to do anything
-#         # by themselves, but they might perform some actions when they
-#         # tick, such as reporting or despawning
+    def step(self, graph, routes, delta_t=1):
+        self.overcrowded = min(self.overcrowded + delta_t, MAX_OVERCROWD_TIME_AGO)
+        if self.waiting > 0:  # Just wait
+            self.waiting -= delta_t
+        else:  # Move
+            conn = graph.get_edge(self.prev_node, self.next_node)
+            self.distance_travelled += self.speed * delta_t
+            self.steps_run += delta_t
 
-#         if passenger.bus_he_is_on is not None and passenger.uses_our_app and passenger.can_report:
+            if self.distance_travelled >= conn.length():  # Arrived at next stop
+                # Reset
+                self.waiting = max(
+                    WAITING_SECONDS, conn.expected_steps() - self.steps_run
+                )
+                self.distance_travelled = 0.0
+                self.steps_run = 0
+                self.speed = EXPECTED_SPEED
 
-#             bus = passenger.bus_he_is_on
-#             time_departed = env.time - bus.departure_time
+                # Prepare stop
+                circ = routes[self.route].circuit[::self.dir]
+                self.prev_node = self.next_node
+                for i, node in enumerate(circ):
+                    if node == self.prev_node:
+                        if i == len(circ) - 1:
+                            self.next_node = circ[0]
+                        else:
+                            self.next_node = circ[i + 1]
+                        break
 
-#             if len(bus.on_board) >= (OVERCROWDING_THRESHOLD * bus.capacity) and not passenger.reported_overcrowding:
-#                 p = (len(bus.on_board) / bus.capacity - OVERCROWDING_THRESHOLD) / (1 - OVERCROWDING_THRESHOLD) * (MAX_OVERCROWD_PROB - MIN_OVERCROWD_PROB) + MIN_OVERCROWD_PROB
-#                 p = p / (FALLOFF * time_departed + 1)
-#                 if random.random() < p:
-#                     passenger.reported_overcrowding = True
-#                     logging.warning(f"Passenger {passenger.name} {passenger.surname} reports overcrowding on bus {bus.name}")
-#                     requests.put(f"http://localhost:5000/buses/{bus.name}", json={
-#                         "overcrowded": True
-#                     })
-
-#             if not passenger.reported_boarding:
-#                 p = SIGN_PROB / (FALLOFF * time_departed + 1)
-#                 if random.random() < p:
-
-#                     logging.info(f"Passenger {passenger.name} {passenger.surname} reports boarding on bus {bus.name}")
-
-#                     passenger.reported_boarding = True
-
-#                     requests.put(f"http://localhost:5000/buses/{bus.name}", json={
-#                         "boardedat": 0.0,
-#                         "from": bus.last_stop.name,
-#                         "to": bus.next_stop.name
-#                     })
-
-#         elif passenger.arrived:
-
-#             # nice!
-
-#             logging.info(f"Passenger {passenger.name} {passenger.surname} leaves the simulation, say bye!")
-
-#             env.passengers.remove(passenger)
-
-#             break # despawn
-#         await asyncio.sleep(5+random.random()) # scrambling the wait to avoid huge chunks of work at once
-
-# tells us what's going on in the simulation every 5 minutes
-async def env_dumper(env: SimulationEnv):
-    while env.time < STOP_AT:
-
-        logging.info((f"ENVDUMP:\n\tCurrent time: {env.time}\n\tTotal passengers: {len(env.passengers)}\n\t"))
-
-        await asyncio.sleep(300)
+@dataclass
+class Route:
+    name: str
+    color: Tuple[int, int, int]
+    circuit: List[str]
 
 
-async def main():
-    buses = [
-        tds.Bus(
-        name = "A1",
-        capacity = CAPACITY,
-        speed= SPEED,
-        route = routes[0],
-        curr_pos_idx = 0),
-        tds.Bus(
-        name = "A2",
-        capacity = CAPACITY,
-        speed= SPEED,
-        route = routes[0],
-        curr_pos_idx = 4),
-        tds.Bus(
-        name = "1A",
-        capacity = CAPACITY,
-        speed= SPEED,
-        route = routes[0],
-        curr_pos_idx = -1),
-        tds.Bus(
-        name = "B1",
-        capacity = CAPACITY,
-        speed= SPEED,
-        route = routes[1],
-        curr_pos_idx = 0),
-        tds.Bus(
-        name = "1B",
-        capacity = CAPACITY,
-        speed= SPEED,
-        route = routes[1],
-        curr_pos_idx = -1),
-        tds.Bus(
-        name = "C1",
-        capacity = CAPACITY,
-        speed= SPEED,
-        route = routes[2],
-        curr_pos_idx = 0),
-        tds.Bus(
-        name = "1C",
-        capacity = CAPACITY,
-        speed= SPEED,
-        route = routes[2],
-        curr_pos_idx = -1)
-    ]
+@dataclass
+class Graph:
+    stops: Dict[str, Node]
+    edges: Dict[str, Edge]
 
-    env = SimulationEnv(bus_stops, routes, buses, [])
+    def startup(self, stops):
+        self.stops = {
+            stop: Node(stop, random.randint(-10, 10), random.randint(-10, 10))
+            for stop in stops
+        }
+        self.edges = dict()
 
-    await asyncio.gather(
-        tick_time(env),
-        *[simulate_bus(bus, env) for bus in buses],
-        env_dumper(env)
-    )
+    def get_edge(self, a, b):
+        if (edge := self.edges.get((a, b), None)) is not None:
+            return edge
+        return self.edges.get((b, a), None)
 
-    #env.save("sim.json")
+    def add_edge(self, a, b):
+        if (edge := self.get_edge(a, b)) is not None:
+            return edge
+        else:
+            edge = Edge(
+                self.stops[a], self.stops[b], simplex_noise(random.getrandbits(32))
+            )
+            self.edges[(a, b)] = edge
+            return edge
+        
+@dataclass
+class SearchBus:
+    name: str
+    route: str
+    prev_node: str
+    next_node: str
+    dir: int = 1
+    distance_travelled: float = 0.0
+    waiting: float = WAITING_SECONDS
+    steps_run: float = 0.0
+    speed: float = EXPECTED_SPEED
 
+    def step(self, graph, routes):
+        if self.waiting > 0:  # Just wait
+            self.waiting -= 1
+        else:  # Move
+            conn = graph.get_edge(self.prev_node, self.next_node)
+            self.distance_travelled += self.speed
+            self.steps_run += 1
+
+            if self.distance_travelled >= conn.length():  # Arrived at next stop
+                # Reset
+                self.waiting = max(
+                    WAITING_SECONDS, conn.expected_steps() - self.steps_run
+                )
+                self.distance_travelled = 0.0
+                self.steps_run = 0
+                self.speed = EXPECTED_SPEED
+
+                # Prepare stop
+                circ = routes[self.route].circuit[::self.dir]
+                self.prev_node = self.next_node
+                for i, node in enumerate(circ):
+                    if node == self.prev_node:
+                        if i == len(circ) - 1:
+                            self.next_node = circ[0]
+                        else:
+                            self.next_node = circ[i + 1]
+                        break
+
+@dataclass
+class AtStop:
+    name: str
+    time: int
+    children: List[Any]
+    parent: Optional[Any]
+
+    def check(self, graph, buses, reached, time):
+
+        for child in self.children:
+            child.check(graph, buses, reached, time)
+
+        for bus in buses:
+            if reached["bus-" + bus.name] is None and bus.waiting > 0 and bus.prev_node == self.name:
+                child = OnTravel(bus.name, time, bus, [], self, [(self.name, time)])
+                self.children.append(child)
+                reached["bus-" + bus.name] = child
+@dataclass
+class OnTravel:
+    name: str
+    time: str
+    bus: SearchBus
+    children: List[AtStop]
+    parent: AtStop
+    stops: List[Tuple[str, int]]
+
+    def check(self, graph, buses, reached, time):
+        for child in self.children:
+            child.check(graph, buses, reached, time)
+
+        if self.bus.waiting > 0:
+            if self.stops[-1][0] != self.bus.prev_node:
+                self.stops.append((self.bus.prev_node, time))
+
+            if reached["stop-" + self.bus.prev_node] is None:
+                child = AtStop(self.bus.prev_node, time, [], self)
+                self.children.append(child)
+                reached["stop-" + self.bus.prev_node] = child
+
+def directions(start, end, graph, routes, vbuses):
+    # Deep-copy buses
+    buses = [SearchBus(bus.name, bus.route, bus.prev_node, bus.next_node, bus.dir, bus.distance_travelled, bus.waiting, bus.steps_run, bus.speed) for bus in vbuses.values()]
+    
+    seconds_passed = 0
+    tree = AtStop(start, seconds_passed, [], None)
+    reached = {"bus-" + bus.name: None for bus in buses}
+    reached.update({"stop-" + stop.name: None for stop in graph.stops.values()})
+    reached["stop-" + start] = tree
+
+    run = True
+    while seconds_passed < 3600 and run:
+        tree.check(graph, buses, reached, seconds_passed)
+
+        if reached["stop-" + end] is not None:
+            run = False
+
+        for bus in buses:
+            bus.step(graph, routes)
+
+        seconds_passed += 1
+
+    if run:
+        print("Couldn't find route")
+        return None
+    else:
+        unravel = []
+        elem = reached["stop-" + end]
+        while elem is not None:
+            unravel.append(elem)
+            elem = elem.parent
+
+        lst = unravel[::-1]
+
+        foo = []
+
+        i = 0
+        while i < len(lst) - 1:
+            board = lst[i]
+            bus = lst[i+1]
+            unboard = lst[i+2]
+            i = i+2
+
+            found_board = False
+            bar = []
+
+            for place, time in bus.stops:
+                if not found_board:
+                    if place == board.name:
+                        bar.append((place, time))
+                        found_board = True
+                else:
+                    bar.append((place, time))
+                    if place == unboard.name:
+                        break
+            foo.append((bus.name, bar))
+        return foo
+            
+
+
+def shrink(x):
+    return int(x/10)
 
 if __name__ == "__main__":
+    stops = ["A", "B", "C", "D", "E", "F", "G"]
+    graph = Graph(dict(), dict())
+    graph.startup(stops)
+    graph.stops["A"].x = 3000
+    graph.stops["A"].y = 3000
+    graph.stops["B"].x = 4000
+    graph.stops["B"].y = 3000
+    graph.stops["C"].x = 4000
+    graph.stops["C"].y = 4000
+    graph.stops["D"].x = 3000
+    graph.stops["D"].y = 4000
+    graph.stops["E"].x = 4500
+    graph.stops["E"].y = 4750
+    graph.stops["F"].x = 3500
+    graph.stops["F"].y = 4750
+    graph.stops["G"].x = 2500
+    graph.stops["G"].y = 4750
 
-    logging.info("log separator\n\n\n---Starting simulation---\n\n")
+    v_buses = { "A1": VirtualBus("A1", ["A", "B", "C", "D", "C", "B"], "A", "B"),
+                "A2": VirtualBus("A2", ["C", "D", "C", "B", "A", "B"], "C", "D"),
+                "1A": VirtualBus("1A", ["D", "C", "B", "A", "B", "C"], "D", "C"),
+                "B1": VirtualBus("B1", ["C", "E", "F", "E"], "C", "E"),
+                "1B": VirtualBus("1B", ["F", "E", "C", "E"], "F", "E"),
+                "C1": VirtualBus("C1", ["D", "G", "F", "G"], "D", "G"),
+                "1C": VirtualBus("1C", ["F", "G", "D", "G"], "F", "G")}
 
-    asyncio.run(main())
+    buses = {   "A1": TrueBus("A1", ["A", "B", "C", "D", "C", "B"], "A", "B"),
+                "A2": TrueBus("A2", ["C", "D", "C", "B", "A", "B"], "C", "D"),
+                "1A": TrueBus("1A", ["D", "C", "B", "A", "B", "C"], "D", "C"),
+                "B1": TrueBus("B1", ["C", "E", "F", "E"], "C", "E"),
+                "1B": TrueBus("1B", ["F", "E", "C", "E"], "F", "E"),
+                "C1": TrueBus("C1", ["D", "G", "F", "G"], "D", "G"),
+                "1C": TrueBus("1C", ["F", "G", "D", "G"], "F", "G")}
+
+    routes = {"A":Route("A", (255, 0, 0), ["A", "B", "C", "D"]),
+                "B":Route("B", (0, 255, 0), ["C", "E", "F"]),
+                "C":Route("C", (0, 0, 255), ["D", "G", "F"])}
+    
+    for route in routes.values():
+        this_buses = []
+
+        first = prev = route.circuit[0]
+        for curr in route.circuit[1:]:
+            graph.add_edge(prev, curr)
+            prev = curr
+        graph.add_edge(prev, first)
+
+    title = "Simulation"
+    v_title = "Virtual buses"
+
+    img = np.ones((800, 800, 3), dtype=np.uint8) * 255
+
+    run = True
+
+    cv2.namedWindow(title)
+    cv2.namedWindow(v_title)
+
+    last_time = time.time()
+
+    while run:
+        buff_img = img.copy()
+
+        for route in routes.values():
+            start = prev = graph.stops[route.circuit[0]]
+
+            for curr in route.circuit[1:]:
+                curr = graph.stops[curr]
+                cv2.line(buff_img, (shrink(prev.x), shrink(prev.y)), (shrink(curr.x), shrink(curr.y)), route.color, 3)
+                prev = curr
+            cv2.line(buff_img, (shrink(prev.x), shrink(prev.y)), (shrink(start.x), shrink(start.y)), route.color, 3)
+
+        for node in graph.stops.values():
+            cv2.circle(buff_img, (shrink(node.x), shrink(node.y)), 5, (12,12,12), 3)
+
+        v_buff_img = buff_img.copy()
+
+        for bus in buses.values():
+            start = graph.stops[bus.prev_node]
+            stop = graph.stops[bus.next_node]
+            conn = graph.get_edge(bus.prev_node, bus.next_node)
+            l = conn.length()
+            dir_x = (stop.x - start.x) / l * bus.distance_travelled
+            dir_y = (stop.y - start.y) / l * bus.distance_travelled
+            pos_x = dir_x + start.x
+            pos_y = dir_y + start.y
+
+            col = (255, 255, 0)
+
+            cv2.circle(buff_img, (shrink(pos_x), shrink(pos_y)), 5, col, -1)
+            cv2.putText(buff_img, bus.name, (shrink(pos_x) + 5, shrink(pos_y)), fontFace=0, fontScale=.4, color=(12,12,12))
+
+        for bus in v_buses.values():
+            start = graph.stops[bus.prev_node]
+            stop = graph.stops[bus.next_node]
+            conn = graph.get_edge(bus.prev_node, bus.next_node)
+            l = conn.length()
+            dir_x = (stop.x - start.x) / l * bus.distance_travelled
+            dir_y = (stop.y - start.y) / l * bus.distance_travelled
+            pos_x = dir_x + start.x
+            pos_y = dir_y + start.y
+
+            col = (255, 255, 0)
+
+            cv2.circle(v_buff_img, (shrink(pos_x), shrink(pos_y)), 5, col, -1)
+            cv2.putText(v_buff_img, bus.name, (shrink(pos_x) + 5, shrink(pos_y)), fontFace=0, fontScale=.4, color=(12,12,12))
+
+        cv2.imshow(title, buff_img)
+        cv2.imshow(v_title, v_buff_img)
+
+        key = cv2.waitKey(10)
+
+        if key == ord("q"):
+            run = False
+
+        time_now = time.time()
+        time_delta = time_now - last_time
+
+        last_time = time_now
+
+        for bus in buses.values():
+            bus.step(graph, buses, v_buses, time_delta)
+
+        for edge in graph.edges.values():
+            edge.step()
+
+    cv2.destroyAllWindows()
