@@ -16,6 +16,34 @@ components:
       description: |-
         The server encountered an internal error.
   schemas:
+    businfo:
+      title: Bus info
+      description: |-
+        This object contains all of a bus's info at a certain point in time
+      type: object
+      properties:
+        line:
+          type: string
+          description: Line of the bus
+        last_seen:
+          description: Datetime of last boarded signal
+          type: string
+        overcrowded:
+          description: Datetime of last overcrowded signal
+          type: string
+        expected_next_arrival:
+          description: Expected datetime to get to next stop (delay accounted for)
+          type: string
+        expected_from:
+          description: The last stop where the bus should be
+          type: string
+        expected_to:
+          description: The next stop where the bus should be
+          type: string
+        calculated_delay:
+          description: Calculated delay
+          type: natural
+
     lineinfo:
       title: Line info
       description: |-
@@ -31,29 +59,7 @@ components:
           description: List of buses servicing the line
           type: array
           items:
-            type: string
-
-    businfo:
-      title: Bus info
-      description: |-
-        This object contains all of a bus's info at a certain point in time
-      type: object
-      properties:
-        line:
-          type: string
-          description: Line of the bus
-        last_seen:
-          description: Last time the bus has been signaled
-          type: string
-        overcrowded:
-          description: Whether the bus was overcrowded
-          type: boolean
-        expected_position:
-          description: The last stop where the bus should be
-          type: string
-        expected_time_left:
-          description: Expected time left to get to next stop
-          type: integer
+            $ref: "#/components/schemas/businfo"
 
     route:
       title: Route
@@ -64,7 +70,7 @@ components:
         type: object
         properties:
           bus:
-            $ref: "#/components/schemas/businfo"
+            type: string
           delay:
             type: string
           stops:

@@ -13,36 +13,34 @@ app = Quart(__name__)
 
 @app.route("/users", methods=["POST"])
 async def create_user():
-    if request.method == "POST":
-        r = request.get_json()
+    r = request.get_json()
 
-        name = r["name"]
+    name = r["name"]
 
-        cur = con.execute("SELECT * FROM users WHERE name = ?", [name])
-        result = cur.fetchone()
+    cur = con.execute("SELECT * FROM users WHERE name = ?", [name])
+    result = cur.fetchone()
 
-        status = 200
+    status = 200
 
-        if result is None:
-            auth = 0
-            is_free = False
-            while not is_free:
-                auth = random.getrandbits(64)
-                cur = con.execute("SELECT * FROM users WHERE auth = ?", [int(auth)])
-                is_free = cur.fetchone() is None
-            cur = con.execute("INSERT INTO users VALUES(:name, :auth, :credits)", {"name":name, "auth": auth, "credits":0})
-            cur.close()
-            con.commit()
-            status = 201
-        else:
-            auth = result[1]
-        r = Response(response=json.dumps({"auth": auth}), status=status, mimetype="application/json")
-        return r
-    return "Internal Server Error", 500
+    if result is None:
+        auth = 0
+        is_free = False
+        while not is_free:
+            auth = random.getrandbits(64)
+            cur = con.execute("SELECT * FROM users WHERE auth = ?", [int(auth)])
+            is_free = cur.fetchone() is None
+        cur = con.execute("INSERT INTO users VALUES(:name, :auth, :credits)", {"name":name, "auth": auth, "credits":0})
+        cur.close()
+        con.commit()
+        status = 201
+    else:
+        auth = result[1]
+    r = Response(response=json.dumps({"auth": auth}), status=status, mimetype="application/json")
+    return r
 
 
-@app.route("/users/<user>", methods=["GET", "PUT"])
-async def handle_users(user):
+@app.route("/users/<user>", methods=["PUT"])
+async def handle_users_put(user):
     headers = request.headers
     auth = headers.get('Authorization')
     cur = con.execute("SELECT * FROM users WHERE name = ? AND auth = ?", [user, auth])
@@ -54,20 +52,42 @@ async def handle_users(user):
 
     user, _, credits = a
 
-    if request.method == "GET":
-        r = Response(response=json.dumps({"credits": credits}), status=200, mimetype="application/json")
-        return r
-    elif request.method == "PUT":
-        r = request.get_json()
-        cur = con.execute("UPDATE users SET credits = credits - ? WHERE name = ?", [r["credits"], user])
-        cur.close()
-        con.commit()
-        return "Successful operation", 204
-    return "Internal Server Error", 500
+    r = request.get_json()
+    cur = con.execute("UPDATE users SET credits = credits - ? WHERE name = ?", [r["credits"], user])
+    cur.close()
+    con.commit()
+    return "Successful operation", 204
 
-@app.route("/route", methods=["put"])
+@app.route("/users/<user>", methods=["GET"])
+async def handle_users_get(user):
+    headers = request.headers
+    auth = headers.get('Authorization')
+    cur = con.execute("SELECT * FROM users WHERE name = ? AND auth = ?", [user, auth])
+    a = cur.fetchone()
+    cur.close()
+    con.commit()
+    if a is None:
+        return "User not found", 404
+
+    user, _, credits = a
+
+    r = Response(response=json.dumps({"credits": credits}), status=200, mimetype="application/json")
+    return r
+
+def bus_info(bus):
+    bus = v_buses.get(bus, None)
+    
+    conn = graph.get_edge(bus.prev_node, bus.next_node)
+    time_to_arrive = conn.expected_steps() - bus.steps_run + bus.waiting
+    time_to_arrive = datetime.now() + timedelta(seconds=time_to_arrive)
+    
+    return {"line": bus.route, "last_seen": bus.last_signal,
+            "overcrowded": bus.overcrowded, "expected_from": bus.prev_node,
+            "expected_to": bus.next_node, "calculated_delay": bus.delay,
+            "expected_next_arrival": time_to_arrive}
+
+@app.route("/route", methods=["PUT"])
 async def request_directions():
-
     data = await request.get_json()
 
     data_dict = {k: v for k, v in data.items()}
@@ -78,15 +98,27 @@ async def request_directions():
     
     dt = datetime.now()
     
-    res = []
-    for bus_name, stops in ret:
-        val = {"bus": bus_name, "delay":v_buses[bus_name].delay, "stops": [{"stop-name": name, "time": (dt + timedelta(seconds=time)).isoformat()} for name, time in stops]}
-        res.append(val)
+    res_outer = []
+    for solution in ret:
+        res = []
+        for bus_name, stops in solution:
+            val = {"bus": bus_name, "delay":v_buses[bus_name].delay, "stops": [{"stop-name": name, "time": (dt + timedelta(seconds=time)).isoformat()} for name, time in stops]}
+            res.append(val)
+        res_outer.append(res)
 
-    return Response(response=json.dumps(res), status=200, mimetype="application/json")
+    return Response(response=json.dumps(res_outer), status=200, mimetype="application/json")
     
-@app.route("/buses/<bus>", methods=["put"])
-async def bus_put_data(bus):
+@app.route("/buses/<bus>", methods=["PUT"])
+async def bus_put(bus):
+
+    headers = request.headers
+    auth = headers.get('Authorization')
+    cur = con.execute("SELECT * FROM users WHERE auth = ?", [auth])
+    a = cur.fetchone()
+    cur.close()
+    con.commit()
+    if a is None:
+        return "Not a user", 401
 
     data = await request.get_json()
 
@@ -113,6 +145,39 @@ async def bus_put_data(bus):
         # 400 Bad Request
         return Response(status=400)
     
+@app.route("/buses/<bus>", methods=["GET"])
+async def bus_get(bus):
+
+    bus = v_buses.get(bus, None)
+
+    if bus is None:
+        return "Bus not found", 404
+    
+    resp = bus_info(bus)
+
+    return Response(response=json.dumps(resp), status=200, mimetype="application/json")
+
+@app.route("/lines/<line>", methods=["GET"])
+async def line_get(line):
+
+    line = routes.get(line, None)
+
+    if line is None:
+        return "Line not found", 404
+    
+    stops = line.circuit
+
+    buses = []
+
+    for bus in v_buses:
+        if bus.route == line.name:
+            buses.append(bus_info(bus))
+    
+    resp =  {"stops": stops, "buses": buses}
+
+    return Response(response=json.dumps(resp), status=200, mimetype="application/json")
+
+
 def shrink(x):
     return int(x/10)
 
