@@ -488,7 +488,132 @@ interactions that a user must perform in order to complete the task.
 
 \chapter{Prototyping}\label{chap:prototyping}
 
+\paragraph{Tools}
+In order to be able to test our ideas in a flexible context, we decided to prototype our application
+through the popular prototyping tool \emph{Figma}. This allowed us to quickly iterate on our ideas,
+as well as to test them with users in a more realistic context than a simple mockup.
 
+\paragraph{Evaluation Techniques}
+For each major iteration of our prototype, we tested the application with groups of users
+of various sizes, using two different evaluation techniques:
 
+\begin{enumerate}
+	\item \textbf{Think Aloud:} The user is asked to perform a series of tasks, while explaining their thought process,
+	      interactions with the application and expected outcomes out loud.
+	\item \textbf{Cooperative:} Similar to think aloud, but there is a constant feedback loop between the user and the tester.
+\end{enumerate}
+
+In both cases, we recorded the audio of the evaluation session, in order to be able to better analyze the results
+at a later time.
+
+\begin{table}[h!]
+	\rowcolors{2}{gray!25}{white}
+	\centering
+
+	\caption{Test Rounds Sample Sizes}\label{tab:participants-table}
+	\begin{tabular}{c c}
+		\rowcolor{gray!50}
+		% Header
+		Iteration & Number of Tests \\
+		%End Header
+		First     & 4               \\
+		Second    & 7               \\
+		Third     & 13              \\
+	\end{tabular}
+\end{table}
+
+The number of tests increases as we iterated on our design, however, in the beginning,
+the duration of the tests was longer, due to the suboptimal User Experience of the application,
+which led to more time being spent on each task.
+
+\section{Prototypes}\label{sec:prototypes}
+
+In the following section, we are going to show a number of areas of our app and their
+evolution through the various iterations of our design process.
+
+\subsection{The Home Screen}\label{ssec:the-home-screen}
+
+%% Four images in a row
+\begin{figure}[H]
+	\centering
+	\subfloat[First Iteration, Early]{
+		\includegraphics[width=0.30\textwidth, height=0.35\textheight, keepaspectratio]{img/prototype/home/home2.png}\label{fig:home2}
+	}\hspace{0.5pt}
+	\subfloat[First Iteration, Late]{
+		\includegraphics[width=0.30\textwidth, height=0.35\textheight, keepaspectratio]{img/prototype/home/home4.png}\label{fig:home4}
+	}
+	\hspace{0.5pt}
+	\subfloat[Second Iteration]{
+		\includegraphics[width=0.30\textwidth, height=0.35\textheight, keepaspectratio]{img/prototype/home/home5.png}\label{fig:home5}
+	}\hspace{0.5pt}
+	\subfloat[Third Iteration]{
+		\includegraphics[width=0.30\textwidth, height=0.35\textheight, keepaspectratio]{img/prototype/home/home6.png}\label{fig:home6}
+	}
+	\caption{The \emph{home} is the central screen of the application, in \cref{fig:home2},
+		we can see the very first iteration of the home screen, which lacked the top navigation bar, and a separation
+		of the news section, the iteration that was actually deployed in tests is \cref{fig:home4}, here, it emerged
+		from tests that the lack of news was confusing. This was fixed in \cref{fig:home5}, where we populated the
+		news section with more articles, from now on, a change in color palette can also be noticed, surprisingly,
+		people found having more news even \emph{more} confusing, as they felt it made the app lose its focus on
+		its main objective, thus, in the third iteration (\cref{fig:home6}), it was replaced with a
+		more utilitarian feature, a selection of recent routes and the possibility to resume a route that was previously interrupted.}\label{fig:home}
+\end{figure}
+
+\subsection{Searching for Routes}\label{ssec:searching-for-routes}
+
+%% Four images in a row
+\begin{figure}[H]
+	\centering
+	\subfloat[First Iteration]{
+		\includegraphics[width=0.30\textwidth, height=0.35\textheight, keepaspectratio]{img/prototype/nav/nav1.png}\label{fig:nav1}
+	}\hspace{0.5pt}
+	\subfloat[Second Iteration, Early]{
+		\includegraphics[width=0.30\textwidth, height=0.35\textheight, keepaspectratio]{img/prototype/nav/nav2.png}\label{fig:nav2}
+	}
+	\hspace{0.5pt}
+	\subfloat[Second Iteration, Late]{
+		\includegraphics[width=0.30\textwidth, height=0.35\textheight, keepaspectratio]{img/prototype/nav/nav3.png}\label{fig:nav3}
+	}\hspace{0.5pt}
+	\subfloat[Third Iteration]{
+		\includegraphics[width=0.30\textwidth, height=0.35\textheight, keepaspectratio]{img/prototype/nav/nav5.png}\label{fig:nav5}
+	}
+	\caption{
+		The \emph{navigation} screen was the one that presented the most criticalities during the earliest stages of testing,
+		in \cref{fig:nav1}, we can see the first iteration of the screen, which was very confusing, owing to the fact that
+		the final stop is not present in any of the routes, the individual routes' cards are not clearly separated,
+		the double arrow logo makes it look as if tapping it would switch the direction of the route, when it is in fact
+		purely decorative, and the eccessive use of non-standard icons makes the screen look cluttered. In \cref{fig:nav2},
+		the problem was exacerbated by the addition of an info button, which failed in his purpose by adding to the clutter.
+		The design was simplified in \cref{fig:nav3}, where the info button was removed, the routes were clearly separated,
+		and many icons were replaced with text, this version was very successful in tests, and was only slightly modified
+		in the third iteration (\cref{fig:nav5}), which is mainly a color palette change, along with some slightly
+		more realistic timestamps (and english text).}\label{fig:nav}
+\end{figure}
+
+%% Four images in a row
+\begin{figure}[H]
+	\centering
+	\subfloat[Route Selection, Early]{
+		\includegraphics[width=0.30\textwidth, height=0.35\textheight, keepaspectratio]{img/prototype/path/path1.png}\label{fig:path1}
+	}\hspace{0.5pt}
+	\subfloat[Roundel]{
+		\includegraphics[width=0.30\textwidth, height=0.35\textheight, keepaspectratio]{img/prototype/path/watch1.png}\label{fig:watch1}
+	}
+	\hspace{4.5pt}
+	\subfloat[Route Selection, Final]{
+		\includegraphics[width=0.30\textwidth, height=0.35\textheight, keepaspectratio]{img/prototype/path/path5_select.png}\label{fig:path5_select}
+	}\hspace{0.5pt}
+	\subfloat[Reporting Screen]{
+		\includegraphics[width=0.30\textwidth, height=0.35\textheight, keepaspectratio]{img/prototype/path/path5.png}\label{fig:path5}
+	}
+	\caption{
+		Another critical part of the project was the way that reporting delays and overcrowding was handled, initially,
+		once a route was chosen (\cref{fig:path1}), the user would have to click the ambiguously-sounding button \emph{arrived}, which
+		then brought up a roundel (\cref{fig:watch1}) that users could tap onto to report the time discrepancy between the report and
+		the bus's arrival. This was \emph{the} single most confusing aspect of the User Experience in our earlier iterations,
+		and was subsequently replaced with a saner system, which, based on the assumption that this discrepancy is
+		statistically insignificant, reduced the process to simply select the desired route (\cref{fig:path5_select}) and
+		then tap on a button to report boarding/overcrowdedness (\cref{fig:path5})}\label{fig:path}
+\end{figure}
 
 \end{document}
