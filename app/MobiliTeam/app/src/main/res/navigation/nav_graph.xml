@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/SearchFragment">
+
+    <fragment
+        android:id="@+id/SearchFragment"
+        android:name="com.example.mobiliteam.SearchFragment"
+        android:label="Searching Routes"
+        tools:layout="@layout/fragment_search">
+
+        <action
+            android:id="@+id/action_SearchFragment_to_SelectFragment"
+            app:destination="@id/SelectFragment" />
+
+    </fragment>
+    <fragment
+        android:id="@+id/SelectFragment"
+        android:name="com.example.mobiliteam.SelectFragment"
+        android:label="Searching Routes"
+        tools:layout="@layout/fragment_select">
+
+        <action
+            android:id="@+id/action_SelectFragment_to_PathFollowFragment"
+            app:destination="@id/PathFollowFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/PathFollowFragment"
+        android:name="com.example.mobiliteam.PathFollowFragment"
+        android:label="Searching Routes"
+        tools:layout="@layout/fragment_path_follow"/>
+</navigation>

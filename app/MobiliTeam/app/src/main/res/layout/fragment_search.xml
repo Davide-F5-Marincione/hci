@@ -2,12 +2,11 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
     android:backgroundTint="@color/background"
-    tools:context=".ui.main.TravelFragment">
+    tools:context=".SearchFragment">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/fromInput"
@@ -24,11 +23,9 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/fromInputEdit"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:backgroundTint="#FFFFFF"
-            android:drawableTint="#B65555"
             android:fontFamily="@font/roboto_regular"
             android:hint="From"
             android:textColorHint="#d9d9d9" />
@@ -49,11 +46,9 @@
         app:layout_constraintTop_toBottomOf="@+id/fromInput">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/toInputEdit"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:backgroundTint="#FFFFFF"
-            android:drawableTint="#B65555"
             android:fontFamily="@font/roboto_regular"
             android:hint="To"
             android:textColorHint="#d9d9d9" />
@@ -78,38 +73,17 @@
                 android:id="@+id/textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#FFFFFF"
-                android:backgroundTint="@color/gray_hint"
                 android:fontFamily="@font/inter_bold"
-                android:text="WHERE YOU LEFT"
+                android:text="SUGGESTED ROUTES:"
                 android:textAlignment="viewStart"
-                android:textColor="@color/gray_tab_label" />
+                android:textColor="@color/black" />
 
             <include
-                layout="@layout/left_card"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="visible" />
-
-            <TextView
-                android:id="@+id/textView4"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#FFFFFF"
-                android:backgroundTint="@color/gray_hint"
-                android:fontFamily="@font/inter_bold"
-                android:text="RECENT ROUTES"
-                android:textAlignment="viewStart"
-                android:textColor="@color/gray_tab_label" />
-
-            <include
-                layout="@layout/recent_card"
+                layout="@layout/search_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:visibility="visible" />
 
         </LinearLayout>
     </ScrollView>
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,12 +1,19 @@
 package com.example.mobiliteam.ui.main
 
+import android.content.Intent
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.widget.EditText
+import android.widget.TextView.OnEditorActionListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.example.mobiliteam.TravelActivity
 import com.example.mobiliteam.databinding.TravelLayoutBinding
+
 
 class TravelFragment : Fragment() {
 
@@ -33,6 +40,22 @@ class TravelFragment : Fragment() {
         val root = binding.root
 
         return root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.toInputEdit.setOnEditorActionListener(
+            OnEditorActionListener { v, actionId, event ->
+                if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE || event != null && event.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_ENTER) {
+                    if (event == null || !event.isShiftPressed) {
+                        val intent = Intent(getActivity(), TravelActivity::class.java)
+                        startActivity(intent)
+                    }
+                }
+                false // pass on to other listeners.
+            }
+        )
     }
 
     companion object {
