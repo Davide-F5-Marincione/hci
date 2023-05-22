@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable name="loadingVM" type="com.mobiliteamdhiwisever.app.modules.loading.data.viewmodel.LoadingVM"/>
+    </data>
+    <LinearLayout android:id="@+id/linearLOADING"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:orientation="vertical" style="@style/groupStyleindigo_400">
+        <ImageView android:id="@+id/imageLogoappOne"
+            android:layout_gravity="center_horizontal"
+            android:layout_height="@dimen/_303pxh"
+            android:layout_marginEnd="@dimen/_28pxh"
+            android:layout_marginStart="@dimen/_28pxh"
+            android:layout_marginTop="@dimen/_113pxv"
+            android:layout_width="@dimen/_304pxh"
+            android:scaleType="fitXY"
+            imageRes="@{@drawable/img_logoapp1}"
+            tools:ignore="ContentDescription" tools:src="@drawable/img_logoapp1"/>
+        <TextView android:ellipsize="end" android:gravity="end"
+            android:id="@+id/txtMobiliTeam"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/_66pxh"
+            android:layout_marginStart="@dimen/_66pxh"
+            android:layout_marginTop="@dimen/_32pxv"
+            android:layout_width="match_parent"
+            android:letterSpacing="0.0" android:singleLine="true"
+            android:text="@{loadingVM.loadingModel.txtMobiliTeam}"
+            style="@style/txtRobotoromanbold40" tools:text="@string/lbl_mobiliteam"/>
+        <ImageView android:id="@+id/imageLogobwOne"
+            android:layout_gravity="center_horizontal"
+            android:layout_height="@dimen/_78pxh"
+            android:layout_marginBottom="@dimen/_15pxv"
+            android:layout_marginEnd="@dimen/_28pxh"
+            android:layout_marginStart="@dimen/_28pxh"
+            android:layout_marginTop="@dimen/_211pxv"
+            android:layout_width="@dimen/_69pxh"
+            android:scaleType="fitXY"
+            imageRes="@{@drawable/img_logobw1}"
+            tools:ignore="ContentDescription" tools:src="@drawable/img_logobw1"/>
+    </LinearLayout>
+</layout>

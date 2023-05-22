@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable name="specificDonationVM" type="com.mobiliteamdhiwisever.app.modules.specificdonation.data.viewmodel.SpecificDonationVM"/>
+    </data>
+    <LinearLayout android:gravity="center_horizontal"
+        android:id="@+id/linearSPECIFICDONATI"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:orientation="vertical" style="@style/groupStylegray_200">
+        <androidx.appcompat.widget.Toolbar android:gravity="start"
+            android:id="@+id/toolbarToolbar"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent" app:contentInsetStart="0dp">
+            <LinearLayout android:id="@+id/linearDonationstoolb"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:orientation="horizontal" style="@style/groupStyleindigo_400">
+                <LinearLayout android:id="@+id/linearRowarrowleft"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/_3pxv"
+                    android:layout_marginStart="@dimen/_15pxh"
+                    android:layout_marginTop="@dimen/_9pxv"
+                    android:layout_weight="0.87"
+                    android:layout_width="0dp" android:orientation="horizontal">
+                    <ImageView android:id="@+id/imageArrowleft"
+                        android:layout_height="@dimen/_16pxh"
+                        android:layout_marginBottom="@dimen/_5pxv"
+                        android:layout_marginTop="@dimen/_7pxv"
+                        android:layout_width="@dimen/_11pxh"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/img_arrowleft"
+                        tools:ignore="ContentDescription" tools:src="@drawable/img_arrowleft"/>
+                    <TextView android:ellipsize="end"
+                        android:id="@+id/txtDonations"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_16pxh"
+                        android:layout_weight="0.91"
+                        android:layout_width="0dp"
+                        android:singleLine="true"
+                        android:text="@{specificDonationVM.specificDonationModel.txtDonations}"
+                        style="@style/txtRobotoromanbold24_1" tools:text="@string/lbl_donations"/>
+                </LinearLayout>
+                <ImageView android:id="@+id/imageSettings"
+                    android:layout_height="@dimen/_20pxh"
+                    android:layout_marginBottom="@dimen/_9pxv"
+                    android:layout_marginEnd="@dimen/_11pxh"
+                    android:layout_marginStart="@dimen/_176pxh"
+                    android:layout_marginTop="@dimen/_13pxv"
+                    android:layout_width="@dimen/_20pxh"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/img_settings"
+                    tools:ignore="ContentDescription" tools:src="@drawable/img_settings"/>
+            </LinearLayout>
+        </androidx.appcompat.widget.Toolbar>
+        <FrameLayout android:gravity="start"
+            android:id="@+id/frameStackrectangletwenty"
+            android:layout_height="@dimen/_126pxv" android:layout_width="match_parent">
+            <View android:background="@color/light_green_300"
+                android:id="@+id/viewRectangleTwenty"
+                android:layout_gravity="start"
+                android:layout_height="@dimen/_124pxv"
+                android:layout_marginBottom="@dimen/_2pxv" android:layout_width="@dimen/_360pxh"/>
+            <ImageView android:id="@+id/imageWWF"
+                android:layout_gravity="center"
+                android:layout_height="@dimen/_124pxh"
+                android:layout_marginEnd="@dimen/_40pxh"
+                android:layout_marginStart="@dimen/_40pxh"
+                android:layout_marginTop="@dimen/_2pxv"
+                android:layout_width="@dimen/_143pxh"
+                android:scaleType="fitXY"
+                android:src="@drawable/img_wwf"
+                tools:ignore="ContentDescription" tools:src="@drawable/img_wwf"/>
+        </FrameLayout>
+        <TextView android:ellipsize="end"
+            android:gravity="center_horizontal"
+            android:id="@+id/txtEntertheamoun"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/_21pxh"
+            android:layout_marginStart="@dimen/_21pxh"
+            android:layout_marginTop="@dimen/_71pxv"
+            android:layout_width="match_parent"
+            android:letterSpacing="0.0" android:singleLine="true"
+            android:text="@{specificDonationVM.specificDonationModel.txtEntertheamoun}"
+            style="@style/txtRobotomedium16" tools:text="@string/msg_enter_the_amoun"/>
+        <TextView android:ellipsize="end"
+            android:gravity="center_horizontal"
+            android:id="@+id/txtUsernamefield"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/_21pxh"
+            android:layout_marginStart="@dimen/_21pxh"
+            android:layout_marginTop="@dimen/_17pxv"
+            android:layout_width="match_parent"
+            android:paddingBottom="@dimen/_9pxv"
+            android:paddingStart="@dimen/_30pxh"
+            android:paddingTop="@dimen/_10pxv" android:singleLine="true"
+            android:text="@{specificDonationVM.specificDonationModel.txtUsernamefield}"
+            style="@style/txtSolidRoundedOutline_1" tools:text="@string/lbl_max_50"/>
+        <androidx.appcompat.widget.AppCompatButton
+            android:ellipsize="end" android:gravity="center"
+            android:id="@+id/btnDonate"
+            android:layout_gravity="center_horizontal"
+            android:layout_height="@dimen/_52pxv"
+            android:layout_marginEnd="@dimen/_21pxh"
+            android:layout_marginStart="@dimen/_21pxh"
+            android:layout_marginTop="@dimen/_31pxv"
+            android:layout_width="@dimen/_239pxh"
+            android:paddingBottom="@dimen/_11pxv"
+            android:paddingEnd="@dimen/_30pxh"
+            android:paddingStart="@dimen/_30pxh"
+            android:paddingTop="@dimen/_11pxv" android:singleLine="true"
+            android:text="@string/lbl_donate"
+            android:textAllCaps="false" style="@style/btnSolidRounded_1" tools:text="@string/lbl_donate"/>
+        <View android:background="@color/black_900"
+            android:id="@+id/lineLineFifteen"
+            android:layout_gravity="center_horizontal"
+            android:layout_height="@dimen/_1pxv"
+            android:layout_marginEnd="@dimen/_21pxh"
+            android:layout_marginStart="@dimen/_21pxh"
+            android:layout_marginTop="@dimen/_40pxv" android:layout_width="@dimen/_318pxh"/>
+        <TextView android:gravity="center_horizontal"
+            android:id="@+id/txtDescription"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/_20pxv"
+            android:layout_marginEnd="@dimen/_19pxh"
+            android:layout_marginStart="@dimen/_21pxh"
+            android:layout_marginTop="@dimen/_26pxv"
+            android:layout_width="match_parent"
+            android:letterSpacing="0.0"
+            android:text="@{specificDonationVM.specificDonationModel.txtDescription}"
+            style="@style/txtRobotoromanlight20" tools:text="@string/msg_wwf_works_to_he2"/>
+    </LinearLayout>
+</layout>

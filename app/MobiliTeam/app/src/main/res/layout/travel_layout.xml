@@ -6,16 +6,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
-    android:backgroundTint="#EFEFEF"
+    android:backgroundTint="@color/background"
     tools:context=".ui.main.TravelFragment">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/fromInput"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="32dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="8dp"
         android:hapticFeedbackEnabled="true"
         app:boxBackgroundColor="#FFFFFF"
         app:boxBackgroundMode="outline"
@@ -37,9 +37,9 @@
         android:id="@+id/toInput"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="32dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="8dp"
         android:hapticFeedbackEnabled="true"
         app:boxBackgroundColor="#FFFFFF"
         app:boxBackgroundMode="outline"
@@ -56,6 +56,39 @@
             android:hint="To"
             android:textColorHint="#d9d9d9" />
     </com.google.android.material.textfield.TextInputLayout>
+
+    <LinearLayout
+        android:id="@+id/vertical_container"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toInput">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            android:backgroundTint="@color/gray_hint"
+            android:fontFamily="@font/inter_bold"
+            android:text="WHERE YOU LEFT"
+            android:textAlignment="viewStart"
+            android:textColor="@color/gray_tab_label" />
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TextView" />
+        </androidx.cardview.widget.CardView>
+    </LinearLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest package="com.mobiliteamdhiwisever.app" xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <application android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name" android:largeHeap="true"
+        android:name="com.mobiliteamdhiwisever.app.appcomponents.di.MyApp"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true" android:theme="@style/Theme.MyApp" android:usesCleartextTraffic="true">
+        <activity
+            android:name="com.mobiliteamdhiwisever.app.modules.pathselected.ui.PathSelectedActivity" android:screenOrientation="portrait"/>
+        <activity
+            android:name="com.mobiliteamdhiwisever.app.modules.pathview.ui.PathViewActivity" android:screenOrientation="portrait"/>
+        <activity
+            android:name="com.mobiliteamdhiwisever.app.modules.recover.ui.RecoverActivity" android:screenOrientation="portrait"/>
+        <activity
+            android:name="com.mobiliteamdhiwisever.app.modules.nav.ui.NavActivity" android:screenOrientation="portrait"/>
+        <activity
+            android:name="com.mobiliteamdhiwisever.app.modules.register.ui.RegisterActivity" android:screenOrientation="portrait"/>
+        <activity
+            android:name="com.mobiliteamdhiwisever.app.modules.specificdonation.ui.SpecificDonationActivity" android:screenOrientation="portrait"/>
+        <activity
+            android:name="com.mobiliteamdhiwisever.app.modules.login.ui.LoginActivity" android:screenOrientation="portrait"/>
+        <activity android:exported="true"
+            android:name="com.mobiliteamdhiwisever.app.modules.loading.ui.LoadingActivity" android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.mobiliteamdhiwisever.app.modules.thanks.ui.ThanksActivity" android:screenOrientation="portrait"/>
+    </application>
+</manifest>

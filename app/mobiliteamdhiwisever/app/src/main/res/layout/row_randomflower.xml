@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable name="randomflowerRowModel" type="com.mobiliteamdhiwisever.app.modules.thanks.data.model.RandomflowerRowModel"/>
+    </data>
+    <FrameLayout android:id="@+id/framePetals"
+        android:layout_height="wrap_content" android:layout_width="match_parent">
+        <ImageView android:id="@+id/imageVolumeTen"
+            android:layout_gravity="bottom|end"
+            android:layout_height="@dimen/_62pxh"
+            android:layout_marginEnd="@dimen/_4pxh"
+            android:layout_marginStart="@dimen/_10pxh"
+            android:layout_marginTop="@dimen/_10pxv"
+            android:layout_width="@dimen/_59pxh"
+            android:scaleType="fitXY" android:src="@drawable/img_volume"
+            tools:ignore="ContentDescription" tools:src="@drawable/img_volume"/>
+        <ImageView android:id="@+id/imageEyeTwenty"
+            android:layout_gravity="bottom|start"
+            android:layout_height="@dimen/_62pxh"
+            android:layout_marginEnd="@dimen/_10pxh"
+            android:layout_marginStart="@dimen/_4pxh"
+            android:layout_marginTop="@dimen/_10pxv"
+            android:layout_width="@dimen/_59pxh"
+            android:scaleType="fitXY" android:src="@drawable/img_eye"
+            tools:ignore="ContentDescription" tools:src="@drawable/img_eye"/>
+        <ImageView android:id="@+id/imageUnevenPetalTen"
+            android:layout_gravity="top|start"
+            android:layout_height="@dimen/_44pxh"
+            android:layout_marginBottom="@dimen/_10pxv"
+            android:layout_marginEnd="@dimen/_10pxh"
+            android:layout_marginTop="@dimen/_8pxv"
+            android:layout_width="@dimen/_65pxh"
+            android:scaleType="fitXY"
+            android:src="@drawable/img_unevenpetal"
+            tools:ignore="ContentDescription" tools:src="@drawable/img_unevenpetal"/>
+        <ImageView android:id="@+id/imageLocationTen"
+            android:layout_gravity="top|center"
+            android:layout_height="@dimen/_57pxh"
+            android:layout_marginBottom="@dimen/_10pxv"
+            android:layout_marginEnd="@dimen/_21pxh"
+            android:layout_marginStart="@dimen/_21pxh"
+            android:layout_width="@dimen/_29pxh"
+            android:scaleType="fitXY"
+            android:src="@drawable/img_location"
+            tools:ignore="ContentDescription" tools:src="@drawable/img_location"/>
+        <ImageView android:id="@+id/imageEyeOne"
+            android:layout_gravity="top|end"
+            android:layout_height="@dimen/_44pxh"
+            android:layout_marginBottom="@dimen/_10pxv"
+            android:layout_marginStart="@dimen/_10pxh"
+            android:layout_marginTop="@dimen/_8pxv"
+            android:layout_width="@dimen/_65pxh"
+            android:scaleType="fitXY"
+            android:src="@drawable/img_eye_purple_300"
+            tools:ignore="ContentDescription" tools:src="@drawable/img_eye_purple_300"/>
+        <FrameLayout android:id="@+id/frameFlowerCore"
+            android:layout_gravity="center"
+            android:layout_height="@dimen/_57pxv"
+            android:layout_marginBottom="@dimen/_5pxv"
+            android:layout_marginEnd="@dimen/_6pxh"
+            android:layout_marginStart="@dimen/_6pxh"
+            android:layout_marginTop="@dimen/_3pxv" android:layout_width="@dimen/_60pxh">
+            <ImageView android:id="@+id/imageStarSevenTen"
+                android:layout_gravity="start"
+                android:layout_height="@dimen/_57pxh"
+                android:layout_width="@dimen/_60pxh"
+                android:scaleType="fitXY"
+                android:src="@drawable/img_star7_8"
+                tools:ignore="ContentDescription" tools:src="@drawable/img_star7_8"/>
+            <ImageView android:id="@+id/imageCloseTen"
+                android:layout_gravity="center"
+                android:layout_height="@dimen/_21pxh"
+                android:layout_marginBottom="@dimen/_17pxv"
+                android:layout_marginEnd="@dimen/_18pxh"
+                android:layout_marginStart="@dimen/_18pxh"
+                android:layout_marginTop="@dimen/_17pxv"
+                android:layout_width="@dimen/_23pxh"
+                android:scaleType="fitXY"
+                android:src="@drawable/img_close_yellow_900"
+                tools:ignore="ContentDescription" tools:src="@drawable/img_close_yellow_900"/>
+        </FrameLayout>
+    </FrameLayout>
+</layout>

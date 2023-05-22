@@ -5,13 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
-    android:backgroundTint="#EFEFEF"
+    android:backgroundTint="@color/background"
     tools:context=".HomeActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#5953D0"
+        android:background="@color/primary"
         android:theme="@style/Theme.MobiliTeam.AppBarOverlay">
 
         <TextView
@@ -28,19 +28,16 @@
             android:id="@+id/tabs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#5953D0"
+            android:background="@color/primary"
             app:tabBackground="@drawable/tab_color_selector"
-            app:tabIconTint="#C8A3E6"
+            app:tabIconTint="@color/accent"
             app:tabIndicatorHeight="0dp"
-            app:tabRippleColor="#000000"
-            app:tabSelectedTextColor="#FFFFFF"
-            app:tabTextColor="#FFFFFF">
+            app:tabSelectedTextColor="@color/white"
+            app:tabTextColor="@color/white">
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:backgroundTint="#BB33EC"
-                android:foregroundTint="#DD2626"
                 android:text="Ao" />
 
             <com.google.android.material.tabs.TabItem
