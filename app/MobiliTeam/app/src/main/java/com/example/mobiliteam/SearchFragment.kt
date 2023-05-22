@@ -1,10 +1,13 @@
 package com.example.mobiliteam
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.mobiliteam.databinding.FragmentSearchBinding
 import com.google.android.material.button.MaterialButton
@@ -36,10 +39,17 @@ class SearchFragment : Fragment() {
         binding.root.findViewById<MaterialButton>(R.id.selectButton).setOnClickListener {
             findNavController().navigate(R.id.action_SearchFragment_to_SelectFragment)
         }
+
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val actionbar = (activity as AppCompatActivity).supportActionBar
+        actionbar?.setDisplayHomeAsUpEnabled(true)
     }
 }

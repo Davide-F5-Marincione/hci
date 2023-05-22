@@ -19,7 +19,7 @@
             android:background="#FFFFFF"
             android:backgroundTint="@color/primary"
             app:navigationIcon="?attr/actionModeCloseDrawable"
-            app:navigationIconTint="@color/white"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:title="Searching Routes"
             app:titleTextColor="@color/white" />
 
