@@ -1,5 +1,6 @@
 package com.example.mobiliteam
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -32,6 +33,10 @@ class PathFollowFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.endRouteButton.setOnClickListener {
+            val intent = Intent(activity, HomeActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     override fun onDestroyView() {

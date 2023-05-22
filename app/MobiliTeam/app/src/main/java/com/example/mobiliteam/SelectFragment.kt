@@ -32,7 +32,7 @@ class SelectFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.buttonSecond.setOnClickListener {
+        binding.fragmentSelectButton.setOnClickListener {
             findNavController().navigate(R.id.action_SelectFragment_to_PathFollowFragment)
         }
     }

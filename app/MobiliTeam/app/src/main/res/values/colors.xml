@@ -14,4 +14,5 @@
     <color name="blue_hyper">#FF00658F</color>
     <color name="green_extra">#FF82B955</color>
     <color name="red_destructive">#FFEF0C0C</color>
+    <color name="red_danger">#FFC64F4F</color>
 </resources>

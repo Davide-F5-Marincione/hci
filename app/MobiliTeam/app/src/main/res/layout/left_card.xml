@@ -131,7 +131,7 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <include layout="@layout/transit_show" />
+                <include layout="@layout/transit_show_small" />
 
                 <ImageView
                     android:id="@+id/arr1"
@@ -144,7 +144,7 @@
                     app:srcCompat="?attr/actionModeCloseDrawable"
                     app:tint="@color/black" />
 
-                <include layout="@layout/transit_show" />
+                <include layout="@layout/transit_show_small" />
 
                 <ImageView
                     android:id="@+id/arr2"
@@ -157,7 +157,7 @@
                     app:srcCompat="?attr/actionModeCloseDrawable"
                     app:tint="@color/black" />
 
-                <include layout="@layout/transit_show" />
+                <include layout="@layout/transit_show_small" />
 
                 <ImageView
                     android:id="@+id/arr3"
@@ -170,7 +170,7 @@
                     app:srcCompat="?attr/actionModeCloseDrawable"
                     app:tint="@color/black" />
 
-                <include layout="@layout/transit_show" />
+                <include layout="@layout/transit_show_small" />
 
             </LinearLayout>
         </HorizontalScrollView>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="boarded"> <font size="16">Boarded</font>\n<font size="10">(+3 credits)</font></string>
+    <string name="overcrowded"> <font size="16">Overcrowded</font>\n<font size="10">(+1 credits)</font></string>
+</resources>

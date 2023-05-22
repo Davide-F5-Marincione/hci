@@ -49,7 +49,7 @@ class TravelFragment : Fragment() {
             OnEditorActionListener { v, actionId, event ->
                 if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE || event != null && event.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_ENTER) {
                     if (event == null || !event.isShiftPressed) {
-                        val intent = Intent(getActivity(), TravelActivity::class.java)
+                        val intent = Intent(activity, TravelActivity::class.java)
                         startActivity(intent)
                     }
                 }
