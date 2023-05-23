@@ -79,6 +79,8 @@ acs-*.bib
 # fixme
 *.lox
 
+todo.md
+
 # feynmf/feynmp
 *.mf
 *.mp
