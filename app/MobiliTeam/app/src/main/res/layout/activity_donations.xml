@@ -24,6 +24,6 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include layout="@layout/content_donations" />
+    <include layout="@layout/fragment_wwfdonations" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

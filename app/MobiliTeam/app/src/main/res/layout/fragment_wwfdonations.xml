@@ -71,7 +71,7 @@
         android:layout_height="match_parent"
         android:backgroundTint="#FFFFFF"
         android:fontFamily="@font/roboto_regular"
-        android:hint="Type Here..."
+        android:hint=""
         android:textColorHint="@color/gray_hint"
         android:singleLine="true"
          />
@@ -83,17 +83,15 @@
         android:id="@+id/max_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="372dp"
+        android:layout_marginTop="-36dp"
+        android:layout_marginEnd="30dp"
         android:fontFamily="@font/roboto_regular"
-        android:text="Max:"
-        android:textColor="@color/black"
+        android:text="max:"
+        android:textColor="@color/primary"
         android:textSize="12sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/donationInput"/>
+        app:layout_constraintEnd_toEndOf="@+id/donationInput"
+        app:layout_constraintTop_toBottomOf="@+id/donationInput" />
 
     <TextView
         android:id="@+id/currentcredits"
@@ -102,7 +100,7 @@
         android:layout_marginStart="6dp"
         android:fontFamily="@font/roboto_regular"
         android:text="0"
-        android:textColor="@color/black"
+        android:textColor="@color/primary"
         android:textSize="12sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -155,12 +153,13 @@
         android:layout_marginStart="44dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="44dp"
-        android:textAlignment= "center"
         android:fontFamily="@font/roboto_regular"
         android:text="WWF works to help local communities conserve the natural resources they depend upon; transform markets and policies toward sustainability; and protect and restore species and their habitats. Our efforts ensure that the value of nature is reflected in decision-making from a local to a global scale."
+        android:textAlignment="center"
         android:textColor="@color/black"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/donate_view" />
 
