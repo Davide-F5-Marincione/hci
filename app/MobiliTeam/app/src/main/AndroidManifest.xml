@@ -26,6 +26,11 @@
             android:label="@string/title_activity_search_layout"
             android:theme="@style/Theme.MobiliTeam" />
         <activity
+            android:name=".DonationsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_search_layout"
+            android:theme="@style/Theme.MobiliTeam" />
+        <activity
             android:name=".RecoverActivity"
             android:exported="false"
             android:label="Username Recovery"

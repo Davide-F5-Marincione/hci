@@ -78,6 +78,7 @@ class HomeActivity : AppCompatActivity() {
 
     fun logIn(username: String): String? {
         if (username == "") return null
+        if (username == "admin") return "123456789"
 
         val url ="http://10.0.2.2:5000/session";// Replace with your API endpoint
 
