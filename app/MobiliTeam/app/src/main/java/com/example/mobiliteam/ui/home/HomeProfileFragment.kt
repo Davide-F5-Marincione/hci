@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.example.mobiliteam.HomeActivity
 import com.example.mobiliteam.databinding.FragmentProfileBinding
 
 class HomeProfileFragment : Fragment() {
@@ -30,6 +31,13 @@ class HomeProfileFragment : Fragment() {
     ): View? {
 
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
+
+        binding.logoutThingie.setOnClickListener {
+            val act = activity as HomeActivity
+            act._store.username = ""
+            act.launchLogIn()
+        }
+
         val root = binding.root
 
         return root

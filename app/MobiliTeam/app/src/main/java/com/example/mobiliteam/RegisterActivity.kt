@@ -2,23 +2,28 @@ package com.example.mobiliteam
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputLayout
+import okhttp3.Call
+import okhttp3.Callback
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
+import java.util.concurrent.CountDownLatch
 
 
 class RegisterActivity : AppCompatActivity() {
 
-    val client: OkHttpClient = OkHttpClient()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
@@ -42,40 +47,48 @@ class RegisterActivity : AppCompatActivity() {
         // else, display an error message
 
         // Davide - Must change as the endpoint for login is now on /session
-        val url ="http://127.0.0.1:5000/user";// Replace with your API endpoint
+        val url ="http://10.0.2.2:5000/users";// Replace with your API endpoint
 
         val jsonObject = JSONObject()
-            jsonObject.put("username", username)
-            jsonObject.put("firstname", findViewById<TextInputLayout>(R.id.firstNameInput).editText?.text.toString())
-            jsonObject.put("lastname", findViewById<TextInputLayout>(R.id.lastNameInput).editText?.text.toString())
-            jsonObject.put("email", findViewById<TextInputLayout>(R.id.emailInput).editText?.text.toString())
+        jsonObject.put("username", username)
+        jsonObject.put("firstname", findViewById<TextInputLayout>(R.id.firstNameInput).editText?.text.toString())
+        jsonObject.put("lastname", findViewById<TextInputLayout>(R.id.lastNameInput).editText?.text.toString())
+        jsonObject.put("email", findViewById<TextInputLayout>(R.id.emailInput).editText?.text.toString())
 
         val request: Request = Request.Builder()
-            .url(url).post(jsonObject.toString().toRequestBody()).build()
+            .url(url).header("Content-Type","application/json").post(jsonObject.toString().toRequestBody()).build()
 
-        try {
-            val response = client.newCall(request).execute()
-            when (response.code) {
-                204 -> {
-                    val intent = Intent()
-                    intent.putExtra("username", username)
-                    setResult(RESULT_OK, intent)
-                    finish()
+        var ok = false
+        val countDownLatch = CountDownLatch(1)
+
+        (this.application as MobiliTeam).client.newCall(request).enqueue(object : Callback {
+            override fun onResponse(call: Call, response: Response) {
+                when (response.code) {
+                    204 -> {
+                        ok = true
+                    }
+                    403 -> {
+                    }
+                    500 -> {
+                    }
                 }
-                403 -> {
-                    val errorMessage = findViewById<TextView>(R.id.errorMessage)
-                    errorMessage.text = "Username already exists"
-                }
-                500 -> {
-                    val errorMessage = findViewById<TextView>(R.id.errorMessage)
-                    errorMessage.text = "Internal server error"
-                }
+                response.close()
+                countDownLatch.countDown()
             }
 
-        } catch (e: IOException) {
-            //display an error message
-            val errorMessage = findViewById<TextView>(R.id.errorMessage)
-            e.printStackTrace()
+            override fun onFailure(call: Call, e: IOException) {
+                e.printStackTrace()
+                countDownLatch.countDown()
+            }
+        })
+
+        countDownLatch.await()
+
+        if (ok) {
+            val intent = Intent()
+            intent.putExtra("username", username)
+            setResult(RESULT_OK, intent)
+            finish()
         }
     }
 }

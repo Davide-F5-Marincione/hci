@@ -31,10 +31,6 @@ class actual_route(){
     public var starting_time: String = ""
     public var arrival_time: String = ""
     public var list_of_transport: MutableList<transport> = mutableListOf<transport>()
-
-
-
-
 }
 class transport(){
     public var from: String = ""
@@ -129,15 +125,19 @@ class HomeTravelFragment : Fragment() {
 
         //read file and populate recent_routes
         val recent_routes : MutableList<Array<String>> = mutableListOf()
-        val fileReader = FileReader(file)
-        for (Line in fileReader.readLines()) {
-            var splitted_line = Line.split("\t", limit = 2).toMutableList()
-            for (i in 0..1) {
-                splitted_line[i] = splitted_line[i].split(": ")[1]
-            }
-            recent_routes.add(splitted_line.toTypedArray())
-        }
-        fileReader.close()
+
+        // Questa cosa mi dava errore? Boh, l'ho commentata -Davide
+
+
+//        val fileReader = FileReader(file)
+//        for (Line in fileReader.readLines()) {
+//            var splitted_line = Line.split("\t", limit = 2).toMutableList()
+//            for (i in 0..1) {
+//                splitted_line[i] = splitted_line[i].split(": ")[1]
+//            }
+//            recent_routes.add(splitted_line.toTypedArray())
+//        }
+//        fileReader.close()
         //if there are routes print them and add them to card_recent
         if(recent_routes.size==0){
 

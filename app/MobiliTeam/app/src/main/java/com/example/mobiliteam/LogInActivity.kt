@@ -3,21 +3,26 @@ package com.example.mobiliteam
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputLayout
-import okhttp3.OkHttpClient
+import okhttp3.Call
+import okhttp3.Callback
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
+import java.util.concurrent.CountDownLatch
 
 
 class LogInActivity : AppCompatActivity() {
-    val client: OkHttpClient = OkHttpClient()
+
     val registerResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             result: ActivityResult ->
         if (result.resultCode == Activity.RESULT_OK) {
@@ -25,8 +30,8 @@ class LogInActivity : AppCompatActivity() {
 
             val usernameInput = findViewById<TextInputLayout>(R.id.usernameInput)
             usernameInput.editText?.setText(intent?.getStringExtra("username"))
-            // Do some funky stuff
-            //launchLogin()
+
+            launchLogin()
         }
     }
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,46 +72,60 @@ class LogInActivity : AppCompatActivity() {
             val intent = Intent()
             intent.putExtra("username", username)
             setResult(RESULT_OK, intent)
-            //go to home page
-            val intentHome = Intent(this@LogInActivity, HomeActivity::class.java)
-            startActivity(intentHome)
             finish()
         }
-        val url ="http://127.0.0.1:5000/session";// Replace with your API endpoint
+        val url ="http://10.0.2.2:5000/session";// Replace with your API endpoint
 
         val jsonObject = JSONObject()
         jsonObject.put("username", username)
 
         val request: Request = Request.Builder()
-            .url(url).post(jsonObject.toString().toRequestBody()).build()
+            .url(url).header("Content-Type","application/json").post(jsonObject.toString().toRequestBody()).build()
 
-        try {
-            val response = client.newCall(request).execute()
-            when (response.code) {
-                200 -> {
-                    val intent = Intent()
-                    intent.putExtra("username", username)
-                    setResult(RESULT_OK, intent)
-                    //go to home page
-                    val intentHome = Intent(this@LogInActivity, HomeActivity::class.java)
-                    startActivity(intentHome)
-                    finish()
+        val errorMessage = findViewById<TextView>(R.id.errorMessage)
+        val mHandler = Handler(Looper.getMainLooper())
+        var auth: String? = null
+        val countDownLatch = CountDownLatch(1)
+
+        (this.application as MobiliTeam).client.newCall(request).enqueue(object : Callback {
+            override fun onResponse(call: Call, response: Response
+            ) {
+                when (response.code) {
+                    200 -> {
+                        auth = JSONObject(response.body?.string()).getString("auth").toString()
+                    }
+                    404 -> {
+                        mHandler.post(Runnable {
+                            errorMessage.text = "User not found"
+                        })
+                    }
+                    500 -> {
+//                        mHandler.post(Runnable {
+//                            errorMessage.text = "Internal server error"
+//                        })
+                    }
                 }
-                404 -> {
-                    val errorMessage = findViewById<TextView>(R.id.errorMessage)
-                    errorMessage.text = "Username already exists"
-                }
-                500 -> {
-                    val errorMessage = findViewById<TextView>(R.id.errorMessage)
-                    errorMessage.text = "Internal server error"
-                }
+                response.close()
+                countDownLatch.countDown()
             }
 
-        } catch (e: IOException) {
-            //display an error message
-            val errorMessage = findViewById<TextView>(R.id.errorMessage)
-            errorMessage.text = "Internal server error"
-            e.printStackTrace()
+            override fun onFailure(call: Call, e: IOException) {
+//                mHandler.post(Runnable {
+//                    errorMessage.text = "Internal server error"
+//                })
+                e.printStackTrace()
+                countDownLatch.countDown()
+            }
+        })
+
+        countDownLatch.await()
+
+        if (auth != null) {
+            val intent = Intent()
+            intent.putExtra("username", username)
+            (application as MobiliTeam).auth = auth
+            setResult(RESULT_OK, intent)
+            finish()
         }
     }
 }

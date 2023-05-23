@@ -33,18 +33,18 @@ app = Quart(__name__)
 
 @app.route("/session", methods=["POST"])
 async def log_in():
-    r = request.get_json()
+    r = await request.get_json()
 
     name = r["username"]
 
-    cur = con.execute("SELECT * FROM users WHERE user_name = ?", [name])
+    cur = con.execute("SELECT auth FROM users WHERE user_name = ?", [name])
     result = cur.fetchone()
 
     if result is None:
         return "User not found", 404
 
     r = Response(
-        response=json.dumps({"auth": result[1]}),
+        response=json.dumps({"auth": result[0]}),
         status=200,
         mimetype="application/json",
     )
@@ -90,10 +90,7 @@ async def registration():
     cur.close()
     con.commit()
 
-    r = Response(
-        response=json.dumps({"auth": auth}), status=201, mimetype="application/json"
-    )
-    return r
+    return "", 204
 
 
 @app.route("/users/<user>/credits", methods=["GET"])

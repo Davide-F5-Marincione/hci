@@ -42,7 +42,7 @@ components:
           type: string
         calculated_delay:
           description: Calculated delay
-          type: natural
+          type: number
 
     lineinfo:
       title: Line info
@@ -310,6 +310,12 @@ paths:
                   credits:
                     type: integer
                     description: User's credits
+                  reports_counter:
+                    type: integer
+                    description: User's reports
+                  donations_counter:
+                    type: integer
+                    description: User's donations
         "404":
           description: User not found
         "500":
