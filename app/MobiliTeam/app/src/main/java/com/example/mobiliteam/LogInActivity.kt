@@ -78,6 +78,9 @@ class LogInActivity : AppCompatActivity() {
                     val intent = Intent()
                     intent.putExtra("username", username)
                     setResult(RESULT_OK, intent)
+                    //go to home page
+                    val intentHome = Intent(this@LogInActivity, HomeActivity::class.java)
+                    startActivity(intentHome)
                     finish()
                 }
                 404 -> {
