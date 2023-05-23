@@ -2,18 +2,50 @@ package com.example.mobiliteam.ui.home
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.widget.HorizontalScrollView
+import android.widget.LinearLayout
+import android.widget.ScrollView
+import android.widget.TextView
 import android.widget.TextView.OnEditorActionListener
+import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.example.mobiliteam.R
 import com.example.mobiliteam.TravelActivity
+import com.example.mobiliteam.databinding.CardLeftBinding
 import com.example.mobiliteam.databinding.FragmentTravelBinding
+import java.io.BufferedReader
+import java.io.File
+import java.io.FileNotFoundException
+import java.io.FileReader
+import kotlin.math.log
+class actual_route(){
+    public var from: String = ""
+    public var to: String = ""
+    public var starting_time: String = ""
+    public var arrival_time: String = ""
+    public var list_of_transport: MutableList<transport> = mutableListOf<transport>()
 
 
+
+
+}
+class transport(){
+    public var from: String = ""
+    public var to: String = ""
+    public var line: String = ""
+    public var starting_time: String = ""
+    public var arrival_time: String = ""
+    public var duration: String = ""
+    public var type: String = ""
+    public var list_of_stops: MutableList<String> = mutableListOf<String>()
+}
 class HomeTravelFragment : Fragment() {
 
     private lateinit var pageViewModel: PageViewModel
@@ -24,6 +56,7 @@ class HomeTravelFragment : Fragment() {
     private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         pageViewModel = ViewModelProvider(this).get(PageViewModel::class.java).apply {
             setIndex(arguments?.getInt(ARG_SECTION_NUMBER) ?: 1)
@@ -34,11 +67,114 @@ class HomeTravelFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         _binding = FragmentTravelBinding.inflate(inflater, container, false)
-        val root = binding.root
 
-        return root
+        //EXAMPLE TRANSPORT//
+        var transport1 = transport()
+        transport1.from = "Piazza Bologna"
+        transport1.to = "Verano"
+        transport1.line = "61"
+        transport1.starting_time = "12:00"
+        transport1.arrival_time = "12:10"
+        transport1.duration = "10 min"
+        transport1.type = "Bus"
+        transport1.list_of_stops.add("Piazza Bologna")
+        transport1.list_of_stops.add("Verano")
+        var actualRoute = actual_route()
+        actualRoute.from = "Piazza Bologna"
+        actualRoute.to = "Verano"
+        actualRoute.starting_time = "12:00"
+        actualRoute.arrival_time = "12:10"
+        actualRoute.list_of_transport.add(transport1)
+        //EXAMPLE TRANSPORT//
+
+
+        val linearLayout: LinearLayout = binding.linearLayout
+        val recent_text = binding.textView4
+        val continue_text = binding.textView
+        linearLayout.removeAllViews()
+
+        //check if actual Route is not null, if its not print it and add it to card_left
+        if (actualRoute!=null){
+            linearLayout.addView(continue_text)
+            var cardLeftBinding = inflater.inflate(R.layout.card_left, container, false)
+            cardLeftBinding.findViewById<TextView>(R.id.actual_from).text = actualRoute.from
+            cardLeftBinding.findViewById<TextView>(R.id.actual_to).text = actualRoute.to
+            cardLeftBinding.findViewById<TextView>(R.id.time).text = actualRoute.starting_time+" - "+actualRoute.arrival_time
+            var busseslist : HorizontalScrollView = cardLeftBinding.findViewById<HorizontalScrollView>(R.id.transit_viewer)
+            busseslist.removeAllViews()
+            for(transport in actualRoute.list_of_transport) {
+                var transportView = inflater.inflate(R.layout.transit_show_small, null)
+                transportView.findViewById<TextView>(R.id.transit_desc).text=transport.line
+                busseslist.addView(transportView)
+            }
+            cardLeftBinding.setOnClickListener {
+                val intent = Intent(context, TravelActivity::class.java)
+                startActivity(intent)
+            }
+            linearLayout.addView(cardLeftBinding)
+        }
+
+
+        //check if file exists if not create and populate it
+        val file = File(context?.filesDir, "recents.txt")
+        try {
+            Log.d("file_opener", "file exists at ${file.absolutePath}")
+        } catch (e: FileNotFoundException) {
+            //since file doesn't exists yet, create it and save it
+            file.createNewFile()
+            file.writeText("from: Piazza Bologna\tto: Verano")
+            Log.d("file_opener", "created at ${file.absolutePath}")
+        }
+
+        //read file and populate recent_routes
+        val recent_routes : MutableList<Array<String>> = mutableListOf()
+        val fileReader = FileReader(file)
+        for (Line in fileReader.readLines()) {
+            var splitted_line = Line.split("\t", limit = 2).toMutableList()
+            for (i in 0..1) {
+                splitted_line[i] = splitted_line[i].split(": ")[1]
+            }
+            recent_routes.add(splitted_line.toTypedArray())
+        }
+        fileReader.close()
+        //if there are routes print them and add them to card_recent
+        if(recent_routes.size==0){
+
+        }
+        else {
+            linearLayout.addView(recent_text)
+            for (route in recent_routes) {
+                if(linearLayout.childCount ==10){
+                    break
+                }
+                Log.d("route", "from:" + route[0] + " to: " + route[1])
+                val cardRecentView = inflater.inflate(R.layout.card_recent, null)
+                cardRecentView.findViewById<TextView>(R.id.actual_from).text = route[0]
+                cardRecentView.findViewById<TextView>(R.id.actual_to).text = route[1]
+                cardRecentView.setOnClickListener {
+                    val intent = Intent(context, TravelActivity::class.java)
+                    startActivity(intent)
+                }
+                linearLayout.addView(cardRecentView)
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        return binding.root
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
