@@ -11,6 +11,7 @@ import model.simulator as vsim
 from dataclasses import dataclass
 import re
 
+
 @dataclass
 class User:
     uname: str
@@ -20,11 +21,15 @@ class User:
 
     def __post_init__(self):
         # validate email with regex
-        if re.match("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", self.email) is None:
+        if (
+            re.match("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", self.email)
+            is None
+        ):
             raise ValueError("Invalid Email")
 
 
 app = Quart(__name__)
+
 
 @app.route("/session", methods=["POST"])
 async def log_in():
@@ -38,15 +43,20 @@ async def log_in():
     if result is None:
         return "User not found", 404
 
-    r = Response(response=json.dumps({"auth": result[1]}), status=200, mimetype="application/json")
+    r = Response(
+        response=json.dumps({"auth": result[1]}),
+        status=200,
+        mimetype="application/json",
+    )
     return r
+
 
 @app.route("/users", methods=["POST"])
 async def registration():
-    r = request.get_json()
+    r = await request.get_json()
 
     try:
-        user = User(r["username"], r["first_name"], r["last_name"], r["email"])
+        user = User(r["username"], r["firstname"], r["lastname"], r["email"])
     except ValueError as e:
         return str(e), 400
 
@@ -55,50 +65,44 @@ async def registration():
     if cur.fetchone() is not None:
         return "User already exists", 409
 
-    auth = random.getrandbits(64)
+    auth = str(random.getrandbits(64))
 
     while True:
-        cur = con.execute("SELECT * FROM users WHERE auth = ?", [int(auth)])
+        cur = con.execute("SELECT * FROM users WHERE auth = ?", [auth])
         if cur.fetchone() is None:
             break
-        auth = random.getrandbits(64)
+        auth = str(random.getrandbits(64))
 
-    cur = con.execute("INSERT INTO users VALUES(:user_name, :first_name, :last_name, :email, :auth)", {"user_name": user.uname, "first_name": user.first_name, "last_name": user.last_name, "email": user.email, "auth": auth})
+    cur = con.execute(
+        "INSERT INTO users VALUES(:user_name, :first_name, :last_name, :email, :auth, :credits, :donations_counter, :reports_counter)",
+        {
+            "user_name": user.uname,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "email": user.email,
+            "auth": auth,
+            "credits": 0,
+            "donations_counter": 0,
+            "reports_counter": 0,
+        },
+    )
 
     cur.close()
     con.commit()
 
-    r = Response(response=json.dumps({"auth": auth}), status=201, mimetype="application/json")
-    return r
-
-    ### DO SOME FUNKY STUFF
-
-    # name = r["username"]
-
-    # status = 200
-
-    # if result is None:
-    #     auth = 0
-    #     is_free = False
-    #     while not is_free:
-    #         auth = random.getrandbits(64)
-    #         cur = con.execute("SELECT * FROM users WHERE auth = ?", [int(auth)])
-    #         is_free = cur.fetchone() is None
-    #     cur = con.execute("INSERT INTO users VALUES(:name, :auth, :credits)", {"name":name, "auth": auth, "credits":0})
-    #     cur.close()
-    #     con.commit()
-    #     status = 201
-    # else:
-    #     auth = result[1]
-    # r = Response(response=json.dumps({"auth": auth}), status=status, mimetype="application/json")
+    r = Response(
+        response=json.dumps({"auth": auth}), status=201, mimetype="application/json"
+    )
     return r
 
 
 @app.route("/users/<user>", methods=["PUT"])
 async def handle_users_put(user):
     headers = request.headers
-    auth = headers.get('Authorization')
-    cur = con.execute("SELECT * FROM users WHERE user_name = ? AND auth = ?", [user, auth])
+    auth = headers.get("Authorization")
+    cur = con.execute(
+        "SELECT * FROM users WHERE user_name = ? AND auth = ?", [user, auth]
+    )
     a = cur.fetchone()
     cur.close()
     con.commit()
@@ -108,26 +112,35 @@ async def handle_users_put(user):
     user, _, credits = a
 
     r = request.get_json()
-    cur = con.execute("UPDATE users SET credits = credits - ? WHERE user_name = ?", [r["credits"], user])
+    cur = con.execute(
+        "UPDATE users SET credits = credits - ? WHERE user_name = ?",
+        [r["credits"], user],
+    )
     cur.close()
     con.commit()
     return "Successful operation", 204
 
+
 @app.route("/users/<user>", methods=["GET"])
 async def handle_users_get(user):
     headers = request.headers
-    auth = headers.get('Authorization')
-    cur = con.execute("SELECT * FROM users WHERE user_name = ? AND auth = ?", [user, auth])
-    a = cur.fetchone()
+    auth = headers.get("Authorization")
+    cur = con.execute(
+        "SELECT * FROM users WHERE user_name = ? AND auth = ?", [user, auth]
+    )
+    record = cur.fetchone()
     cur.close()
     con.commit()
-    if a is None:
+    if record is None:
         return "User not found", 404
 
-    user, _, credits = a
-
-    r = Response(response=json.dumps({"credits": credits}), status=200, mimetype="application/json")
+    r = Response(
+        response=json.dumps(record),
+        status=200,
+        mimetype="application/json",
+    )
     return r
+
 
 def bus_info(bus):
     bus = v_buses.get(bus, None)
@@ -136,10 +149,16 @@ def bus_info(bus):
     time_to_arrive = conn.expected_steps() - bus.steps_run + bus.waiting
     time_to_arrive = datetime.now() + timedelta(seconds=time_to_arrive)
 
-    return {"line": bus.route, "last_seen": bus.last_signal,
-            "overcrowded": bus.overcrowded, "expected_from": bus.prev_node,
-            "expected_to": bus.next_node, "calculated_delay": bus.delay,
-            "expected_next_arrival": time_to_arrive}
+    return {
+        "line": bus.route,
+        "last_seen": bus.last_signal,
+        "overcrowded": bus.overcrowded,
+        "expected_from": bus.prev_node,
+        "expected_to": bus.next_node,
+        "calculated_delay": bus.delay,
+        "expected_next_arrival": time_to_arrive,
+    }
+
 
 @app.route("/route", methods=["PUT"])
 async def request_directions():
@@ -157,17 +176,29 @@ async def request_directions():
     for solution in ret:
         res = []
         for bus_name, stops in solution:
-            val = {"bus": bus_name, "delay":v_buses[bus_name].delay, "stops": [{"stop-name": name, "time": (dt + timedelta(seconds=time)).isoformat()} for name, time in stops]}
+            val = {
+                "bus": bus_name,
+                "delay": v_buses[bus_name].delay,
+                "stops": [
+                    {
+                        "stop-name": name,
+                        "time": (dt + timedelta(seconds=time)).isoformat(),
+                    }
+                    for name, time in stops
+                ],
+            }
             res.append(val)
         res_outer.append(res)
 
-    return Response(response=json.dumps(res_outer), status=200, mimetype="application/json")
+    return Response(
+        response=json.dumps(res_outer), status=200, mimetype="application/json"
+    )
+
 
 @app.route("/buses/<bus>", methods=["PUT"])
 async def bus_put(bus):
-
     headers = request.headers
-    auth = headers.get('Authorization')
+    auth = headers.get("Authorization")
     cur = con.execute("SELECT * FROM users WHERE auth = ?", [auth])
     a = cur.fetchone()
     cur.close()
@@ -180,17 +211,17 @@ async def bus_put(bus):
     data_dict = {k: v for k, v in data.items()}
 
     if data_dict.get("overcrowded", None) is not None:
-
-        if (a:=v_buses.get(bus, None)) is not None:
+        if (a := v_buses.get(bus, None)) is not None:
             a.overcrowd()
             return Response(status=200)
         else:
             return Response(status=404)
 
     elif data_dict.get("boardedat", None) is not None:
-
-        if (a:=v_buses.get(bus, None)) is not None:
-            a.board_signal(data_dict["from"], data_dict["to"], graph, data_dict["boardedat"])
+        if (a := v_buses.get(bus, None)) is not None:
+            a.board_signal(
+                data_dict["from"], data_dict["to"], graph, data_dict["boardedat"]
+            )
             return Response(status=200)
         else:
             return Response(status=404)
@@ -200,9 +231,9 @@ async def bus_put(bus):
         # 400 Bad Request
         return Response(status=400)
 
+
 @app.route("/buses/<bus>", methods=["GET"])
 async def bus_get(bus):
-
     bus = v_buses.get(bus, None)
 
     if bus is None:
@@ -212,9 +243,9 @@ async def bus_get(bus):
 
     return Response(response=json.dumps(resp), status=200, mimetype="application/json")
 
+
 @app.route("/lines/<line>", methods=["GET"])
 async def line_get(line):
-
     line = routes.get(line, None)
 
     if line is None:
@@ -228,13 +259,21 @@ async def line_get(line):
         if bus.route == line.name:
             buses.append(bus_info(bus))
 
-    resp =  {"stops": stops, "buses": buses}
+    resp = {"stops": stops, "buses": buses}
 
     return Response(response=json.dumps(resp), status=200, mimetype="application/json")
 
 
+@app.route("/liveness", methods=["GET"])
+async def liveness():
+    return Response(
+        status=200, mimetype="application/json", response=json.dumps({"status": "ok"})
+    )
+
+
 def shrink(x):
-    return int(x/10)
+    return int(x / 10)
+
 
 async def sim():
     title = "Simulation"
@@ -257,13 +296,32 @@ async def sim():
 
             for curr in route.circuit[1:]:
                 curr = graph.stops[curr]
-                cv2.line(buff_img, (shrink(prev.x), shrink(prev.y)), (shrink(curr.x), shrink(curr.y)), route.color, 3)
+                cv2.line(
+                    buff_img,
+                    (shrink(prev.x), shrink(prev.y)),
+                    (shrink(curr.x), shrink(curr.y)),
+                    route.color,
+                    3,
+                )
                 prev = curr
-            cv2.line(buff_img, (shrink(prev.x), shrink(prev.y)), (shrink(start.x), shrink(start.y)), route.color, 3)
+            cv2.line(
+                buff_img,
+                (shrink(prev.x), shrink(prev.y)),
+                (shrink(start.x), shrink(start.y)),
+                route.color,
+                3,
+            )
 
         for node in graph.stops.values():
-            cv2.putText(buff_img, node.name, (shrink(node.x) + 15, shrink(node.y) + 15), fontFace=3, fontScale=.4, color=(12,12,12))
-            cv2.circle(buff_img, (shrink(node.x), shrink(node.y)), 5, (12,12,12), 3)
+            cv2.putText(
+                buff_img,
+                node.name,
+                (shrink(node.x) + 15, shrink(node.y) + 15),
+                fontFace=3,
+                fontScale=0.4,
+                color=(12, 12, 12),
+            )
+            cv2.circle(buff_img, (shrink(node.x), shrink(node.y)), 5, (12, 12, 12), 3)
 
         v_buff_img = buff_img.copy()
 
@@ -280,7 +338,14 @@ async def sim():
             col = (255, 255, 0)
 
             cv2.circle(buff_img, (shrink(pos_x), shrink(pos_y)), 5, col, -1)
-            cv2.putText(buff_img, bus.name, (shrink(pos_x) + 5, shrink(pos_y)), fontFace=0, fontScale=.4, color=(12,12,12))
+            cv2.putText(
+                buff_img,
+                bus.name,
+                (shrink(pos_x) + 5, shrink(pos_y)),
+                fontFace=0,
+                fontScale=0.4,
+                color=(12, 12, 12),
+            )
 
         for bus in v_buses.values():
             start = graph.stops[bus.prev_node]
@@ -295,7 +360,14 @@ async def sim():
             col = (255, 255, 0)
 
             cv2.circle(v_buff_img, (shrink(pos_x), shrink(pos_y)), 5, col, -1)
-            cv2.putText(v_buff_img, bus.name, (shrink(pos_x) + 5, shrink(pos_y)), fontFace=0, fontScale=.4, color=(12,12,12))
+            cv2.putText(
+                v_buff_img,
+                bus.name,
+                (shrink(pos_x) + 5, shrink(pos_y)),
+                fontFace=0,
+                fontScale=0.4,
+                color=(12, 12, 12),
+            )
 
         cv2.imshow(title, buff_img)
         cv2.imshow(v_title, v_buff_img)
@@ -320,14 +392,12 @@ async def sim():
 
     cv2.destroyAllWindows()
 
+
 async def main():
-    await asyncio.gather(
-        sim(),
-        app.run_task()
-    )
+    await asyncio.gather(sim(), app.run_task())
+
 
 if __name__ == "__main__":
-
     stops = ["A", "B", "C", "D", "E", "F", "G"]
     graph = vsim.Graph(dict(), dict())
     graph.startup(stops)
@@ -346,25 +416,31 @@ if __name__ == "__main__":
     graph.stops["G"].x = 2500
     graph.stops["G"].y = 4750
 
-    v_buses = { "A1": vsim.VirtualBus("A1", "A", "A", "B"),
-                "A3": vsim.VirtualBus("A3", "A", "C", "D"),
-                "A2": vsim.VirtualBus("A2", "A", "D", "C", -1),
-                "B1": vsim.VirtualBus("B1", "B", "C", "E"),
-                "B2": vsim.VirtualBus("B2", "B", "F", "E", -1),
-                "C1": vsim.VirtualBus("C1", "C", "D", "G"),
-                "C2": vsim.VirtualBus("C2", "C", "F", "G", -1)}
+    v_buses = {
+        "A1": vsim.VirtualBus("A1", "A", "A", "B"),
+        "A3": vsim.VirtualBus("A3", "A", "C", "D"),
+        "A2": vsim.VirtualBus("A2", "A", "D", "C", -1),
+        "B1": vsim.VirtualBus("B1", "B", "C", "E"),
+        "B2": vsim.VirtualBus("B2", "B", "F", "E", -1),
+        "C1": vsim.VirtualBus("C1", "C", "D", "G"),
+        "C2": vsim.VirtualBus("C2", "C", "F", "G", -1),
+    }
 
-    buses = {   "A1": vsim.TrueBus("A1", "A", "A", "B"),
-                "A3": vsim.TrueBus("A3", "A", "C", "D"),
-                "A2": vsim.TrueBus("A2", "A", "D", "C", -1),
-                "B1": vsim.TrueBus("B1", "B", "C", "E"),
-                "B2": vsim.TrueBus("B2", "B", "F", "E", -1),
-                "C1": vsim.TrueBus("C1", "C", "D", "G"),
-                "C2": vsim.TrueBus("C2", "C", "F", "G", -1)}
+    buses = {
+        "A1": vsim.TrueBus("A1", "A", "A", "B"),
+        "A3": vsim.TrueBus("A3", "A", "C", "D"),
+        "A2": vsim.TrueBus("A2", "A", "D", "C", -1),
+        "B1": vsim.TrueBus("B1", "B", "C", "E"),
+        "B2": vsim.TrueBus("B2", "B", "F", "E", -1),
+        "C1": vsim.TrueBus("C1", "C", "D", "G"),
+        "C2": vsim.TrueBus("C2", "C", "F", "G", -1),
+    }
 
-    routes = {"A":vsim.Route("A", (255, 0, 0), ["A", "B", "C", "D"]),
-                "B":vsim.Route("B", (0, 255, 0), ["C", "E", "F"]),
-                "C":vsim.Route("C", (0, 0, 255), ["D", "G", "F"])}
+    routes = {
+        "A": vsim.Route("A", (255, 0, 0), ["A", "B", "C", "D"]),
+        "B": vsim.Route("B", (0, 255, 0), ["C", "E", "F"]),
+        "C": vsim.Route("C", (0, 0, 255), ["D", "G", "F"]),
+    }
 
     for route in routes.values():
         this_buses = []
@@ -375,11 +451,14 @@ if __name__ == "__main__":
             prev = curr
         graph.add_edge(prev, first)
 
-
     con = sqlite3.connect("tutorial.db")
-
-    with open("sim/schema.sql") as f:
-        con.execute(f.read())
-        con.commit()
+    try:
+        with open("sim/schema.sql") as f:
+            con.execute(f.read())
+            con.commit()
+    except:
+        print(
+            "Schema not found, perhaps you are not running from the root directory? (hci/)"
+        )
 
     asyncio.run(main())

@@ -321,3 +321,21 @@ paths:
           description: User not found
         "500":
           $ref: "#/components/responses/InternalServerError"
+
+  /liveness:
+    get:
+      summary: Ping the server
+      operationId: livenessCheck
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: Server status
+        "500":
+          $ref: "#/components/responses/InternalServerError"
