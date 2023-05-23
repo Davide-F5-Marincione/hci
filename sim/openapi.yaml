@@ -127,21 +127,18 @@ paths:
           description: Bus not found
         "500":
           $ref: "#/components/responses/InternalServerError"
+
+  /buses/{bus}/board:
     put:
-      security:
-        - bearerAuth: []
-      summary: Board/overcrowd bus
-      description: Sets a specific bus's info
-      operationId: setBusInfo
+      summary: Board bus
+      description: Boards a bus
+      operationId: boardBus
       requestBody:
         content:
           application/json:
             schema:
               type: object
               properties:
-                overcrowded:
-                  description: Whether the bus is currently overcrowded
-                  type: boolean
                 from:
                   description: Where the bus was boarded
                   type: string
@@ -162,6 +159,32 @@ paths:
           description: Bus not found
         "500":
           $ref: "#/components/responses/InternalServerError"
+
+  /buses/{bus}/overcrowd:
+    put:
+      summary: Report overcrowding
+      description: Reports overcrowding on a bus
+      operationId: overcrowdBus
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                overcrowded:
+                  description: Whether the bus is currently overcrowded
+                  type: boolean
+        required: true
+      responses:
+        "204":
+          description: Successful operation
+        "400":
+          description: Request badly formed
+        "404":
+          description: Bus not found
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
   /route:
     put:
       summary: Request route
@@ -250,7 +273,50 @@ paths:
           description: User already exists
         "500":
           $ref: "#/components/responses/InternalServerError"
+
   /users/{user}:
+    parameters:
+      - in: path
+        name: user
+        schema:
+          type: string
+        required: true
+    get:
+      security:
+        - bearerAuth: []
+      summary: Get user info
+      description: Returns user's info
+      operationId: getUserInfo
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+                    description: User name
+                  firstname:
+                    type: string
+                    description: First name
+                  lastname:
+                    type: string
+                    description: Last name
+                  email:
+                    type: string
+                    description: email
+                  credits:
+                    type: integer
+                    description: User's credits
+        "404":
+          description: User not found
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+
+  /users/{user}/credits:
     parameters:
       - in: path
         name: user
@@ -271,28 +337,15 @@ paths:
               schema:
                 type: object
                 properties:
-                  firstname:
-                    type: string
-                    description: User's first name
-                  lastname:
-                    type: string
-                    description: User's last name
-                  email:
-                    type: string
-                    description: User's email
                   credits:
                     type: integer
                     description: User's credits
-                  reports:
-                    type: integer
-                    description: User's number of reports
-                  donations:
-                    type: integer
-                    description: User's number of donations
         "404":
           description: User not found
         "500":
           $ref: "#/components/responses/InternalServerError"
+
+  /users/{user}/donate:
     put:
       security:
         - bearerAuth: []
@@ -313,7 +366,7 @@ paths:
                   type: integer
         required: true
       responses:
-        "204":
+        "200":
           description: Successful operation
         "400":
           description: Request badly formed

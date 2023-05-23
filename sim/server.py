@@ -96,29 +96,64 @@ async def registration():
     return r
 
 
-@app.route("/users/<user>", methods=["PUT"])
+@app.route("/users/<user>/credits", methods=["GET"])
+async def get_credits(user):
+    headers = request.headers
+    auth = headers.get("Authorization")
+    cur = con.execute(
+        "SELECT * FROM users WHERE user_name = ? AND auth = ?", [user, auth]
+    )
+    record = cur.fetchone()
+    cur.close()
+    con.commit()
+    if record is None:
+        return "User not found", 404
+
+    user, curr_credits = record["user_name"], record["credits"]
+
+    return Response(
+        response=json.dumps({"credits": curr_credits}),
+        status=200,
+        mimetype="application/json",
+    )
+
+
+@app.route("/users/<user>/donate", methods=["PUT"])
 async def handle_users_put(user):
     headers = request.headers
     auth = headers.get("Authorization")
     cur = con.execute(
         "SELECT * FROM users WHERE user_name = ? AND auth = ?", [user, auth]
     )
-    a = cur.fetchone()
+    record = cur.fetchone()
     cur.close()
     con.commit()
-    if a is None:
+    if record is None:
         return "User not found", 404
 
-    user, _, credits = a
+    user, curr_credits = record["user_name"], record["credits"]
 
-    r = request.get_json()
+    r = await request.get_json()
+
+    to_donate = r["credits"]
+
+    if to_donate > curr_credits:
+        return "Not enough credits", 400
+
+    new_credits = curr_credits - to_donate
+
     cur = con.execute(
-        "UPDATE users SET credits = credits - ? WHERE user_name = ?",
-        [r["credits"], user],
+        "UPDATE users SET credits = ? WHERE user_name = ?",
+        [new_credits, user],
     )
     cur.close()
     con.commit()
-    return "Successful operation", 204
+
+    cur = con.execute(
+        "UPDATE users SET donations_counter = donations_counter + 1 WHERE user_name = ?",
+        [user],
+    )
+    return "Successful operation", 200
 
 
 @app.route("/users/<user>", methods=["GET"])
@@ -195,8 +230,8 @@ async def request_directions():
     )
 
 
-@app.route("/buses/<bus>", methods=["PUT"])
-async def bus_put(bus):
+@app.route("/buses/<bus>/board", methods=["PUT"])
+async def bus_board(bus):
     headers = request.headers
     auth = headers.get("Authorization")
     cur = con.execute("SELECT * FROM users WHERE auth = ?", [auth])
@@ -210,29 +245,67 @@ async def bus_put(bus):
 
     data_dict = {k: v for k, v in data.items()}
 
-    if data_dict.get("overcrowded", None) is not None:
-        if (a := v_buses.get(bus, None)) is not None:
-            a.overcrowd()
-            return Response(status=200)
-        else:
-            return Response(status=404)
+    if (a := v_buses.get(bus, None)) is not None:
+        a.board_signal(data_dict["from"], data_dict["to"], graph)
 
-    elif data_dict.get("boardedat", None) is not None:
-        if (a := v_buses.get(bus, None)) is not None:
-            a.board_signal(
-                data_dict["from"], data_dict["to"], graph, data_dict["boardedat"]
-            )
-            return Response(status=200)
-        else:
-            return Response(status=404)
+        cur = con.execute(
+            "UPDATE users SET reports_counter = reports_counter + 1 WHERE auth = ?",
+            [auth],
+        )
 
+        cur.close()
+
+        cur = con.execute(
+            "UPDATE users SET credits = credits + 3 WHERE auth = ?",
+            [auth],
+        )
+
+        cur.close()
+        con.commit()
+
+        return Response(status=200)
     else:
-        print(f"invalid request")
-        # 400 Bad Request
-        return Response(status=400)
+        return Response(status=404)
 
 
-@app.route("/buses/<bus>", methods=["GET"])
+@app.route("/buses/<bus>/overcrowd", methods=["PUT"])
+async def bus_overcrowd(bus):
+    headers = request.headers
+    auth = headers.get("Authorization")
+    cur = con.execute("SELECT * FROM users WHERE auth = ?", [auth])
+    a = cur.fetchone()
+    cur.close()
+    con.commit()
+    if a is None:
+        return "Not a user", 401
+
+    data = await request.get_json()
+
+    data_dict = {k: v for k, v in data.items()}
+
+    if (a := v_buses.get(bus, None)) is not None:
+        a.overcrowd()
+
+        cur = con.execute(
+            "UPDATE users SET reports_counter = reports_counter + 1 WHERE auth = ?",
+            [auth],
+        )
+
+        cur.close()
+
+        cur = con.execute(
+            "UPDATE users SET credits = credits + 1 WHERE auth = ?",
+            [auth],
+        )
+
+        cur.close()
+        con.commit()
+
+        return Response(status=200)
+    else:
+        return Response(status=404)
+
+
 async def bus_get(bus):
     bus = v_buses.get(bus, None)
 
