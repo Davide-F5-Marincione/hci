@@ -57,12 +57,21 @@ class LogInActivity : AppCompatActivity() {
 
     fun launchLogin() {
         // take value from username field
-        val username = findViewById<TextView>(R.id.usernameInput).text.toString()
+        val username = findViewById<TextInputLayout>(R.id.usernameInput).editText?.text.toString()
         // perform a get request to the server to check if the username exists
         // if it does, then go to the home page
         // else, display an error message
 
-        // Davide - Must change as the endpoint for login is now on /session
+       //check if the username is 'admin' than directly go to the home page
+        if(username == "admin"){
+            val intent = Intent()
+            intent.putExtra("username", username)
+            setResult(RESULT_OK, intent)
+            //go to home page
+            val intentHome = Intent(this@LogInActivity, HomeActivity::class.java)
+            startActivity(intentHome)
+            finish()
+        }
         val url ="http://127.0.0.1:5000/session";// Replace with your API endpoint
 
         val jsonObject = JSONObject()
