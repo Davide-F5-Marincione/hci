@@ -7,7 +7,7 @@
     app:cardCornerRadius="0dp"
     app:cardElevation="0dp"
     app:strokeWidth="0dp"
-    tools:showIn="@layout/travel_layout">
+    tools:showIn="@layout/fragment_travel">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
