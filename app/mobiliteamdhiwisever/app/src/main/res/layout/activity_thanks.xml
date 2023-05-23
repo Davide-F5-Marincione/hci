@@ -1292,14 +1292,7 @@
                                     android:layout_marginBottom="@dimen/_10pxv"
                                     android:layout_marginStart="@dimen/_10pxh"
                                     android:layout_width="@dimen/_98pxh" style="@style/groupStylecornerRadius">
-                                    <ImageView
-                                    android:id="@+id/imageStarOneSeven"
-                                    android:layout_gravity="start"
-                                    android:layout_height="@dimen/_102pxh"
-                                    android:layout_width="@dimen/_98pxh"
-                                    android:scaleType="fitXY"
-                                    android:src="@drawable/img_star1_102x98"
-                                    tools:ignore="ContentDescription" tools:src="@drawable/img_star1_102x98"/>
+
                                     <View
                                     android:background="@drawable/rectangle_bg_orange_a201_border_yellow_900_radius_7_07"
                                     android:id="@+id/viewRectangleNineSix"
@@ -1783,5 +1776,15 @@
                 </LinearLayout>
             </FrameLayout>
         </androidx.core.widget.NestedScrollView>
+
+        <ImageView
+            android:id="@+id/imageStarOneSeven"
+            android:layout_width="@dimen/_98pxh"
+            android:layout_height="@dimen/_102pxh"
+            android:layout_gravity="start"
+            android:scaleType="fitXY"
+            android:src="@drawable/img_star1_102x98"
+            tools:ignore="ContentDescription"
+            tools:src="@drawable/img_star1_102x98" />
     </LinearLayout>
 </layout>
