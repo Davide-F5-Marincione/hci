@@ -21,7 +21,7 @@
         <activity
             android:name=".RecoverActivity"
             android:exported="false"
-            android:label="@string/title_activity_search_layout"
+            android:label="Username Recovery"
             android:theme="@style/Theme.MobiliTeam.NoActionBar" />
         <activity
             android:name=".HomeActivity"
