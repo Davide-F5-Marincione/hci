@@ -133,7 +133,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/logInButton"
+        android:id="@+id/registerButton"
         style="@style/Widget.Material3.Button.ElevatedButton"
         android:layout_width="250dp"
         android:layout_height="64dp"

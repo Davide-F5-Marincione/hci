@@ -89,7 +89,7 @@
                 android:textColor="@color/gray_tab_label" />
 
             <include
-                layout="@layout/left_card"
+                layout="@layout/card_left"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:visibility="visible" />
@@ -106,7 +106,7 @@
                 android:textColor="@color/gray_tab_label" />
 
             <include
-                layout="@layout/recent_card"
+                layout="@layout/card_recent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:visibility="visible" />

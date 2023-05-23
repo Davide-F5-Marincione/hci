@@ -7,7 +7,7 @@
     android:layout_weight="1"
     android:gravity="center"
     android:orientation="vertical"
-    tools:showIn="@layout/select_card">
+    tools:showIn="@layout/card_select">
 
     <ImageView
         android:id="@+id/transit_img"

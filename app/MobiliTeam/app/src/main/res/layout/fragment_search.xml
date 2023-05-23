@@ -82,7 +82,7 @@
                 android:textColor="@color/black" />
 
             <include
-                layout="@layout/search_card"
+                layout="@layout/card_search"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:visibility="visible" />
