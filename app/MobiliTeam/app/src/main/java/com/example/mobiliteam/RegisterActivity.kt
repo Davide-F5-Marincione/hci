@@ -54,7 +54,6 @@ class RegisterActivity : AppCompatActivity() {
             .url(url).post(jsonObject.toString().toRequestBody()).build()
 
         try {
-
             val response = client.newCall(request).execute()
             when (response.code) {
                 204 -> {
