@@ -8,6 +8,21 @@ from quart import Quart, request, Response, json
 import numpy as np
 import cv2
 import model.simulator as vsim
+from dataclasses import dataclass
+import re
+
+@dataclass
+class User:
+    uname: str
+    first_name: str
+    last_name: str
+    email: str
+
+    def __post_init__(self):
+        # validate email with regex
+        if re.match("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", self.email), "Invalid Email":
+            raise ValueError("Invalid Email")
+
 
 app = Quart(__name__)
 
@@ -17,7 +32,7 @@ async def log_in():
 
     name = r["username"]
 
-    cur = con.execute("SELECT * FROM users WHERE name = ?", [name])
+    cur = con.execute("SELECT * FROM users WHERE user_name = ?", [name])
     result = cur.fetchone()
 
     if result is None:
@@ -26,9 +41,35 @@ async def log_in():
     r = Response(response=json.dumps({"auth": result[1]}), status=200, mimetype="application/json")
     return r
 
-@app.route("/user", methods=["POST"])
+@app.route("/users", methods=["POST"])
 async def registration():
     r = request.get_json()
+
+    try:
+        user = User(r["username"], r["first_name"], r["last_name"], r["email"])
+    except ValueError as e:
+        return str(e), 400
+
+    cur = con.execute("SELECT * FROM users WHERE user_name = ?", [user.uname])
+
+    if cur.fetchone() is not None:
+        return "User already exists", 409
+
+    auth = random.getrandbits(64)
+
+    while True:
+        cur = con.execute("SELECT * FROM users WHERE auth = ?", [int(auth)])
+        if cur.fetchone() is None:
+            break
+        auth = random.getrandbits(64)
+
+    cur = con.execute("INSERT INTO users VALUES(:user_name, :first_name, :last_name, :email, :auth)", {"user_name": user.uname, "first_name": user.first_name, "last_name": user.last_name, "email": user.email, "auth": auth})
+
+    cur.close()
+    con.commit()
+
+    r = Response(response=json.dumps({"auth": auth}), status=201, mimetype="application/json")
+    return r
 
     ### DO SOME FUNKY STUFF
 
@@ -57,7 +98,7 @@ async def registration():
 async def handle_users_put(user):
     headers = request.headers
     auth = headers.get('Authorization')
-    cur = con.execute("SELECT * FROM users WHERE name = ? AND auth = ?", [user, auth])
+    cur = con.execute("SELECT * FROM users WHERE user_name = ? AND auth = ?", [user, auth])
     a = cur.fetchone()
     cur.close()
     con.commit()
@@ -67,7 +108,7 @@ async def handle_users_put(user):
     user, _, credits = a
 
     r = request.get_json()
-    cur = con.execute("UPDATE users SET credits = credits - ? WHERE name = ?", [r["credits"], user])
+    cur = con.execute("UPDATE users SET credits = credits - ? WHERE user_name = ?", [r["credits"], user])
     cur.close()
     con.commit()
     return "Successful operation", 204
@@ -76,7 +117,7 @@ async def handle_users_put(user):
 async def handle_users_get(user):
     headers = request.headers
     auth = headers.get('Authorization')
-    cur = con.execute("SELECT * FROM users WHERE name = ? AND auth = ?", [user, auth])
+    cur = con.execute("SELECT * FROM users WHERE user_name = ? AND auth = ?", [user, auth])
     a = cur.fetchone()
     cur.close()
     con.commit()
@@ -90,11 +131,11 @@ async def handle_users_get(user):
 
 def bus_info(bus):
     bus = v_buses.get(bus, None)
-    
+
     conn = graph.get_edge(bus.prev_node, bus.next_node)
     time_to_arrive = conn.expected_steps() - bus.steps_run + bus.waiting
     time_to_arrive = datetime.now() + timedelta(seconds=time_to_arrive)
-    
+
     return {"line": bus.route, "last_seen": bus.last_signal,
             "overcrowded": bus.overcrowded, "expected_from": bus.prev_node,
             "expected_to": bus.next_node, "calculated_delay": bus.delay,
@@ -109,9 +150,9 @@ async def request_directions():
     ret = vsim.directions(data_dict["from"], data_dict["to"], graph, routes, v_buses)
     if ret is None:
         return Response(status=404)
-    
+
     dt = datetime.now()
-    
+
     res_outer = []
     for solution in ret:
         res = []
@@ -121,7 +162,7 @@ async def request_directions():
         res_outer.append(res)
 
     return Response(response=json.dumps(res_outer), status=200, mimetype="application/json")
-    
+
 @app.route("/buses/<bus>", methods=["PUT"])
 async def bus_put(bus):
 
@@ -139,7 +180,7 @@ async def bus_put(bus):
     data_dict = {k: v for k, v in data.items()}
 
     if data_dict.get("overcrowded", None) is not None:
-        
+
         if (a:=v_buses.get(bus, None)) is not None:
             a.overcrowd()
             return Response(status=200)
@@ -158,7 +199,7 @@ async def bus_put(bus):
         print(f"invalid request")
         # 400 Bad Request
         return Response(status=400)
-    
+
 @app.route("/buses/<bus>", methods=["GET"])
 async def bus_get(bus):
 
@@ -166,7 +207,7 @@ async def bus_get(bus):
 
     if bus is None:
         return "Bus not found", 404
-    
+
     resp = bus_info(bus)
 
     return Response(response=json.dumps(resp), status=200, mimetype="application/json")
@@ -178,7 +219,7 @@ async def line_get(line):
 
     if line is None:
         return "Line not found", 404
-    
+
     stops = line.circuit
 
     buses = []
@@ -186,7 +227,7 @@ async def line_get(line):
     for bus in v_buses:
         if bus.route == line.name:
             buses.append(bus_info(bus))
-    
+
     resp =  {"stops": stops, "buses": buses}
 
     return Response(response=json.dumps(resp), status=200, mimetype="application/json")
@@ -259,7 +300,7 @@ async def sim():
         cv2.imshow(title, buff_img)
         cv2.imshow(v_title, v_buff_img)
 
-        key = cv2.waitKey(5)
+        key = cv2.waitKey(5
 
         if key == ord("q"):
             run = False
@@ -286,7 +327,6 @@ async def main():
     )
 
 if __name__ == "__main__":
-
 
     stops = ["A", "B", "C", "D", "E", "F", "G"]
     graph = vsim.Graph(dict(), dict())
@@ -325,7 +365,7 @@ if __name__ == "__main__":
     routes = {"A":vsim.Route("A", (255, 0, 0), ["A", "B", "C", "D"]),
                 "B":vsim.Route("B", (0, 255, 0), ["C", "E", "F"]),
                 "C":vsim.Route("C", (0, 0, 255), ["D", "G", "F"])}
-    
+
     for route in routes.values():
         this_buses = []
 
@@ -337,9 +377,9 @@ if __name__ == "__main__":
 
 
     con = sqlite3.connect("tutorial.db")
-    con.execute("CREATE TABLE IF NOT EXISTS users(name TEXT PRIMARY KEY, auth INTEGER UNIQUE NOT NULL, credits INTEGER NOT NULL CHECK (credits >= 0) DEFAULT 0)")
-    #con.execute("CREATE TABLE IF NOT EXISTS buses(name TEXT PRIMARY KEY, last_seen TEXT NOT NULL, time_ago DATETIME NOT NULL, should_be TEXT NOT NULL, distance INTEGER NOT NULL)")
-    con.commit()
 
+    with open("schema.sql") as f:
+        con.execute(f.read())
+        con.commit()
 
     asyncio.run(main())
