@@ -40,6 +40,24 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appLogo" />
 
+    <TextView
+        android:id="@+id/errorMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="32dp"
+        android:fontFamily="@font/roboto_regular"
+        android:text=""
+        android:textAlignment="center"
+        android:textColor="@android:color/holo_red_light"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appName" />
+
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/usernameInput"
         android:layout_width="0dp"
