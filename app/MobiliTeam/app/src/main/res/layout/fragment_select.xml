@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF"
     android:backgroundTint="@color/background"
-    tools:context=".SelectFragment">
+    tools:context=".SelectFragment"
+    android:id="@+id/fragmentSelect">
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
