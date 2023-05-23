@@ -20,7 +20,7 @@ class User:
 
     def __post_init__(self):
         # validate email with regex
-        if re.match("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", self.email), "Invalid Email":
+        if re.match("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", self.email) is None:
             raise ValueError("Invalid Email")
 
 
@@ -300,7 +300,7 @@ async def sim():
         cv2.imshow(title, buff_img)
         cv2.imshow(v_title, v_buff_img)
 
-        key = cv2.waitKey(5
+        key = cv2.waitKey(5)
 
         if key == ord("q"):
             run = False
@@ -378,7 +378,7 @@ if __name__ == "__main__":
 
     con = sqlite3.connect("tutorial.db")
 
-    with open("schema.sql") as f:
+    with open("sim/schema.sql") as f:
         con.execute(f.read())
         con.commit()
 
