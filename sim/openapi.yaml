@@ -194,6 +194,31 @@ paths:
           description: Stops not found
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /session:
+    post:
+      summary: Log-In user
+      description: Logs a user in
+      operationId: logIn
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: User name
+      responses:
+        "200":
+          description: User registration action successful
+          content:
+            application/json:
+              schema:
+                type: string
+        "404":
+          description: User not found
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /users:
     post:
       summary: Create user
@@ -205,24 +230,23 @@ paths:
             schema:
               type: object
               properties:
-                name:
+                username:
                   type: string
                   description: User name
+                firstname:
+                  type: string
+                  description: First name
+                lastname:
+                  type: string
+                  description: Last name
+                email:
+                  type: string
+                  description: email
       responses:
-        "200":
-          description: User log-in action successful
-          content:
-            application/json:
-              schema:
-                type: string
-        "201":
-          description: User log-in (registration) action successful
-          content:
-            application/json:
-              schema:
-                type: string
-        "400":
-          description: Unacceptable username
+        "204":
+          description: User registration action successful
+        "403":
+          description: User already exists
         "500":
           $ref: "#/components/responses/InternalServerError"
   /users/{user}:

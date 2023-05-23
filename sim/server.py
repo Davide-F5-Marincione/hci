@@ -11,31 +11,45 @@ import model.simulator as vsim
 
 app = Quart(__name__)
 
-@app.route("/users", methods=["POST"])
-async def create_user():
+@app.route("/session", methods=["POST"])
+async def log_in():
     r = request.get_json()
 
-    name = r["name"]
+    name = r["username"]
 
     cur = con.execute("SELECT * FROM users WHERE name = ?", [name])
     result = cur.fetchone()
 
-    status = 200
-
     if result is None:
-        auth = 0
-        is_free = False
-        while not is_free:
-            auth = random.getrandbits(64)
-            cur = con.execute("SELECT * FROM users WHERE auth = ?", [int(auth)])
-            is_free = cur.fetchone() is None
-        cur = con.execute("INSERT INTO users VALUES(:name, :auth, :credits)", {"name":name, "auth": auth, "credits":0})
-        cur.close()
-        con.commit()
-        status = 201
-    else:
-        auth = result[1]
-    r = Response(response=json.dumps({"auth": auth}), status=status, mimetype="application/json")
+        return "User not found", 404
+
+    r = Response(response=json.dumps({"auth": result[1]}), status=200, mimetype="application/json")
+    return r
+
+@app.route("/user", methods=["POST"])
+async def registration():
+    r = request.get_json()
+
+    ### DO SOME FUNKY STUFF
+
+    # name = r["username"]
+
+    # status = 200
+
+    # if result is None:
+    #     auth = 0
+    #     is_free = False
+    #     while not is_free:
+    #         auth = random.getrandbits(64)
+    #         cur = con.execute("SELECT * FROM users WHERE auth = ?", [int(auth)])
+    #         is_free = cur.fetchone() is None
+    #     cur = con.execute("INSERT INTO users VALUES(:name, :auth, :credits)", {"name":name, "auth": auth, "credits":0})
+    #     cur.close()
+    #     con.commit()
+    #     status = 201
+    # else:
+    #     auth = result[1]
+    # r = Response(response=json.dumps({"auth": auth}), status=status, mimetype="application/json")
     return r
 
 
