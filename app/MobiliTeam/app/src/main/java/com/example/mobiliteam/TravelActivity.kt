@@ -40,8 +40,7 @@ class TravelActivity : AppCompatActivity() {
         binding.toolbar.setNavigationOnClickListener(View.OnClickListener {
             val a = navController.navigateUp()
             if (!a) {
-                val intent = Intent(this@TravelActivity, HomeActivity::class.java)
-                startActivity(intent)
+                finish()
             }
         })
     }

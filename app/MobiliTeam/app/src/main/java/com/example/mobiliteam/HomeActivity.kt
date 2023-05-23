@@ -4,7 +4,7 @@ import android.os.Bundle
 import com.google.android.material.tabs.TabLayout
 import androidx.viewpager2.widget.ViewPager2
 import androidx.appcompat.app.AppCompatActivity
-import com.example.mobiliteam.ui.main.SectionsPagerAdapter
+import com.example.mobiliteam.ui.home.SectionsPagerAdapter
 import com.example.mobiliteam.databinding.ActivityHomeBinding
 import com.google.android.material.tabs.TabLayoutMediator
 

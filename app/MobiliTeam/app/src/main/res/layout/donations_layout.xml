@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF"
     android:backgroundTint="@color/background"
-    tools:context=".ui.main.DonationsFragment">
+    tools:context=".ui.home.HomeDonationsFragment">
 
     <TextView
         android:id="@+id/textView3"

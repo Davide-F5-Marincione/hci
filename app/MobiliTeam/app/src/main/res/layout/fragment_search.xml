@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF"
     android:backgroundTint="@color/background"
-    tools:context=".SearchFragment"
+    tools:context=".ui.travel.SearchFragment"
     android:id="@+id/fragmentSearch">
 
     <com.google.android.material.textfield.TextInputLayout
@@ -29,6 +29,7 @@
             android:backgroundTint="#FFFFFF"
             android:fontFamily="@font/roboto_regular"
             android:hint="From"
+            android:singleLine="true"
             android:textColorHint="#d9d9d9" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -52,6 +53,7 @@
             android:backgroundTint="#FFFFFF"
             android:fontFamily="@font/roboto_regular"
             android:hint="To"
+            android:singleLine="true"
             android:textColorHint="#d9d9d9" />
     </com.google.android.material.textfield.TextInputLayout>
 

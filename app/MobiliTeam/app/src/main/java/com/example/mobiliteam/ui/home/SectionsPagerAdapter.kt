@@ -1,4 +1,4 @@
-package com.example.mobiliteam.ui.main
+package com.example.mobiliteam.ui.home
 
 import android.content.Context
 import androidx.fragment.app.Fragment
@@ -16,11 +16,11 @@ class SectionsPagerAdapter(private val context: Context, fa: FragmentActivity) :
         // getItem is called to instantiate the fragment for the given page.
         // Return a PlaceholderFragment.
         if (position == 0) {
-            return TravelFragment.newInstance(1)
+            return HomeTravelFragment.newInstance(1)
         } else if (position == 1) {
-            return ProfileFragment.newInstance(2)
+            return HomeProfileFragment.newInstance(2)
         }
-        return DonationsFragment.newInstance(3)
+        return HomeDonationsFragment.newInstance(3)
     }
 
     override fun getItemCount(): Int {

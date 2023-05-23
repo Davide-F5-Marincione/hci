@@ -1,4 +1,4 @@
-package com.example.mobiliteam.ui.main
+package com.example.mobiliteam.ui.home
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.mobiliteam.databinding.ProfileLayoutBinding
 
-class ProfileFragment : Fragment() {
+class HomeProfileFragment : Fragment() {
 
     private lateinit var pageViewModel: PageViewModel
     private var _binding: ProfileLayoutBinding? = null
@@ -47,8 +47,8 @@ class ProfileFragment : Fragment() {
          * number.
          */
         @JvmStatic
-        fun newInstance(sectionNumber: Int): ProfileFragment {
-            return ProfileFragment().apply {
+        fun newInstance(sectionNumber: Int): HomeProfileFragment {
+            return HomeProfileFragment().apply {
                 arguments = Bundle().apply {
                     putInt(ARG_SECTION_NUMBER, sectionNumber)
                 }

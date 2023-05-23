@@ -1,4 +1,4 @@
-package com.example.mobiliteam.ui.main
+package com.example.mobiliteam.ui.home
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.mobiliteam.databinding.DonationsLayoutBinding
 
-class DonationsFragment : Fragment() {
+class HomeDonationsFragment : Fragment() {
 
     private lateinit var pageViewModel: PageViewModel
     private var _binding: DonationsLayoutBinding? = null
@@ -47,8 +47,8 @@ class DonationsFragment : Fragment() {
          * number.
          */
         @JvmStatic
-        fun newInstance(sectionNumber: Int): DonationsFragment {
-            return DonationsFragment().apply {
+        fun newInstance(sectionNumber: Int): HomeDonationsFragment {
+            return HomeDonationsFragment().apply {
                 arguments = Bundle().apply {
                     putInt(ARG_SECTION_NUMBER, sectionNumber)
                 }

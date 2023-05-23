@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF"
     android:backgroundTint="@color/background"
-    tools:context=".PathFollowFragment"
+    tools:context=".ui.travel.PathFollowFragment"
     android:id="@+id/fragmentPathFollow">
 
     <androidx.constraintlayout.widget.ConstraintLayout

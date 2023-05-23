@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/SearchFragment"
-        android:name="com.example.mobiliteam.SearchFragment"
+        android:name="com.example.mobiliteam.ui.travel.SearchFragment"
         android:label="Searching Routes"
         tools:layout="@layout/fragment_search">
 
@@ -18,7 +18,7 @@
     </fragment>
     <fragment
         android:id="@+id/SelectFragment"
-        android:name="com.example.mobiliteam.SelectFragment"
+        android:name="com.example.mobiliteam.ui.travel.SelectFragment"
         android:label="Searching Routes"
         tools:layout="@layout/fragment_select">
 
@@ -28,7 +28,7 @@
     </fragment>
     <fragment
         android:id="@+id/PathFollowFragment"
-        android:name="com.example.mobiliteam.PathFollowFragment"
+        android:name="com.example.mobiliteam.ui.travel.PathFollowFragment"
         android:label="Searching Routes"
         tools:layout="@layout/fragment_path_follow"/>
 </navigation>

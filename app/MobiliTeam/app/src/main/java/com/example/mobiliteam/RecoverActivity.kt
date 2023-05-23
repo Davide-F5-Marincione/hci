@@ -12,14 +12,12 @@ class RecoverActivity : AppCompatActivity() {
         setContentView(R.layout.recover_username)
         val backButton = findViewById<ImageView>(R.id.backButton)
         backButton.setOnClickListener {
-            val intent = Intent(this@RecoverActivity, LogInActivity::class.java)
-            startActivity(intent)
+            finish()
         }
 
         val submitButton = findViewById<MaterialButton>(R.id.submitButton)
         submitButton.setOnClickListener {
-            val intent = Intent(this@RecoverActivity, LogInActivity::class.java)
-            startActivity(intent)
+            finish()
         }
     }
 }

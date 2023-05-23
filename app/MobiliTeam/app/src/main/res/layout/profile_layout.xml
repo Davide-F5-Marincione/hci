@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF"
     android:backgroundTint="@color/background"
-    tools:context=".ui.main.ProfileFragment">
+    tools:context=".ui.home.HomeProfileFragment">
 
     <TextView
         android:id="@+id/textView2"

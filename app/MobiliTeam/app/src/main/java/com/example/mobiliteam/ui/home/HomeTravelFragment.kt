@@ -1,4 +1,4 @@
-package com.example.mobiliteam.ui.main
+package com.example.mobiliteam.ui.home
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.widget.EditText
 import android.widget.TextView.OnEditorActionListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -15,7 +14,7 @@ import com.example.mobiliteam.TravelActivity
 import com.example.mobiliteam.databinding.TravelLayoutBinding
 
 
-class TravelFragment : Fragment() {
+class HomeTravelFragment : Fragment() {
 
     private lateinit var pageViewModel: PageViewModel
     private var _binding: TravelLayoutBinding? = null
@@ -45,6 +44,8 @@ class TravelFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // binding.scrollContent
+
         binding.toInputEdit.setOnEditorActionListener(
             OnEditorActionListener { v, actionId, event ->
                 if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE || event != null && event.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_ENTER) {
@@ -70,8 +71,8 @@ class TravelFragment : Fragment() {
          * number.
          */
         @JvmStatic
-        fun newInstance(sectionNumber: Int): TravelFragment {
-            return TravelFragment().apply {
+        fun newInstance(sectionNumber: Int): HomeTravelFragment {
+            return HomeTravelFragment().apply {
                 arguments = Bundle().apply {
                     putInt(ARG_SECTION_NUMBER, sectionNumber)
                 }
