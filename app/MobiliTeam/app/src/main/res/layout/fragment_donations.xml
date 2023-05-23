@@ -12,15 +12,20 @@
     <TextView
         android:id="@+id/num_available_credits"
         android:layout_width="12dp"
-        android:layout_height="20dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="8dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="91dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginEnd="91dp"
         android:fontFamily="@font/roboto_regular"
+        android:shadowColor="#20000000"
+        android:shadowDx="7"
+        android:shadowDy="2"
+        android:shadowRadius="3"
         android:text="0"
         android:textColor="@color/black"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/credits" />
 
@@ -29,8 +34,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="91dp"
-        android:layout_marginTop="55dp"
-        android:layout_marginEnd="92dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginEnd="91dp"
         android:shadowColor="#20000000"
         android:shadowDx="7"
         android:shadowDy="2"
@@ -39,6 +44,7 @@
         android:textColor="#000000"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -46,7 +52,7 @@
         android:id="@+id/redirectToDonations"
         android:layout_width="match_parent"
         android:layout_height="124dp"
-        android:layout_marginTop="232dp"
+        android:layout_marginTop="164dp"
         android:background="#BFE476"
         android:gravity="center_vertical"
         android:orientation="horizontal"
@@ -59,7 +65,6 @@
             android:id="@+id/img_wwf"
             android:layout_width="152dp"
             android:layout_height="126dp"
-
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -69,14 +74,16 @@
             android:id="@+id/wwf_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
+            android:layout_marginStart="4dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginEnd="205dp"
             android:fontFamily="@font/roboto_regular"
             android:text="WWF"
-
             android:textColor="@color/black"
-            android:textSize="11sp"
+            android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/img_wwf"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.064" />
@@ -86,9 +93,11 @@
             android:layout_width="match_parent"
             android:layout_height="2dp"
             android:layout_marginStart="152dp"
-            android:layout_marginTop="14dp"
-            android:background="@android:color/black"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
 
+            android:background="@android:color/black"
+            app:layout_constraintBottom_toTopOf="@+id/wwf_text_second"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -98,15 +107,18 @@
             android:id="@+id/wwf_text_second"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_marginStart="4dp"
+            android:layour_marginLeft='4dp'
             android:fontFamily="@font/roboto_regular"
             android:text="WWF works to help local communities conserve the natural resources they depend upon; transform markets and policies toward sustainability..."
             android:textColor="@color/black"
             android:textSize="11sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toEndOf="@+id/img_wwf"
-            app:layout_constraintTop_toBottomOf="@+id/view" />
+            app:layout_constraintTop_toBottomOf="@+id/view"
+            app:layout_constraintVertical_bias="0.0" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
