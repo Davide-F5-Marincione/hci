@@ -18,24 +18,116 @@
         android:textColor="@color/black"
         android:textSize="20sp"
         app:layout_constraintTop_toEndOf="@+id/available_credits"
-        tools:layout_editor_absoluteX="199dp"
-        tools:layout_editor_absoluteY="101dp" />
+        tools:layout_editor_absoluteX="46dp"
+        tools:layout_editor_absoluteY="151dp" />
 
     <TextView
         android:id="@+id/available_credits"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="104dp"
         android:layout_marginEnd="8dp"
         android:fontFamily="@font/roboto_regular"
+        android:shadowColor="#20000000"
+        android:shadowDx="7"
+        android:shadowDy="2"
         android:text="Available Credits:"
         android:textColor="@color/black"
-        android:textSize="20sp"
+        android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.537"
+        app:layout_constraintHorizontal_bias="0.601"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:layout_marginStart="70dp"
+        android:layout_marginTop="110dp"
+        android:layout_marginEnd="8dp"
+        android:id="@+id/credits"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:shadowColor="#20000000"
+        android:shadowDx="7"
+        android:shadowDy="2"
+        android:shadowRadius="3"
+        android:text="AVAILABLE CREDITS:"
+        android:textColor="#000000"
+        android:textSize="24sp"
+        tools:layout_editor_absoluteX="91dp"
+        tools:layout_editor_absoluteY="55dp" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="124dp"
+        android:layout_marginTop="232dp"
+        android:background="#BFE476"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/img_wwf"
+            android:layout_width="152dp"
+            android:layout_height="126dp"
+
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/img_wwf" />
+
+        <TextView
+            android:id="@+id/wwf_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_constraintStart_toEndOf="@+id/img_wwf"
+
+            android:fontFamily="@font/roboto_regular"
+            android:text="WWF"
+            android:textStyle="bold"
+
+            android:textColor="@color/black"
+            android:textSize="11sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.042"
+            app:layout_constraintStart_toEndOf="@+id/img_wwf"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.064" />
+
+        <View
+            android:id="@+id/view"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginStart="152dp"
+            android:layout_marginEnd="0dp"
+            android:background="@android:color/black"
+            app:layout_constraintEnd_toEndOf="parent"
+
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:layout_editor_absoluteY="36dp" />
+
+        <TextView
+            android:id="@+id/wwf_text_second"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_constraintStart_toEndOf="@+id/img_wwf"
+            android:fontFamily="@font/roboto_regular"
+            android:text="WWF works to help local communities conserve the natural resources they depend upon; transform markets and policies toward sustainability..."
+            android:textColor="@color/black"
+            android:textSize="11sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/img_wwf"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.593" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
