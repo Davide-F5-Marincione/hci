@@ -8,7 +8,7 @@
     android:backgroundTint="@color/background"
     android:layout_marginBottom="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:showIn="@layout/activity_travel">
+    tools:showIn="@layout/activity_donations">
 
     <fragment
         android:id="@+id/nav_host_fragment_content_search_layout"
@@ -20,5 +20,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:navGraph="@navigation/travel_nav_graph" />
+        app:navGraph="@navigation/donations_nav_graph" />
 </androidx.constraintlayout.widget.ConstraintLayout>
