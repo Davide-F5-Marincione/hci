@@ -19,12 +19,17 @@
             android:label="@string/title_activity_search_layout"
             android:theme="@style/Theme.MobiliTeam" />
         <activity
+            android:name=".RecoverActivity"
+            android:exported="false"
+            android:label="@string/title_activity_search_layout"
+            android:theme="@style/Theme.MobiliTeam.NoActionBar" />
+        <activity
             android:name=".HomeActivity"
             android:exported="false"
             android:label="@string/title_activity_home"
             android:theme="@style/Theme.MobiliTeam.NoActionBar" />
         <activity
-            android:name=".MainActivity"
+            android:name=".LogInActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

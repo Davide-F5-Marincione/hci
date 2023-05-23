@@ -6,7 +6,9 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF"
     android:backgroundTint="@color/background"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".RecoverActivity">
+
     <ImageView
         android:id="@+id/backButton"
         android:layout_width="wrap_content"
@@ -18,13 +20,14 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="?attr/actionModeCloseDrawable"
         app:tint="@color/black" />
+
     <TextView
         android:id="@+id/title"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
+        android:layout_marginTop="219dp"
         android:layout_marginEnd="10dp"
-        android:layout_marginTop="0dp"
         android:fontFamily="@font/roboto_regular"
         android:text="USERNAME RECOVER"
         android:textAlignment="center"
@@ -33,7 +36,7 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="219dp" />
+        app:layout_constraintTop_toTopOf="parent" />
     <TextView
         android:id="@+id/caption"
         android:layout_width="300dp"

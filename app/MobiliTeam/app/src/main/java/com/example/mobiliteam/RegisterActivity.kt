@@ -11,7 +11,7 @@ class RegisterActivity : AppCompatActivity() {
         setContentView(R.layout.register)
         val registerGoTo = findViewById<ImageView>(R.id.backButton)
         registerGoTo.setOnClickListener {
-            val intent = Intent(this@RegisterActivity, MainActivity::class.java)
+            val intent = Intent(this@RegisterActivity, LogInActivity::class.java)
             startActivity(intent)
         }
     }
