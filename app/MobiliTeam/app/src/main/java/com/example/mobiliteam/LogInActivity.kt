@@ -95,14 +95,14 @@ class LogInActivity : AppCompatActivity() {
                         auth = JSONObject(response.body?.string()).getString("auth").toString()
                     }
                     404 -> {
-                        mHandler.post(Runnable {
-                            errorMessage.text = "User not found"
-                        })
+//                        mHandler.post(Runnable {
+//                            errorMessage.text = "User not found"
+//                        })
                     }
                     500 -> {
-//                        mHandler.post(Runnable {
-//                            errorMessage.text = "Internal server error"
-//                        })
+                        mHandler.post(Runnable {
+                            errorMessage.text = "Internal server error"
+                        })
                     }
                 }
                 response.close()
@@ -110,9 +110,9 @@ class LogInActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call, e: IOException) {
-//                mHandler.post(Runnable {
-//                    errorMessage.text = "Internal server error"
-//                })
+                mHandler.post(Runnable {
+                    errorMessage.text = "Internal server error"
+                })
                 e.printStackTrace()
                 countDownLatch.countDown()
             }

@@ -13,13 +13,16 @@
         android:id="@+id/num_available_credits"
         android:layout_width="12dp"
         android:layout_height="20dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="8dp"
         android:fontFamily="@font/roboto_regular"
         android:text="0"
         android:textColor="@color/black"
         android:textSize="20sp"
-        app:layout_constraintTop_toEndOf="@+id/available_credits"
-        tools:layout_editor_absoluteX="199dp"
-        tools:layout_editor_absoluteY="101dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/available_credits" />
 
     <TextView
         android:id="@+id/available_credits"
