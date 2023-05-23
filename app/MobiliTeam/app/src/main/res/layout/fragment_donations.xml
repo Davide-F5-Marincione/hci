@@ -11,42 +11,35 @@
 
     <TextView
         android:id="@+id/num_available_credits"
-        android:layout_width="12dp"
-        android:layout_height="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="70dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="70dp"
+        android:layout_marginBottom="70dp"
         android:fontFamily="@font/roboto_regular"
+        android:gravity="center"
+        android:shadowColor="#20000000"
+        android:shadowDx="7"
+        android:shadowDy="2"
+        android:shadowRadius="3"
         android:text="0"
         android:textColor="@color/black"
         android:textSize="20sp"
-        app:layout_constraintTop_toEndOf="@+id/available_credits"
-        tools:layout_editor_absoluteX="46dp"
-        tools:layout_editor_absoluteY="151dp" />
+        app:layout_constraintBottom_toTopOf="@+id/constraintLayout3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/available_credits"
+        app:layout_constraintTop_toEndOf="@+id/available_credits" />
 
     <TextView
         android:id="@+id/available_credits"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="104dp"
-        android:layout_marginEnd="8dp"
-        android:fontFamily="@font/roboto_regular"
-        android:shadowColor="#20000000"
-        android:shadowDx="7"
-        android:shadowDy="2"
-        android:text="Available Credits:"
-        android:textColor="@color/black"
-        android:textSize="24sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.601"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
         android:layout_marginStart="70dp"
         android:layout_marginTop="110dp"
-        android:layout_marginEnd="8dp"
-        android:id="@+id/credits"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_marginEnd="70dp"
+        android:gravity="center_horizontal"
         android:shadowColor="#20000000"
         android:shadowDx="7"
         android:shadowDy="2"
@@ -54,13 +47,16 @@
         android:text="AVAILABLE CREDITS:"
         android:textColor="#000000"
         android:textSize="24sp"
-        tools:layout_editor_absoluteX="91dp"
-        tools:layout_editor_absoluteY="55dp" />
+        app:layout_constraintBottom_toTopOf="@+id/num_available_credits"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout3"
         android:layout_width="match_parent"
         android:layout_height="124dp"
-        android:layout_marginTop="232dp"
+        android:layout_marginTop="188dp"
         android:background="#BFE476"
         android:gravity="center_vertical"
         android:orientation="horizontal"
@@ -86,17 +82,17 @@
             android:layout_constraintStart_toEndOf="@+id/img_wwf"
 
             android:fontFamily="@font/roboto_regular"
-            android:text="WWF"
-            android:textStyle="bold"
 
+            android:text="WWF"
             android:textColor="@color/black"
             android:textSize="11sp"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.042"
+            app:layout_constraintHorizontal_bias="0.273"
             app:layout_constraintStart_toEndOf="@+id/img_wwf"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.064" />
+            app:layout_constraintVertical_bias="0.146" />
 
         <View
             android:id="@+id/view"
