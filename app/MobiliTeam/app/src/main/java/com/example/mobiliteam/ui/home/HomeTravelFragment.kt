@@ -11,13 +11,13 @@ import android.widget.TextView.OnEditorActionListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.mobiliteam.TravelActivity
-import com.example.mobiliteam.databinding.TravelLayoutBinding
+import com.example.mobiliteam.databinding.FragmentTravelBinding
 
 
 class HomeTravelFragment : Fragment() {
 
     private lateinit var pageViewModel: PageViewModel
-    private var _binding: TravelLayoutBinding? = null
+    private var _binding: FragmentTravelBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -35,7 +35,7 @@ class HomeTravelFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        _binding = TravelLayoutBinding.inflate(inflater, container, false)
+        _binding = FragmentTravelBinding.inflate(inflater, container, false)
         val root = binding.root
 
         return root

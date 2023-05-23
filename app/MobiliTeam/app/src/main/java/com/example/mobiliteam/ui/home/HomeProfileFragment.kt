@@ -6,12 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.example.mobiliteam.databinding.ProfileLayoutBinding
+import com.example.mobiliteam.databinding.FragmentProfileBinding
 
 class HomeProfileFragment : Fragment() {
 
     private lateinit var pageViewModel: PageViewModel
-    private var _binding: ProfileLayoutBinding? = null
+    private var _binding: FragmentProfileBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -29,7 +29,7 @@ class HomeProfileFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        _binding = ProfileLayoutBinding.inflate(inflater, container, false)
+        _binding = FragmentProfileBinding.inflate(inflater, container, false)
         val root = binding.root
 
         return root

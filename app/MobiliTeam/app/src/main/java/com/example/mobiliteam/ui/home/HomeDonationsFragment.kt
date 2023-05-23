@@ -6,12 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.example.mobiliteam.databinding.DonationsLayoutBinding
+import com.example.mobiliteam.databinding.FragmentDonationsBinding
 
 class HomeDonationsFragment : Fragment() {
 
     private lateinit var pageViewModel: PageViewModel
-    private var _binding: DonationsLayoutBinding? = null
+    private var _binding: FragmentDonationsBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -29,7 +29,7 @@ class HomeDonationsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        _binding = DonationsLayoutBinding.inflate(inflater, container, false)
+        _binding = FragmentDonationsBinding.inflate(inflater, container, false)
         val root = binding.root
 
         return root

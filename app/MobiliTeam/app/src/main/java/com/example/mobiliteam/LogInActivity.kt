@@ -8,13 +8,25 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.textfield.TextInputLayout
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.IOException
 
 
 class LogInActivity : AppCompatActivity() {
-    var client: OkHttpClient = OkHttpClient()
+    val client: OkHttpClient = OkHttpClient()
+    val registerResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            result: ActivityResult ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val intent = result.data
+
+            val usernameInput = findViewById<TextInputLayout>(R.id.usernameInput)
+            usernameInput.editText?.setText(intent?.getStringExtra("username"))
+            // Do some funky stuff
+            //launchLogin()
+        }
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
@@ -38,15 +50,7 @@ class LogInActivity : AppCompatActivity() {
 
     fun launchRegistration() {
         val intent = Intent(this@LogInActivity, RegisterActivity::class.java)
-        val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-                result: ActivityResult ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val intent = result.data
-                // Do some funky stuff
-                launchLogin()
-            }
-        }
-        startForResult.launch(intent)
+        registerResult.launch(intent)
     }
 
     fun launchLogin() {
@@ -55,7 +59,9 @@ class LogInActivity : AppCompatActivity() {
         // perform a get request to the server to check if the username exists
         // if it does, then go to the home page
         // else, display an error message
-        val url ="http://127.0.0.1:5000/users/"+ username;// Replace with your API endpoint
+
+        // Davide - Must change as the endpoint for login is now on /session
+        val url ="http://127.0.0.1:5000/session";// Replace with your API endpoint
 
         val request: Request = Request.Builder()
             .url(url)
@@ -79,7 +85,5 @@ class LogInActivity : AppCompatActivity() {
             val errorMessage = findViewById<TextView>(R.id.errorMessage)
             e.printStackTrace()
         }
-        val intent = Intent(this@LogInActivity, HomeActivity::class.java)
-        startActivity(intent)
     }
 }
