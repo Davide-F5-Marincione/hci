@@ -271,9 +271,24 @@ paths:
               schema:
                 type: object
                 properties:
+                  firstname:
+                    type: string
+                    description: User's first name
+                  lastname:
+                    type: string
+                    description: User's last name
+                  email:
+                    type: string
+                    description: User's email
                   credits:
                     type: integer
                     description: User's credits
+                  reports:
+                    type: integer
+                    description: User's number of reports
+                  donations:
+                    type: integer
+                    description: User's number of donations
         "404":
           description: User not found
         "500":
