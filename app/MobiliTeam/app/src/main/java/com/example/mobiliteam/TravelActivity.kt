@@ -13,14 +13,29 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.mobiliteam.databinding.ActivityTravelBinding
+import com.example.mobiliteam.ui.home.actual_route
 
 
 class TravelActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     lateinit var binding: ActivityTravelBinding
+    public var actual_route: actual_route = actual_route()
+    public var from : String = ""
+    public var to : String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        var intent : Intent = getIntent();
+        if (intent.hasExtra("from")) {
+            Log.d("From", intent.getStringExtra("from").toString())
+            from = intent.getStringExtra("from").toString()
+
+        }
+        if (intent.hasExtra("to")) {
+            Log.d("To", intent.getStringExtra("to").toString())
+            to = intent.getStringExtra("to").toString()
+        }
         WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
 
