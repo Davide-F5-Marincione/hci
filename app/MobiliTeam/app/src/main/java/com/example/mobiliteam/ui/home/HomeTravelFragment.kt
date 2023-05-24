@@ -8,7 +8,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.widget.Button
 import android.widget.HorizontalScrollView
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.TextView.OnEditorActionListener
@@ -101,8 +103,12 @@ class HomeTravelFragment : Fragment() {
                 transportView.findViewById<TextView>(R.id.transit_desc).text=transport.line
                 busseslist.addView(transportView)
             }
-            cardLeftBinding.findViewById<TextView>(R.id.continueButton).setOnClickListener {
+            cardLeftBinding.findViewById<Button>(R.id.continueButton).setOnClickListener{
                 continueRoute()
+            }
+            cardLeftBinding.findViewById<ImageView>(R.id.close_x).setOnClickListener{
+                linearLayout.removeView(cardLeftBinding)
+                linearLayout.removeView(continue_text)
             }
             linearLayout.addView(cardLeftBinding)
         }
@@ -184,7 +190,10 @@ class HomeTravelFragment : Fragment() {
             OnEditorActionListener { v, actionId, event ->
                 if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE || event != null && event.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_ENTER) {
                     if (event == null || !event.isShiftPressed) {
-                        searchRoute(binding.fromInput.editText?.text.toString(), binding.toInput.editText?.text.toString())
+                        val intent = Intent(activity, TravelActivity::class.java)
+                        intent.putExtra("from", binding.fromInputEdit.text.toString())
+                        intent.putExtra("to", binding.toInputEdit.text.toString())
+                        startActivity(intent)
                     }
                 }
                 false // pass on to other listeners.
