@@ -60,11 +60,11 @@ async def registration():
     except ValueError as e:
         return str(e), 400
     
-    if r["username"] == "admin":
+    if r["username"] == "admin": # Shhhhhhhhhhhhhhhhhh
         return "Nope lol", 403
     
     if len(r["username"]) == 0:
-        return "Try a better name", 406
+        return "Try a better name", 400
 
     cur = con.execute("SELECT * FROM users WHERE user_name = ?", [user.uname])
 
