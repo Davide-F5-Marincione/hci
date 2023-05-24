@@ -85,6 +85,7 @@ class LogInActivity : AppCompatActivity() {
             intent.putExtra("username", username)
             setResult(RESULT_OK, intent)
             finish()
+            return
         }
         val url ="http://10.0.2.2:5000/session";// Replace with your API endpoint
 
