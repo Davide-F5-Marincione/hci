@@ -14,6 +14,9 @@
         <action
             android:id="@+id/action_SearchFragment_to_SelectFragment"
             app:destination="@id/SelectFragment" />
+        <action
+            android:id="@+id/action_SearchFragment_to_PathFollowFragment"
+            app:destination="@id/PathFollowFragment" />
 
     </fragment>
     <fragment

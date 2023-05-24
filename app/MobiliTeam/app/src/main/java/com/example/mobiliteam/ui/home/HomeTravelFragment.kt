@@ -10,21 +10,18 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
-import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.TextView.OnEditorActionListener
-import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.mobiliteam.R
 import com.example.mobiliteam.TravelActivity
-import com.example.mobiliteam.databinding.CardLeftBinding
 import com.example.mobiliteam.databinding.FragmentTravelBinding
-import java.io.BufferedReader
+import com.google.android.material.textfield.TextInputLayout
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileReader
-import kotlin.math.log
+
 class actual_route(){
     public var from: String = ""
     public var to: String = ""
@@ -104,9 +101,8 @@ class HomeTravelFragment : Fragment() {
                 transportView.findViewById<TextView>(R.id.transit_desc).text=transport.line
                 busseslist.addView(transportView)
             }
-            cardLeftBinding.setOnClickListener {
-                val intent = Intent(context, TravelActivity::class.java)
-                startActivity(intent)
+            cardLeftBinding.findViewById<TextView>(R.id.continueButton).setOnClickListener {
+                continueRoute()
             }
             linearLayout.addView(cardLeftBinding)
         }
@@ -188,8 +184,7 @@ class HomeTravelFragment : Fragment() {
             OnEditorActionListener { v, actionId, event ->
                 if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE || event != null && event.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_ENTER) {
                     if (event == null || !event.isShiftPressed) {
-                        val intent = Intent(activity, TravelActivity::class.java)
-                        startActivity(intent)
+                        searchRoute(binding.fromInput.editText?.text.toString(), binding.toInput.editText?.text.toString())
                     }
                 }
                 false // pass on to other listeners.
@@ -221,5 +216,32 @@ class HomeTravelFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    fun continueRoute() {
+
+        // Adding payload to represent
+
+        val intent = Intent(context, TravelActivity::class.java)
+        val b = Bundle()
+        b.putInt("key", 1) // Follow route ID is 1
+
+
+        // We have to add all the rest of the info here!
+
+
+
+        intent.putExtras(b)
+        startActivity(intent)
+    }
+
+    fun searchRoute(from: String, to: String) {
+        val intent = Intent(context, TravelActivity::class.java)
+        val b = Bundle()
+        b.putInt("key", 0) // Search ID is 0
+        b.putString("from", from)
+        b.putString("to", to)
+        intent.putExtras(b)
+        startActivity(intent)
     }
 }

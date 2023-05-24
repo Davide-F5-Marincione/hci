@@ -1,19 +1,14 @@
 package com.example.mobiliteam
 
 
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.get
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -53,6 +48,16 @@ class TravelActivity : AppCompatActivity() {
                 finish()
             }
         })
+
+
+        val b = intent.extras
+        if (b != null)
+            if (b.getInt("key") == 0) {
+                // Add the "from" and "to" to their respective inputs and make request
+            } else {
+                // Payload means we have already a route to follow, skip past all the other fragments!
+                navController.navigate(R.id.action_SearchFragment_to_PathFollowFragment)
+            }
     }
 
     override fun onSupportNavigateUp(): Boolean {
