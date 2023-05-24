@@ -67,14 +67,14 @@
         app:layout_constraintTop_toBottomOf="@+id/enter_donation_text">
 
         <com.google.android.material.textfield.TextInputEditText
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:backgroundTint="#FFFFFF"
-        android:fontFamily="@font/roboto_regular"
-        android:hint=""
-        android:textColorHint="@color/gray_hint"
-        android:singleLine="true"
-         />
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:backgroundTint="#FFFFFF"
+            android:fontFamily="@font/roboto_regular"
+            android:hint=""
+            android:inputType="number"
+            android:singleLine="true"
+            android:textColorHint="@color/gray_hint" />
 
 </com.google.android.material.textfield.TextInputLayout>
 

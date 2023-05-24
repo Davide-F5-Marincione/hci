@@ -104,7 +104,7 @@ async def get_credits(user):
     headers = request.headers
     auth = headers.get("Authorization").strip("Bearer ")
     cur = con.execute(
-        "SELECT * FROM users WHERE user_name = ? AND auth = ?", [user, auth]
+        "SELECT user_name, credits FROM users WHERE user_name = ? AND auth = ?", [user, auth]
     )
     record = cur.fetchone()
     cur.close()
@@ -112,7 +112,7 @@ async def get_credits(user):
     if record is None:
         return "User not found", 404
 
-    user, curr_credits = record["user_name"], record["credits"]
+    user, curr_credits = record[0], record[1]
 
     return Response(
         response=json.dumps({"credits": curr_credits}),
@@ -126,7 +126,7 @@ async def handle_users_put(user):
     headers = request.headers
     auth = headers.get("Authorization").strip("Bearer ")
     cur = con.execute(
-        "SELECT * FROM users WHERE user_name = ? AND auth = ?", [user, auth]
+        "SELECT user_name, credits FROM users WHERE user_name = ? AND auth = ?", [user, auth]
     )
     record = cur.fetchone()
     cur.close()
@@ -134,7 +134,7 @@ async def handle_users_put(user):
     if record is None:
         return "User not found", 404
 
-    user, curr_credits = record["user_name"], record["credits"]
+    user, curr_credits = record[0], record[1]
 
     r = await request.get_json()
 
