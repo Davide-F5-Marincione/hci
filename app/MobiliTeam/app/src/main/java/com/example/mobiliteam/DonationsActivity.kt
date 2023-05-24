@@ -2,6 +2,7 @@ package com.example.mobiliteam
 
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
@@ -19,9 +20,14 @@ class DonationsActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     lateinit var binding: ActivityDonationsBinding
 
+    var ngo: Int = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
+
+        val b = intent.extras
+        ngo = b?.getInt("ngo")!!
 
         binding = ActivityDonationsBinding.inflate(layoutInflater)
         setContentView(binding.root)

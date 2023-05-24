@@ -9,7 +9,7 @@
         android:id="@+id/DonationFragment"
         android:name="com.example.mobiliteam.ui.donations.DonationFragment"
         android:label="Donations"
-        tools:layout="@layout/fragment_wwfdonations">
+        tools:layout="@layout/fragment_donations_fr">
 
         <action
             android:id="@+id/action_DonationFragment_to_ThanksFragment"
