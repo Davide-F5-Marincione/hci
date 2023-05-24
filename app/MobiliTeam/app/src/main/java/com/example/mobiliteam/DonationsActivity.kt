@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -23,6 +25,14 @@ class DonationsActivity : AppCompatActivity() {
 
         binding = ActivityDonationsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        val windowInsetsController =
+            WindowCompat.getInsetsController(window, window.decorView)
+        // Configure the behavior of the hidden system bars.
+        windowInsetsController.systemBarsBehavior =
+            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+
+        windowInsetsController.hide(WindowInsetsCompat.Type.navigationBars())
 
         setSupportActionBar(binding.toolbar)
 

@@ -8,6 +8,8 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
@@ -29,6 +31,14 @@ class TravelActivity : AppCompatActivity() {
 
         binding = ActivityTravelBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        val windowInsetsController =
+            WindowCompat.getInsetsController(window, window.decorView)
+        // Configure the behavior of the hidden system bars.
+        windowInsetsController.systemBarsBehavior =
+            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+
+        windowInsetsController.hide(WindowInsetsCompat.Type.navigationBars())
 
         setSupportActionBar(binding.toolbar)
 

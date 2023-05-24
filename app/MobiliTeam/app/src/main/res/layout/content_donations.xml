@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF"
     android:backgroundTint="@color/background"
-    android:layout_marginBottom="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/activity_donations">
 

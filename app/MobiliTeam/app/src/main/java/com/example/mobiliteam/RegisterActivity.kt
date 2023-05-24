@@ -7,6 +7,9 @@ import android.os.Looper
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputLayout
 import okhttp3.Call
@@ -27,6 +30,15 @@ class RegisterActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
+
+        val windowInsetsController =
+            WindowCompat.getInsetsController(window, window.decorView)
+        // Configure the behavior of the hidden system bars.
+        windowInsetsController.systemBarsBehavior =
+            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+
+        windowInsetsController.hide(WindowInsetsCompat.Type.navigationBars())
+
         val backButton = findViewById<ImageView>(R.id.backButton)
         backButton.setOnClickListener {
             setResult(RESULT_CANCELED, Intent())

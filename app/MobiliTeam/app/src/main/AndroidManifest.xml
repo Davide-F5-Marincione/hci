@@ -28,7 +28,7 @@
         <activity
             android:name=".DonationsActivity"
             android:exported="false"
-            android:label="@string/title_activity_search_layout"
+            android:label="Donations"
             android:theme="@style/Theme.MobiliTeam" />
         <activity
             android:name=".RecoverActivity"

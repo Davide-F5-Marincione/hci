@@ -10,6 +10,9 @@ import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.viewpager2.widget.ViewPager2
 import com.example.mobiliteam.data.SettingsStore
 import com.example.mobiliteam.databinding.ActivityHomeBinding
@@ -56,6 +59,15 @@ class HomeActivity : AppCompatActivity() {
 
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        val windowInsetsController =
+            WindowCompat.getInsetsController(window, window.decorView)
+        // Configure the behavior of the hidden system bars.
+        windowInsetsController.systemBarsBehavior =
+            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+
+        windowInsetsController.hide(WindowInsetsCompat.Type.navigationBars())
+
 
         (this.application as MobiliTeam).auth = logIn(_store.username)
         if ((this.application as MobiliTeam).auth == null) {
