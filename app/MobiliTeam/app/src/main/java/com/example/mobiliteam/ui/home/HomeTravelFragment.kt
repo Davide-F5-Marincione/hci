@@ -113,14 +113,17 @@ class HomeTravelFragment : Fragment() {
 
 
         //check if file exists if not create and populate it
+        var fileReader : FileReader
         val file = File(context?.filesDir, "recents.txt")
         try {
+            fileReader = FileReader(file)
             Log.d("file_opener", "file exists at ${file.absolutePath}")
         } catch (e: FileNotFoundException) {
             //since file doesn't exists yet, create it and save it
             file.createNewFile()
             file.writeText("from: Piazza Bologna\tto: Verano")
             Log.d("file_opener", "created at ${file.absolutePath}")
+            fileReader = FileReader(file)
         }
 
         //read file and populate recent_routes
@@ -129,15 +132,14 @@ class HomeTravelFragment : Fragment() {
         // Questa cosa mi dava errore? Boh, l'ho commentata -Davide
 
 
-//        val fileReader = FileReader(file)
-//        for (Line in fileReader.readLines()) {
-//            var splitted_line = Line.split("\t", limit = 2).toMutableList()
-//            for (i in 0..1) {
-//                splitted_line[i] = splitted_line[i].split(": ")[1]
-//            }
-//            recent_routes.add(splitted_line.toTypedArray())
-//        }
-//        fileReader.close()
+
+        for (Line in fileReader.readLines()) {
+            var splitted_line = Line.split("\t", limit = 2).toMutableList()
+            for (i in 0..1) {
+               splitted_line[i] = splitted_line[i].split(": ")[1]
+            }
+            recent_routes.add(splitted_line.toTypedArray()) }
+       fileReader.close()
         //if there are routes print them and add them to card_recent
         if(recent_routes.size==0){
 
