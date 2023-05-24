@@ -77,6 +77,7 @@
             android:layout_height="match_parent"
             android:fontFamily="@font/roboto_regular"
             android:hint="Username"
+            android:singleLine="true"
             android:textColorHint="@color/gray_hint" />
     </com.google.android.material.textfield.TextInputLayout>
 

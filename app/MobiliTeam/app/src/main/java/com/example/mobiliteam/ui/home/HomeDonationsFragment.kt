@@ -8,8 +8,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.mobiliteam.DonationsActivity
-import com.example.mobiliteam.HomeActivity
-import com.example.mobiliteam.LogInActivity
 import com.example.mobiliteam.databinding.FragmentDonationsBinding
 
 class HomeDonationsFragment : Fragment() {

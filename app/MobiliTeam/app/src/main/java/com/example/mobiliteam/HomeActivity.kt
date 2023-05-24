@@ -41,8 +41,6 @@ private val TAB_TITLES = arrayOf(
 class HomeActivity : AppCompatActivity() {
     private lateinit var binding: ActivityHomeBinding
 
-    val _store = SettingsStore(this)
-
     val logInResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             result: ActivityResult ->
         if (result.resultCode == Activity.RESULT_OK) {
@@ -50,7 +48,7 @@ class HomeActivity : AppCompatActivity() {
             val username = intent?.getStringExtra("username")
 
             Log.d("GivenUsername", username.toString())
-            _store.username = username.toString()
+            (this.application as MobiliTeam).store.username = username.toString()
         }
     }
 
@@ -68,12 +66,6 @@ class HomeActivity : AppCompatActivity() {
 
         windowInsetsController.hide(WindowInsetsCompat.Type.navigationBars())
 
-
-        (this.application as MobiliTeam).auth = logIn(_store.username)
-        if ((this.application as MobiliTeam).auth == null) {
-            launchLogIn()
-        }
-
         val sectionsPagerAdapter = SectionsPagerAdapter(this, this)
         val viewPager: ViewPager2 = binding.viewPager
         viewPager.adapter = sectionsPagerAdapter
@@ -81,6 +73,11 @@ class HomeActivity : AppCompatActivity() {
         TabLayoutMediator(tabs, viewPager) { tab, position ->
             tab.text = TAB_TITLES[position]
         }.attach()
+
+        (this.application as MobiliTeam).auth = logIn((this.application as MobiliTeam).store.username)
+        if ((this.application as MobiliTeam).auth == null) {
+            launchLogIn()
+        }
     }
 
     fun launchLogIn() {

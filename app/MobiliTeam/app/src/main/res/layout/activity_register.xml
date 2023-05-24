@@ -57,6 +57,7 @@
             android:drawableTint="#B65555"
             android:fontFamily="@font/roboto_regular"
             android:hint="Username"
+            android:singleLine="true"
             android:textColorHint="#d9d9d9" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -81,6 +82,7 @@
             android:drawableTint="#B65555"
             android:fontFamily="@font/roboto_regular"
             android:hint="First Name"
+            android:singleLine="true"
             android:textColorHint="#d9d9d9" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -105,6 +107,7 @@
             android:drawableTint="#B65555"
             android:fontFamily="@font/roboto_regular"
             android:hint="Last Name"
+            android:singleLine="true"
             android:textColorHint="#d9d9d9" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -129,6 +132,7 @@
             android:drawableTint="#B65555"
             android:fontFamily="@font/roboto_regular"
             android:hint="email"
+            android:singleLine="true"
             android:textColorHint="#d9d9d9" />
     </com.google.android.material.textfield.TextInputLayout>
 

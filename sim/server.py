@@ -59,6 +59,12 @@ async def registration():
         user = User(r["username"], r["firstname"], r["lastname"], r["email"])
     except ValueError as e:
         return str(e), 400
+    
+    if r["username"] == "admin":
+        return "Nope lol", 403
+    
+    if len(r["username"]) == 0:
+        return "Try a better name", 406
 
     cur = con.execute("SELECT * FROM users WHERE user_name = ?", [user.uname])
 
@@ -96,7 +102,7 @@ async def registration():
 @app.route("/users/<user>/credits", methods=["GET"])
 async def get_credits(user):
     headers = request.headers
-    auth = headers.get("Authorization")
+    auth = headers.get("Authorization").strip("Bearer ")
     cur = con.execute(
         "SELECT * FROM users WHERE user_name = ? AND auth = ?", [user, auth]
     )
@@ -118,7 +124,7 @@ async def get_credits(user):
 @app.route("/users/<user>/donate", methods=["PUT"])
 async def handle_users_put(user):
     headers = request.headers
-    auth = headers.get("Authorization")
+    auth = headers.get("Authorization").strip("Bearer ")
     cur = con.execute(
         "SELECT * FROM users WHERE user_name = ? AND auth = ?", [user, auth]
     )
@@ -156,18 +162,26 @@ async def handle_users_put(user):
 @app.route("/users/<user>", methods=["GET"])
 async def handle_users_get(user):
     headers = request.headers
-    auth = headers.get("Authorization")
+    auth = headers.get("Authorization").strip("Bearer ")
     cur = con.execute(
-        "SELECT * FROM users WHERE user_name = ? AND auth = ?", [user, auth]
+        "SELECT first_name, last_name, email, credits, donations_counter, reports_counter FROM users WHERE user_name = ? AND auth = ?", [user, auth]
     )
     record = cur.fetchone()
     cur.close()
     con.commit()
     if record is None:
         return "User not found", 404
+    
+
+    response = {"first_name": record[0],
+                "last_name": record[1],
+                "email": record[2],
+                "credits": record[3],
+                "donations_counter": record[4],
+                "reports_counter": record[5]}
 
     r = Response(
-        response=json.dumps(record),
+        response=json.dumps(response),
         status=200,
         mimetype="application/json",
     )
@@ -230,7 +244,7 @@ async def request_directions():
 @app.route("/buses/<bus>/board", methods=["PUT"])
 async def bus_board(bus):
     headers = request.headers
-    auth = headers.get("Authorization")
+    auth = headers.get("Authorization").strip("Bearer ")
     cur = con.execute("SELECT * FROM users WHERE auth = ?", [auth])
     a = cur.fetchone()
     cur.close()
@@ -268,7 +282,7 @@ async def bus_board(bus):
 @app.route("/buses/<bus>/overcrowd", methods=["PUT"])
 async def bus_overcrowd(bus):
     headers = request.headers
-    auth = headers.get("Authorization")
+    auth = headers.get("Authorization").strip("Bearer ")
     cur = con.execute("SELECT * FROM users WHERE auth = ?", [auth])
     a = cur.fetchone()
     cur.close()
