@@ -84,42 +84,15 @@
 
                 <include layout="@layout/transit_show_small" />
 
-                <ImageView
-                    android:id="@+id/arr1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="2dp"
-                    android:rotation="180"
-                    app:layout_constraintBottom_toBottomOf="@+id/to"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:srcCompat="?attr/actionModeCloseDrawable"
-                    app:tint="@color/black" />
+                <include layout="@layout/da_arrow" />
 
                 <include layout="@layout/transit_show_small" />
 
-                <ImageView
-                    android:id="@+id/arr2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="2dp"
-                    android:rotation="180"
-                    app:layout_constraintBottom_toBottomOf="@+id/to"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:srcCompat="?attr/actionModeCloseDrawable"
-                    app:tint="@color/black" />
+                <include layout="@layout/da_arrow" />
 
                 <include layout="@layout/transit_show_small" />
 
-                <ImageView
-                    android:id="@+id/arr3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="2dp"
-                    android:rotation="180"
-                    app:layout_constraintBottom_toBottomOf="@+id/to"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:srcCompat="?attr/actionModeCloseDrawable"
-                    app:tint="@color/black" />
+                <include layout="@layout/da_arrow" />
 
                 <include layout="@layout/transit_show_small" />
 
