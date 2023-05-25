@@ -198,7 +198,8 @@ def bus_info(bus):
     return {
         "line": bus.route,
         "last_seen": bus.last_signal,
-        "overcrowded": bus.overcrowded,
+        "crowdedness": bus.mu_overcrowded,
+        "crowdedness_var": bus.var_overcrowded,
         "expected_from": bus.prev_node,
         "expected_to": bus.next_node,
         "calculated_delay": bus.delay,
@@ -241,8 +242,8 @@ async def request_directions():
     )
 
 
-@app.route("/buses/<bus>/board", methods=["PUT"])
-async def bus_board(bus):
+@app.route("/buses/<bus>/signal", methods=["PUT"])
+async def bus_signal(bus):
     headers = request.headers
     auth = headers.get("Authorization").strip("Bearer ")
     cur = con.execute("SELECT * FROM users WHERE auth = ?", [auth])
@@ -257,7 +258,7 @@ async def bus_board(bus):
     data_dict = {k: v for k, v in data.items()}
 
     if (a := v_buses.get(bus, None)) is not None:
-        a.board_signal(data_dict["from"], data_dict["to"], graph)
+        a.overcrowd(data_dict["is_overcrowded"], buses[bus])
 
         cur = con.execute(
             "UPDATE users SET reports_counter = reports_counter + 1 WHERE auth = ?",
@@ -268,44 +269,6 @@ async def bus_board(bus):
 
         cur = con.execute(
             "UPDATE users SET credits = credits + 3 WHERE auth = ?",
-            [auth],
-        )
-
-        cur.close()
-        con.commit()
-
-        return Response(status=200)
-    else:
-        return Response(status=404)
-
-
-@app.route("/buses/<bus>/overcrowd", methods=["PUT"])
-async def bus_overcrowd(bus):
-    headers = request.headers
-    auth = headers.get("Authorization").strip("Bearer ")
-    cur = con.execute("SELECT * FROM users WHERE auth = ?", [auth])
-    a = cur.fetchone()
-    cur.close()
-    con.commit()
-    if a is None:
-        return "Not a user", 401
-
-    data = await request.get_json()
-
-    data_dict = {k: v for k, v in data.items()}
-
-    if (a := v_buses.get(bus, None)) is not None:
-        a.overcrowd()
-
-        cur = con.execute(
-            "UPDATE users SET reports_counter = reports_counter + 1 WHERE auth = ?",
-            [auth],
-        )
-
-        cur.close()
-
-        cur = con.execute(
-            "UPDATE users SET credits = credits + 1 WHERE auth = ?",
             [auth],
         )
 
@@ -424,7 +387,7 @@ async def sim():
             cv2.circle(buff_img, (shrink(pos_x), shrink(pos_y)), 5, col, -1)
             cv2.putText(
                 buff_img,
-                bus.name,
+                f"{bus.name}, {len(bus.passengers) / bus.capacity:.2f}",
                 (shrink(pos_x) + 5, shrink(pos_y)),
                 fontFace=0,
                 fontScale=0.4,
@@ -446,7 +409,7 @@ async def sim():
             cv2.circle(v_buff_img, (shrink(pos_x), shrink(pos_y)), 5, col, -1)
             cv2.putText(
                 v_buff_img,
-                bus.name,
+                f"{bus.name}, {bus.mu_overcrowded:.2f}~{bus.var_overcrowded**.5:.2f}",
                 (shrink(pos_x) + 5, shrink(pos_y)),
                 fontFace=0,
                 fontScale=0.4,

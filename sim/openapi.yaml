@@ -28,9 +28,16 @@ components:
         last_seen:
           description: Datetime of last boarded signal
           type: string
-        overcrowded:
-          description: Datetime of last overcrowded signal
-          type: string
+        crowdedness:
+          description: Calculated value that represents how much the bus is crowded (1=very crowded, 0=empty)
+          type: number
+          minimum: 0
+          maximum: 1
+        crowdedness_var:
+          description: Variance of crowdedness calculation
+          type: number
+          minimum: 0
+          maximum: 1
         expected_next_arrival:
           description: Expected datetime to get to next stop (delay accounted for)
           type: string
@@ -128,50 +135,18 @@ paths:
         "500":
           $ref: "#/components/responses/InternalServerError"
 
-  /buses/{bus}/board:
+  /buses/{bus}/signal:
     put:
-      summary: Board bus
-      description: Boards a bus
-      operationId: boardBus
+      summary: Report bus
+      description: Reports overcrowding (or not) on a bus
+      operationId: signalBus
       requestBody:
         content:
           application/json:
             schema:
               type: object
               properties:
-                from:
-                  description: Where the bus was boarded
-                  type: string
-                to:
-                  description: Where the bus is heading
-                  type: string
-                boardedat:
-                  description: How much time ago the boarding happened
-                  type: number
-                  minimum: 0
-        required: true
-      responses:
-        "204":
-          description: Successful operation
-        "400":
-          description: Request badly formed
-        "404":
-          description: Bus not found
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-
-  /buses/{bus}/overcrowd:
-    put:
-      summary: Report overcrowding
-      description: Reports overcrowding on a bus
-      operationId: overcrowdBus
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                overcrowded:
+                is_overcrowded:
                   description: Whether the bus is currently overcrowded
                   type: boolean
         required: true

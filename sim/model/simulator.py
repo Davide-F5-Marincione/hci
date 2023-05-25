@@ -1,10 +1,11 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import List, Tuple, Dict, Any, Optional
 import random
 import time
 import numpy as np
 import cv2
 import datetime
+import math
 
 MIN = 0
 MAX = 1
@@ -15,15 +16,16 @@ CAPACITY = 50
 MAX_OVERCROWD_TIME_AGO = 1024
 TELEPORT = True
 
+ALPHA = .84
+BETA = .16
+
 PROB_TO_USE_APP = .2
-
-SIGNAL_PROB = .5
-
-OVERCROWDING_THRESHOLD = 0.8
-MIN_OVERCROWD_PROB = .4
-MAX_OVERCROWD_PROB = .8
-
+SIGNAL_PROB = .3
 FALLOFF = 0.02
+SHARPNESS = 20
+UNCERTAINTY = .7
+
+TIME_TO_RECHARGE = 120
 
 EXPECTED_SPEED = ((MAX + MIN) / 2 + ADD) * SPEED
 AVG_SPEED = (MAX + MIN) / 2 * SPEED
@@ -36,6 +38,10 @@ def simplex_noise(seed):
     while True:
         i += 1
         yield (1 / 6 * np.sin(vals * i / 50).sum() + 0.5)
+
+def fixed_sigmoid(fill, max):
+    sigm = lambda x: 1/(1 + math.exp(UNCERTAINTY * SHARPNESS - x * SHARPNESS))
+    return (sigm(fill / max) - sigm(0)) / (sigm(1) - sigm(0))
 
 @dataclass
 class Node:
@@ -59,6 +65,12 @@ class Edge:
 
     def step(self):
         self.curr_traffic = next(self.traffic_update)
+
+@dataclass
+class Passenger:
+    is_user: bool
+    time_to_recharge: float = 0.0
+    on_for: float = 0.0
     
 @dataclass
 class TrueBus:
@@ -69,73 +81,65 @@ class TrueBus:
     dir: int = 1
     distance_travelled: float = 0.0
     capacity: int = CAPACITY
-    fill: int = 0
-    users: int = 0
     waiting: float = WAITING_SECONDS
-    steps_run: float = 0.0
-    curr_signaled: bool = False
+    time_passed: float = 0.0
     boarded: bool = False
-
-    retard: float = 0.0
+    delay: float = 0.0
+    passengers: List[Passenger] = field(default_factory=lambda: [])
 
     def step(self, graph, routes, v_buses, delta_t=1):
+
         if self.waiting > delta_t:  # Just wait
             self.waiting -= delta_t
         else:  # Board calc
             if not self.boarded:
-                max_board = self.capacity - self.fill
+                max_board = self.capacity - len(self.passengers)
                 general_board = random.randint(0, max_board)
-                users_board = 0
-                for _ in range(general_board):
-                    if np.random.rand() < PROB_TO_USE_APP:
-                        users_board += 1
 
-                self.fill += general_board
-                self.users += users_board
+                for _ in range(general_board):
+                    self.passengers.append(Passenger(np.random.rand() < PROB_TO_USE_APP))
+
                 self.waiting = 0.0
                 
                 self.boarded = True
 
             conn = graph.get_edge(self.prev_node, self.next_node)
             self.distance_travelled += (conn.curr_traffic * (MAX - MIN) + MIN) * delta_t * SPEED
-            self.steps_run += delta_t
+            self.time_passed += delta_t
 
-            if self.curr_signaled is False:
-                p = SIGNAL_PROB / (FALLOFF * self.steps_run + 1)
-                p = 1 - (1 - p)**self.users
-                if np.random.rand() < p:
-                    v_buses[self.name].board_signal(
-                        self.prev_node, self.next_node, graph, self.steps_run
-                    )
-                    self.curr_signaled = True
-                
-            if self.fill >= OVERCROWDING_THRESHOLD * self.capacity:
-                p = (self.fill / self.capacity - OVERCROWDING_THRESHOLD) / (1 - OVERCROWDING_THRESHOLD) * (MAX_OVERCROWD_PROB - MIN_OVERCROWD_PROB) + MIN_OVERCROWD_PROB
-                p = p / (FALLOFF * self.steps_run + 1)
-                p = 1 - (1 - p)**self.users
-                if random.random() < p:
-                    v_buses[self.name].overcrowd()
+            p_to_signal_overcrowding = fixed_sigmoid(len(self.passengers), self.capacity)
+            for passenger in self.passengers:
+                if passenger.is_user:
+                    p_to_signal_whatever = SIGNAL_PROB / (FALLOFF * passenger.on_for + 1)
+                    if passenger.time_to_recharge > 0.0:
+                        passenger.time_to_recharge -= delta_t
+                    else:
+                        p_overcrowding = p_to_signal_whatever * p_to_signal_overcrowding
+                        p_not_overcrowding = 1 - p_to_signal_whatever * (1 - p_to_signal_overcrowding)
+                        r = random.random()
+                        if r < p_overcrowding:
+                            v_buses[self.name].overcrowd_signal(True, self)
+                            passenger.time_to_recharge = TIME_TO_RECHARGE
+                        elif r > p_not_overcrowding:
+                            v_buses[self.name].overcrowd_signal(False, self)
+                            passenger.time_to_recharge = TIME_TO_RECHARGE
+                passenger.on_for += delta_t
 
             if self.distance_travelled >= conn.length():  # Arrived at next stop
                 # Reset
-                ahead = conn.expected_steps() - self.steps_run + WAITING_SECONDS
+                ahead = conn.expected_steps() - self.time_passed + WAITING_SECONDS
                 diff = max(0, ahead - WAITING_SECONDS)
-                self.waiting = WAITING_SECONDS + max(0, diff - self.retard)
-                self.retard = max(0, self.retard - diff)
+                self.waiting = WAITING_SECONDS + max(0, diff - self.delay)
+                self.delay = max(0, self.delay - diff)
 
                 self.distance_travelled = 0.0
-                self.steps_run = 0
-                self.curr_signaled = False
+                self.time_passed = 0
                 self.boarded = False
 
                 # Unload passengers
-                general_unload = random.randint(0, self.fill)
-                users_unload = random.randint(
-                    max(0, general_unload - (self.fill - self.users)),
-                    min(general_unload, self.users),
-                )
-                self.fill -= general_unload
-                self.users -= users_unload
+                general_unload = random.randint(0, len(self.passengers))
+                random.shuffle(self.passengers)
+                self.passengers = self.passengers[general_unload:]
 
                 # Prepare stop
                 circ = routes[self.route].circuit[::self.dir]
@@ -160,35 +164,26 @@ class VirtualBus:
     dir: int = 1
     distance_travelled: float = 0.0
     waiting: float = WAITING_SECONDS
-    steps_run: float = 0.0
-    overcrowded: datetime.datetime = datetime.datetime.fromtimestamp(0)
+    time_passed: float = 0.0
+    mu_overcrowded: float = 0.5
+    var_overcrowded: float = 0.1
     last_signal: datetime.datetime = datetime.datetime.fromtimestamp(0)
     speed: float = EXPECTED_SPEED
     delay: float = 0.0
-
-    def board_signal(self, prev_node, next_node, graph, ago=0):
-        self.last_signal = datetime.datetime.now()
-        if TELEPORT:
-            self.delay += self.steps_run - ago
-            self.waiting = 0
-            self.steps_run = ago
-            self.prev_node = prev_node
-            self.next_node = next_node
-            self.distance_travelled = ago * AVG_SPEED
-        else:
-            self.delay += self.steps_run - ago
-            if self.waiting > 0 or prev_node != self.prev_node:
-                self.waiting = 0
-                self.steps_run = 0
-                self.prev_node = prev_node
-                self.next_node = next_node
-                self.distance_travelled = 0.0
-            conn = graph.get_edge(self.prev_node, self.next_node)
-            time = conn.expected_steps() - ago
-            self.speed = (conn.length() - self.distance_travelled) / time
     
-    def overcrowd(self):
-        self.overcrowded = datetime.datetime.now()
+    def overcrowd_signal(self, is_overcrowded, bus):
+        self.last_signal = datetime.datetime.now()
+        sample = 1 if is_overcrowded else 0
+        new_mu = ALPHA * sample + (1 - ALPHA) * self.mu_overcrowded
+        self.var_overcrowded = BETA * (sample - self.mu_overcrowded) ** 2 + (1 - BETA) * self.var_overcrowded
+        self.mu_overcrowded = new_mu
+
+        self.prev_node = bus.prev_node
+        self.next_node = bus.next_node
+        self.distance_travelled = bus.distance_travelled
+        self.delay += self.time_passed - bus.time_passed
+        self.time_passed = self.distance_travelled / self.speed
+        self.waiting = 0
 
     def step(self, graph, routes, delta_t=1):
         if self.waiting > 0:  # Just wait
@@ -196,15 +191,15 @@ class VirtualBus:
         else:  # Move
             conn = graph.get_edge(self.prev_node, self.next_node)
             self.distance_travelled += self.speed * delta_t
-            self.steps_run += delta_t
+            self.time_passed += delta_t
 
             if self.distance_travelled >= conn.length():  # Arrived at next stop
                 # Reset
                 self.waiting = max(
-                    WAITING_SECONDS, conn.expected_steps() - self.steps_run
+                    WAITING_SECONDS, conn.expected_steps() - self.time_passed
                 )
                 self.distance_travelled = 0.0
-                self.steps_run = 0
+                self.time_passed = 0
                 self.speed = EXPECTED_SPEED
 
                 # Prepare stop
@@ -261,7 +256,7 @@ class SearchBus:
     dir: int = 1
     distance_travelled: float = 0.0
     waiting: float = WAITING_SECONDS
-    steps_run: float = 0.0
+    time_passed: float = 0.0
     speed: float = EXPECTED_SPEED
 
     def step(self, graph, routes):
@@ -270,15 +265,15 @@ class SearchBus:
         else:  # Move
             conn = graph.get_edge(self.prev_node, self.next_node)
             self.distance_travelled += self.speed
-            self.steps_run += 1
+            self.time_passed += 1
 
             if self.distance_travelled >= conn.length():  # Arrived at next stop
                 # Reset
                 self.waiting = max(
-                    WAITING_SECONDS, conn.expected_steps() - self.steps_run
+                    WAITING_SECONDS, conn.expected_steps() - self.time_passed
                 )
                 self.distance_travelled = 0.0
-                self.steps_run = 0
+                self.time_passed = 0
                 self.speed = EXPECTED_SPEED
 
                 # Prepare stop
@@ -343,7 +338,7 @@ class OnTravel:
 
 def directions(start, end, graph, routes, vbuses):
     # Deep-copy buses
-    buses = [SearchBus(bus.name, bus.route, bus.prev_node, bus.next_node, bus.dir, bus.distance_travelled, bus.waiting, bus.steps_run, bus.speed) for bus in vbuses.values()]
+    buses = [SearchBus(bus.name, bus.route, bus.prev_node, bus.next_node, bus.dir, bus.distance_travelled, bus.waiting, bus.time_passed, bus.speed) for bus in vbuses.values()]
     
     seconds_passed = 0
     tree = AtStop(start, seconds_passed, [], None, end)
