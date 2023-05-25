@@ -8,10 +8,11 @@
     <color name="gray_label">#FF979797</color>
     <color name="gray_tab_label">#FF828282</color>
     <color name="black">#FF181818</color>
-    <color name="black_shadow">#80000000</color>
+    <color name="black_shadow">#40000000</color>
     <color name="primary">#FF5953D0</color>
     <color name="accent">#FFC8A3E6</color>
     <color name="blue_hyper">#FF00658F</color>
+    <color name="blue_continue">#FF5C95FF</color>
     <color name="green_extra">#FF82B955</color>
     <color name="red_destructive">#FFEF0C0C</color>
     <color name="red_danger">#FFC64F4F</color>
