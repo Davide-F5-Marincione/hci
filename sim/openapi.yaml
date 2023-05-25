@@ -16,6 +16,34 @@ components:
       description: |-
         The server encountered an internal error.
   schemas:
+    businfo:
+      title: Bus info
+      description: |-
+        This object contains all of a bus's info at a certain point in time
+      type: object
+      properties:
+        line:
+          type: string
+          description: Line of the bus
+        last_seen:
+          description: Datetime of last boarded signal
+          type: string
+        overcrowded:
+          description: Datetime of last overcrowded signal
+          type: string
+        expected_next_arrival:
+          description: Expected datetime to get to next stop (delay accounted for)
+          type: string
+        expected_from:
+          description: The last stop where the bus should be
+          type: string
+        expected_to:
+          description: The next stop where the bus should be
+          type: string
+        calculated_delay:
+          description: Calculated delay
+          type: number
+
     lineinfo:
       title: Line info
       description: |-
@@ -31,29 +59,7 @@ components:
           description: List of buses servicing the line
           type: array
           items:
-            type: string
-
-    businfo:
-      title: Bus info
-      description: |-
-        This object contains all of a bus's info at a certain point in time
-      type: object
-      properties:
-        line:
-          type: string
-          description: Line of the bus
-        last_seen:
-          description: Last time the bus has been signaled
-          type: string
-        overcrowded:
-          description: Whether the bus was overcrowded
-          type: boolean
-        expected_position:
-          description: The last stop where the bus should be
-          type: string
-        expected_time_left:
-          description: Expected time left to get to next stop
-          type: integer
+            $ref: "#/components/schemas/businfo"
 
     route:
       title: Route
@@ -64,7 +70,7 @@ components:
         type: object
         properties:
           bus:
-            $ref: "#/components/schemas/businfo"
+            type: string
           delay:
             type: string
           stops:
@@ -121,21 +127,18 @@ paths:
           description: Bus not found
         "500":
           $ref: "#/components/responses/InternalServerError"
+
+  /buses/{bus}/board:
     put:
-      security:
-        - bearerAuth: []
-      summary: Board/overcrowd bus
-      description: Sets a specific bus's info
-      operationId: setBusInfo
+      summary: Board bus
+      description: Boards a bus
+      operationId: boardBus
       requestBody:
         content:
           application/json:
             schema:
               type: object
               properties:
-                overcrowded:
-                  description: Whether the bus is currently overcrowded
-                  type: boolean
                 from:
                   description: Where the bus was boarded
                   type: string
@@ -156,6 +159,32 @@ paths:
           description: Bus not found
         "500":
           $ref: "#/components/responses/InternalServerError"
+
+  /buses/{bus}/overcrowd:
+    put:
+      summary: Report overcrowding
+      description: Reports overcrowding on a bus
+      operationId: overcrowdBus
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                overcrowded:
+                  description: Whether the bus is currently overcrowded
+                  type: boolean
+        required: true
+      responses:
+        "204":
+          description: Successful operation
+        "400":
+          description: Request badly formed
+        "404":
+          description: Bus not found
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
   /route:
     put:
       summary: Request route
@@ -188,6 +217,31 @@ paths:
           description: Stops not found
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /session:
+    post:
+      summary: Log-In user
+      description: Logs a user in
+      operationId: logIn
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: User name
+      responses:
+        "200":
+          description: User registration action successful
+          content:
+            application/json:
+              schema:
+                type: string
+        "404":
+          description: User not found
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /users:
     post:
       summary: Create user
@@ -199,27 +253,76 @@ paths:
             schema:
               type: object
               properties:
-                name:
+                username:
                   type: string
                   description: User name
+                firstname:
+                  type: string
+                  description: First name
+                lastname:
+                  type: string
+                  description: Last name
+                email:
+                  type: string
+                  description: email
+                  pattern: ^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$
       responses:
-        "200":
-          description: User log-in action successful
-          content:
-            application/json:
-              schema:
-                type: string
-        "201":
-          description: User log-in (registration) action successful
-          content:
-            application/json:
-              schema:
-                type: string
-        "400":
-          description: Unacceptable username
+        "204":
+          description: User registration action successful
+        "403":
+          description: User already exists
         "500":
           $ref: "#/components/responses/InternalServerError"
+
   /users/{user}:
+    parameters:
+      - in: path
+        name: user
+        schema:
+          type: string
+        required: true
+    get:
+      security:
+        - bearerAuth: []
+      summary: Get user info
+      description: Returns user's info
+      operationId: getUserInfo
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+                    description: User name
+                  firstname:
+                    type: string
+                    description: First name
+                  lastname:
+                    type: string
+                    description: Last name
+                  email:
+                    type: string
+                    description: email
+                  credits:
+                    type: integer
+                    description: User's credits
+                  reports_counter:
+                    type: integer
+                    description: User's reports
+                  donations_counter:
+                    type: integer
+                    description: User's donations
+        "404":
+          description: User not found
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+
+  /users/{user}/credits:
     parameters:
       - in: path
         name: user
@@ -247,6 +350,8 @@ paths:
           description: User not found
         "500":
           $ref: "#/components/responses/InternalServerError"
+
+  /users/{user}/donate:
     put:
       security:
         - bearerAuth: []
@@ -267,11 +372,29 @@ paths:
                   type: integer
         required: true
       responses:
-        "204":
+        "200":
           description: Successful operation
         "400":
           description: Request badly formed
         "404":
           description: User not found
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /liveness:
+    get:
+      summary: Ping the server
+      operationId: livenessCheck
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: Server status
         "500":
           $ref: "#/components/responses/InternalServerError"

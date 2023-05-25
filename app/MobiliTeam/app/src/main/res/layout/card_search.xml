@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:cardCornerRadius="0dp"
+    app:cardElevation="2dp"
+    app:strokeWidth="0dp"
+    tools:showIn="@layout/fragment_search">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/delta"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="60dp"
+            android:layout_marginEnd="4dp"
+            android:fontFamily="@font/roboto_regular"
+            android:text="15 min"
+            android:textAlignment="textEnd"
+            android:textColor="@color/black"
+            android:textSize="36sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/roboto_regular"
+            android:text="00:00 - 23:59"
+            android:textAlignment="textEnd"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/continueButton"
+            style="@style/Widget.Material3.Button.ElevatedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="4dp"
+            android:fontFamily="@font/inter_bold"
+            android:paddingHorizontal="0dp"
+            android:shadowColor="@color/black_shadow"
+            android:shadowDx="2"
+            android:shadowDy="4"
+            android:shadowRadius="4"
+            android:text="select"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:typeface="normal"
+            app:backgroundTint="@color/green_extra"
+            app:cornerRadius="4dp"
+            app:iconPadding="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <HorizontalScrollView
+            android:id="@+id/transit_viewer"
+            android:layout_width="0dp"
+            android:layout_height="88dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
+            android:contentDescription="Transits"
+            app:layout_constraintEnd_toStartOf="@+id/delta"
+            app:layout_constraintStart_toStartOf="@+id/time"
+            app:layout_constraintTop_toBottomOf="@+id/time">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <include layout="@layout/transit_show_small" />
+
+                <ImageView
+                    android:id="@+id/arr1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="2dp"
+                    android:rotation="180"
+                    app:layout_constraintBottom_toBottomOf="@+id/to"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:srcCompat="?attr/actionModeCloseDrawable"
+                    app:tint="@color/black" />
+
+                <include layout="@layout/transit_show_small" />
+
+                <ImageView
+                    android:id="@+id/arr2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="2dp"
+                    android:rotation="180"
+                    app:layout_constraintBottom_toBottomOf="@+id/to"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:srcCompat="?attr/actionModeCloseDrawable"
+                    app:tint="@color/black" />
+
+                <include layout="@layout/transit_show_small" />
+
+                <ImageView
+                    android:id="@+id/arr3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="2dp"
+                    android:rotation="180"
+                    app:layout_constraintBottom_toBottomOf="@+id/to"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:srcCompat="?attr/actionModeCloseDrawable"
+                    app:tint="@color/black" />
+
+                <include layout="@layout/transit_show_small" />
+
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <TextView
+            android:id="@+id/info"
+            android:layout_width="0dp"
+            android:layout_height="65dp"
+            android:layout_marginBottom="4dp"
+            android:fontFamily="@font/roboto_regular"
+            android:text="Some bla bla bla bla bla"
+            android:textColor="@color/gray_label"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/transit_viewer"
+            app:layout_constraintStart_toStartOf="@+id/transit_viewer"
+            app:layout_constraintTop_toBottomOf="@+id/transit_viewer" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

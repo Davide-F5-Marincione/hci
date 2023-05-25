@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:backgroundTint="@color/background"
+    tools:context=".ui.donations.ThanksFragment"
+    android:id="@+id/fragmentThanks">
+
+
+    <ImageView
+        android:layout_width="263dp"
+        android:layout_height="246dp"
+        android:layout_marginStart="130dp"
+        android:layout_marginTop="308dp"
+        android:layout_marginEnd="130dp"
+        android:layout_gravity="center"
+        android:src="@drawable/thank_you"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:layout_width="138dp"
+        android:layout_height="157dp"
+        android:layout_marginTop="-25dp"
+        android:src="@drawable/random_flower2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:layout_width="292dp"
+        android:layout_height="254dp"
+
+        android:layout_marginStart="-50dp"
+        android:layout_marginTop="4dp"
+        android:src="@drawable/random_flower"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:layout_width="292dp"
+        android:layout_height="254dp"
+        android:layout_marginStart="212dp"
+        android:src="@drawable/ixora"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:layout_width="292dp"
+        android:layout_height="254dp"
+        android:layout_marginStart="188dp"
+        android:layout_marginTop="640dp"
+        android:src="@drawable/hibiscus"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:layout_width="292dp"
+        android:layout_height="254dp"
+        android:layout_marginStart="-55dp"
+        android:layout_marginTop="540dp"
+        android:src="@drawable/flower"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

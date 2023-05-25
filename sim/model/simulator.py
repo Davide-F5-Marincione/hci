@@ -4,6 +4,7 @@ import random
 import time
 import numpy as np
 import cv2
+import datetime
 
 MIN = 0
 MAX = 1
@@ -153,18 +154,20 @@ class TrueBus:
 @dataclass
 class VirtualBus:
     name: str
-    route: List[str]
+    route: str
     prev_node: str
     next_node: str
     dir: int = 1
     distance_travelled: float = 0.0
     waiting: float = WAITING_SECONDS
     steps_run: float = 0.0
-    overcrowded: float = MAX_OVERCROWD_TIME_AGO
+    overcrowded: datetime.datetime = datetime.datetime.fromtimestamp(0)
+    last_signal: datetime.datetime = datetime.datetime.fromtimestamp(0)
     speed: float = EXPECTED_SPEED
     delay: float = 0.0
 
     def board_signal(self, prev_node, next_node, graph, ago=0):
+        self.last_signal = datetime.datetime.now()
         if TELEPORT:
             self.delay += self.steps_run - ago
             self.waiting = 0
@@ -185,10 +188,9 @@ class VirtualBus:
             self.speed = (conn.length() - self.distance_travelled) / time
     
     def overcrowd(self):
-        self.overcrowded = 0
+        self.overcrowded = datetime.datetime.now()
 
     def step(self, graph, routes, delta_t=1):
-        self.overcrowded = min(self.overcrowded + delta_t, MAX_OVERCROWD_TIME_AGO)
         if self.waiting > 0:  # Just wait
             self.waiting -= delta_t
         else:  # Move
@@ -296,6 +298,7 @@ class AtStop:
     time: int
     children: List[Any]
     parent: Optional[Any]
+    to_find: str
 
     def check(self, graph, buses, reached, time):
 
@@ -304,7 +307,7 @@ class AtStop:
 
         for bus in buses:
             if reached["bus-" + bus.name] is None and bus.waiting > 0 and bus.prev_node == self.name:
-                child = OnTravel(bus.name, time, bus, [], self, [(self.name, time)])
+                child = OnTravel(bus.name, time, bus, dict(), self, [(self.name, time)], self.to_find)
                 self.children.append(child)
                 reached["bus-" + bus.name] = child
 @dataclass
@@ -312,80 +315,98 @@ class OnTravel:
     name: str
     time: str
     bus: SearchBus
-    children: List[AtStop]
+    children: Dict[str, AtStop]
     parent: AtStop
     stops: List[Tuple[str, int]]
+    to_find: str
+    found: bool = False
 
     def check(self, graph, buses, reached, time):
-        for child in self.children:
+        if self.found:
+            return
+
+        for child in self.children.values():
             child.check(graph, buses, reached, time)
 
         if self.bus.waiting > 0:
             if self.stops[-1][0] != self.bus.prev_node:
                 self.stops.append((self.bus.prev_node, time))
 
-            if reached["stop-" + self.bus.prev_node] is None:
-                child = AtStop(self.bus.prev_node, time, [], self)
-                self.children.append(child)
-                reached["stop-" + self.bus.prev_node] = child
+                if self.children.get(self.bus.prev_node, None) is None:
+                    child = AtStop(self.bus.prev_node, time, [], self, self.to_find)
+                    self.children[self.bus.prev_node] = child
+
+                    reached["stop-" + self.bus.prev_node].append(child)
+
+                if self.bus.prev_node == self.to_find:
+                    self.found = True
 
 def directions(start, end, graph, routes, vbuses):
     # Deep-copy buses
     buses = [SearchBus(bus.name, bus.route, bus.prev_node, bus.next_node, bus.dir, bus.distance_travelled, bus.waiting, bus.steps_run, bus.speed) for bus in vbuses.values()]
     
     seconds_passed = 0
-    tree = AtStop(start, seconds_passed, [], None)
+    tree = AtStop(start, seconds_passed, [], None, end)
     reached = {"bus-" + bus.name: None for bus in buses}
-    reached.update({"stop-" + stop.name: None for stop in graph.stops.values()})
-    reached["stop-" + start] = tree
+    reached.update({"stop-" + stop.name: [] for stop in graph.stops.values()})
+    reached["stop-" + start].append(tree)
 
-    run = True
-    while seconds_passed < 3600 and run:
+    first_found = False
+    max_time = 3600
+    while seconds_passed < max_time:
         tree.check(graph, buses, reached, seconds_passed)
 
-        if reached["stop-" + end] is not None:
-            run = False
+        if len(reached["stop-" + end]) > 1 and not first_found:
+            first_found = True
+            max_time = seconds_passed + 1800
+
+        if len(reached["stop-" + end]) >= 3:
+            max_time = 0
 
         for bus in buses:
             bus.step(graph, routes)
 
         seconds_passed += 1
 
-    if run:
+    print(tree)
+
+    if len(reached["stop-" + end]) < 1:
         print("Couldn't find route")
         return None
     else:
-        unravel = []
-        elem = reached["stop-" + end]
-        while elem is not None:
-            unravel.append(elem)
-            elem = elem.parent
+        results = []
+        for elem in reached["stop-" + end]:
+            unravel = []
+            while elem is not None:
+                unravel.append(elem)
+                elem = elem.parent
 
-        lst = unravel[::-1]
+            lst = unravel[::-1]
 
-        foo = []
+            foo = []
 
-        i = 0
-        while i < len(lst) - 1:
-            board = lst[i]
-            bus = lst[i+1]
-            unboard = lst[i+2]
-            i = i+2
+            i = 0
+            while i < len(lst) - 1:
+                board = lst[i]
+                bus = lst[i+1]
+                unboard = lst[i+2]
+                i = i+2
 
-            found_board = False
-            bar = []
+                found_board = False
+                bar = []
 
-            for place, time in bus.stops:
-                if not found_board:
-                    if place == board.name:
+                for place, time in bus.stops:
+                    if not found_board:
+                        if place == board.name:
+                            bar.append((place, time))
+                            found_board = True
+                    else:
                         bar.append((place, time))
-                        found_board = True
-                else:
-                    bar.append((place, time))
-                    if place == unboard.name:
-                        break
-            foo.append((bus.name, bar))
-        return foo
+                        if place == unboard.name:
+                            break
+                foo.append((bus.name, bar))
+            results.append(foo)
+        return results
             
 
 
@@ -411,25 +432,25 @@ if __name__ == "__main__":
     graph.stops["G"].x = 2500
     graph.stops["G"].y = 4750
 
-    v_buses = { "A1": VirtualBus("A1", ["A", "B", "C", "D", "C", "B"], "A", "B"),
-                "A2": VirtualBus("A2", ["C", "D", "C", "B", "A", "B"], "C", "D"),
-                "1A": VirtualBus("1A", ["D", "C", "B", "A", "B", "C"], "D", "C"),
-                "B1": VirtualBus("B1", ["C", "E", "F", "E"], "C", "E"),
-                "1B": VirtualBus("1B", ["F", "E", "C", "E"], "F", "E"),
-                "C1": VirtualBus("C1", ["D", "G", "F", "G"], "D", "G"),
-                "1C": VirtualBus("1C", ["F", "G", "D", "G"], "F", "G")}
+    v_buses = { "A1": VirtualBus("A1", "A", "A", "B"),
+                "A3": VirtualBus("A3", "A", "C", "D"),
+                "A2": VirtualBus("A2", "A", "D", "C", -1),
+                "B1": VirtualBus("B1", "B", "C", "E"),
+                "B2": VirtualBus("B2", "B", "F", "E", -1),
+                "C1": VirtualBus("C1", "C", "D", "G"),
+                "C2": VirtualBus("C2", "C", "F", "G", -1)}
 
-    buses = {   "A1": TrueBus("A1", ["A", "B", "C", "D", "C", "B"], "A", "B"),
-                "A2": TrueBus("A2", ["C", "D", "C", "B", "A", "B"], "C", "D"),
-                "1A": TrueBus("1A", ["D", "C", "B", "A", "B", "C"], "D", "C"),
-                "B1": TrueBus("B1", ["C", "E", "F", "E"], "C", "E"),
-                "1B": TrueBus("1B", ["F", "E", "C", "E"], "F", "E"),
-                "C1": TrueBus("C1", ["D", "G", "F", "G"], "D", "G"),
-                "1C": TrueBus("1C", ["F", "G", "D", "G"], "F", "G")}
+    buses = {   "A1": TrueBus("A1", "A", "A", "B"),
+                "A3": TrueBus("A3", "A", "C", "D"),
+                "A2": TrueBus("A2", "A", "D", "C", -1),
+                "B1": TrueBus("B1", "B", "C", "E"),
+                "B2": TrueBus("B2", "B", "F", "E", -1),
+                "C1": TrueBus("C1", "C", "D", "G"),
+                "C2": TrueBus("C2", "C", "F", "G", -1)}
 
-    routes = {"A":Route("A", (255, 0, 0), ["A", "B", "C", "D"]),
-                "B":Route("B", (0, 255, 0), ["C", "E", "F"]),
-                "C":Route("C", (0, 0, 255), ["D", "G", "F"])}
+    routes = {"A": Route("A", (255, 0, 0), ["A", "B", "C", "D"]),
+              "B": Route("B", (0, 255, 0), ["C", "E", "F"]),
+              "C": Route("C", (0, 0, 255), ["D", "G", "F"])}
     
     for route in routes.values():
         this_buses = []
