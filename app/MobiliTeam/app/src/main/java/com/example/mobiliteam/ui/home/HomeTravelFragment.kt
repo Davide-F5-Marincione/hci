@@ -23,12 +23,32 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileReader
 
-class actual_route(){
+class Route(){
     public var from: String = ""
     public var to: String = ""
     public var starting_time: String = ""
     public var arrival_time: String = ""
     public var list_of_transport: MutableList<transport> = mutableListOf<transport>()
+
+    fun GetDuration():String{
+        var start = starting_time.split(":")
+        var end = arrival_time.split(":")
+        var start_hour = start[0].toInt()
+        var start_min = start[1].toInt()
+        var end_hour = end[0].toInt()
+        var end_min = end[1].toInt()
+        var duration_hour = end_hour - start_hour
+        var duration_min = end_min - start_min
+        if (duration_min<0){
+            duration_hour = duration_hour - 1
+            duration_min = duration_min + 60
+        }
+
+        if (duration_hour==0){
+            return duration_min.toString() + "min"
+        }
+        return  duration_hour.toString() + "h " + duration_min.toString() + "min"
+    }
 }
 class transport(){
     public var from: String = ""
@@ -74,7 +94,7 @@ class HomeTravelFragment : Fragment() {
         transport1.type = "Bus"
         transport1.list_of_stops.add("Piazza Bologna")
         transport1.list_of_stops.add("Verano")
-        var actualRoute = actual_route()
+        var actualRoute = Route()
         actualRoute.from = "Piazza Bologna"
         actualRoute.to = "Verano"
         actualRoute.starting_time = "12:00"
@@ -94,7 +114,7 @@ class HomeTravelFragment : Fragment() {
             var cardLeftBinding = inflater.inflate(R.layout.card_left, container, false)
             cardLeftBinding.findViewById<TextView>(R.id.actual_from).text = actualRoute.from
             cardLeftBinding.findViewById<TextView>(R.id.actual_to).text = actualRoute.to
-            cardLeftBinding.findViewById<TextView>(R.id.time).text = actualRoute.starting_time+" - "+actualRoute.arrival_time
+            cardLeftBinding.findViewById<TextView>(R.id.bus_time).text = actualRoute.starting_time+" - "+actualRoute.arrival_time
             var busseslist : HorizontalScrollView = cardLeftBinding.findViewById<HorizontalScrollView>(R.id.transit_viewer)
             busseslist.removeAllViews()
             for(transport in actualRoute.list_of_transport) {
@@ -130,7 +150,6 @@ class HomeTravelFragment : Fragment() {
         //read file and populate recent_routes
         val recent_routes : MutableList<Array<String>> = mutableListOf()
 
-        // Questa cosa mi dava errore? Boh, l'ho commentata -Davide
 
 
 
@@ -157,6 +176,8 @@ class HomeTravelFragment : Fragment() {
                 cardRecentView.findViewById<TextView>(R.id.actual_to).text = route[1]
                 cardRecentView.setOnClickListener {
                     val intent = Intent(context, TravelActivity::class.java)
+                    intent.putExtra("from",route[0])
+                    intent.putExtra("to", route[1])
                     startActivity(intent)
                 }
                 linearLayout.addView(cardRecentView)

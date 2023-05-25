@@ -15,14 +15,14 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.mobiliteam.databinding.ActivityTravelBinding
-import com.example.mobiliteam.ui.home.actual_route
+import com.example.mobiliteam.ui.home.Route
 
 
 class TravelActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     lateinit var binding: ActivityTravelBinding
-    public var actual_route: actual_route = actual_route()
+    public var actual_route: Route = Route()
     public var from : String = ""
     public var to : String = ""
 
