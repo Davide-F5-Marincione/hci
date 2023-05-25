@@ -19,7 +19,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.mobiliteam.R
 import com.example.mobiliteam.TravelActivity
 import com.example.mobiliteam.databinding.FragmentTravelBinding
-import com.google.android.material.textfield.TextInputLayout
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileReader

@@ -36,7 +36,7 @@ class SearchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.root.findViewById<MaterialButton>(R.id.continueButton).setOnClickListener {
+        binding.root.findViewById<MaterialButton>(R.id.cardSelectButton).setOnClickListener {
             findNavController().navigate(R.id.action_SearchFragment_to_SelectFragment)
         }
 
