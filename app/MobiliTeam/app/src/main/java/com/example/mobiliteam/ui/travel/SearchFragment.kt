@@ -151,8 +151,11 @@ class SearchFragment : Fragment() {
                 transport_view.findViewById<TextView>(R.id.transit_desc).text=transport.line
             }
             CardLayout.removeViewAt(CardLayout.childCount-1)
-
-            RouteCard.findViewById<MaterialButton>(R.id.cardSelectButton).setOnClickListener {
+            RouteCard.setOnClickListener{
+                travelActivity.actual_route = route
+                findNavController().navigate(R.id.action_SearchFragment_to_SelectFragment)
+            }
+           RouteCard.findViewById<MaterialButton>(R.id.cardSelectButton).setOnClickListener{
                 travelActivity.actual_route = route
                 findNavController().navigate(R.id.action_SearchFragment_to_PathFollowFragment)
             }
