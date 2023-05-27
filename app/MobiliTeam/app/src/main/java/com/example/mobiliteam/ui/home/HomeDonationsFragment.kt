@@ -120,9 +120,9 @@ class HomeDonationsFragment : Fragment() {
     }
 
     fun reloadCredits() {
-        Log.d("ProfileInfoGET", "Getting info for " + (activity?.application as MobiliTeam).usernameStore.username)
+        Log.d("ProfileInfoGET", "Getting info for " + (activity?.application as MobiliTeam).store.username)
 
-        val username = (activity?.application as MobiliTeam).usernameStore.username
+        val username = (activity?.application as MobiliTeam).store.username
 
         //check if the username is 'admin' then directly go to the home page
         if(username == "admin"){
@@ -166,7 +166,7 @@ class HomeDonationsFragment : Fragment() {
         countDownLatch.await()
 
         if (credits != null) {
-            binding.numAvailableCredits.text = credits
+            binding.fragmentDonationsNumCredits.text = credits
         }
     }
 }

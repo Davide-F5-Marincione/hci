@@ -42,9 +42,9 @@ class HomeProfileFragment : Fragment() {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         val root = binding.root
 
-        binding.logoutThingie.setOnClickListener {
+        binding.fragmentProfileLogoutThingie.setOnClickListener {
             val act = activity as HomeActivity
-            (activity?.application as MobiliTeam).usernameStore.username = ""
+            (activity?.application as MobiliTeam).store.username = ""
             act.launchLogIn()
         }
 
@@ -83,9 +83,9 @@ class HomeProfileFragment : Fragment() {
     }
 
     fun fillProfileInfo() {
-        Log.d("ProfileInfoGET", "Getting info for " + (activity?.application as MobiliTeam).usernameStore.username)
+        Log.d("ProfileInfoGET", "Getting info for " + (activity?.application as MobiliTeam).store.username)
 
-        val username = (activity?.application as MobiliTeam).usernameStore.username
+        val username = (activity?.application as MobiliTeam).store.username
 
         //check if the username is 'admin' then directly go to the home page
         if(username == "admin"){
@@ -139,13 +139,13 @@ class HomeProfileFragment : Fragment() {
         countDownLatch.await()
 
         if (firstname != null) {
-            binding.profileName.text = username
-            binding.numCredits.text = credits
-            binding.actualFirstname.text = firstname
-            binding.actualLastname.text = lastname
-            binding.actualEmail.text = email
-            binding.numReports.text = reports
-            binding.numDonations.text = donations
+            binding.fragmentProfileUsername.text = username
+            binding.fragmentProfileNumCredits.text = credits
+            binding.fragmentProfileActualFirstName.text = firstname
+            binding.fragmentProfileActualLastName.text = lastname
+            binding.fragmentProfileActualEmail.text = email
+            binding.fragmentProfileNumReports.text = reports
+            binding.fragmentProfileNumDonations.text = donations
         }
     }
 }

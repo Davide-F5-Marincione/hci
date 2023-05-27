@@ -1,7 +1,10 @@
 package com.example.mobiliteam.ui.home
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableStringBuilder
 import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -14,12 +17,20 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.TextView.OnEditorActionListener
+import androidx.annotation.DrawableRes
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.mobiliteam.MobiliTeam
 import com.example.mobiliteam.R
 import com.example.mobiliteam.TravelActivity
+import com.example.mobiliteam.VerticalImageSpan
+import com.example.mobiliteam.addImage
+import com.example.mobiliteam.createDelay
 import com.example.mobiliteam.databinding.FragmentTravelBinding
+import com.example.mobiliteam.extractTime
+import com.example.mobiliteam.summaryMaker
+import com.google.android.material.textfield.TextInputEditText
 import org.json.JSONObject
 import java.io.File
 import java.io.FileNotFoundException
@@ -53,11 +64,25 @@ class HomeTravelFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.toInputEdit.setOnEditorActionListener(
+        val textViewEdit = binding.fragmentTravelFromInput
+        textViewEdit.editText?.setText("[current-pos] A")
+
+        binding.fragmentTravelFromInputEdit.setOnEditorActionListener(
             OnEditorActionListener { v, actionId, event ->
                 if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE || event != null && event.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_ENTER) {
-                    if (event == null || !event.isShiftPressed) {
-                        searchRoute(binding.fromInputEdit.text.toString(), binding.toInputEdit.text.toString())
+                    if (event == null || !event.isShiftPressed || binding.fragmentTravelToInputEdit.text.toString().isNotEmpty()) {
+                        searchRoute(binding.fragmentTravelFromInputEdit.text.toString(), binding.fragmentTravelToInputEdit.text.toString())
+                    }
+                }
+                false // pass on to other listeners.
+            }
+        )
+
+        binding.fragmentTravelToInputEdit.setOnEditorActionListener(
+            OnEditorActionListener { v, actionId, event ->
+                if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE || event != null && event.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_ENTER) {
+                    if (event == null || !event.isShiftPressed || binding.fragmentTravelFromInputEdit.text.toString().isNotEmpty()) {
+                        searchRoute(binding.fragmentTravelFromInputEdit.text.toString(), binding.fragmentTravelToInputEdit.text.toString())
                     }
                 }
                 false // pass on to other listeners.
@@ -68,9 +93,13 @@ class HomeTravelFragment : Fragment() {
     override fun onResume() {
         super.onResume()
 
+        binding.fragmentTravelFromInput.addImage("[current-pos]", R.drawable.current_position,
+            resources.getDimensionPixelOffset(R.dimen.dp_30),
+            resources.getDimensionPixelOffset(R.dimen.dp_30))
+
         val inflater = activity?.layoutInflater!!
 
-        val linearLayout: LinearLayout = binding.linearLayout
+        val linearLayout: LinearLayout = binding.fragmentTravelContainer
         linearLayout.removeAllViews()
 
 
@@ -79,55 +108,83 @@ class HomeTravelFragment : Fragment() {
             val route = (activity?.application as MobiliTeam).route_left!!
 
             // Add banner
-            val banner = inflater.inflate(R.layout.list_banner, linearLayout, true) as TextView
+            val banner = inflater.inflate(R.layout.list_banner, null) as TextView
             banner.text = "WHERE YOU LEFT"
+            linearLayout.addView(banner)
 
             // Create card
-            val cardLeftBinding = inflater.inflate(R.layout.card_left, linearLayout, true)
-            cardLeftBinding.findViewById<TextView>(R.id.actual_from).text = route.getString("from")
-            cardLeftBinding.findViewById<TextView>(R.id.actual_to).text = route.getString("to")
-            cardLeftBinding.findViewById<TextView>(R.id.bus_time).text = route.getString("departure_time")+" - "+ route.getString("arrival_time")
+            val cardLeftBinding = inflater.inflate(R.layout.card_left, null)
+            cardLeftBinding.findViewById<TextView>(R.id.left_card_actualFrom).text = route.getString("from")
+            cardLeftBinding.findViewById<TextView>(R.id.left_card_actualTo).text = route.getString("to")
+            cardLeftBinding.findViewById<TextView>(R.id.left_card_times).text = extractTime(route.getString("departure_time"))+" - "+ extractTime(route.getString("arrival_time"))
+
+            cardLeftBinding.findViewById<TextView>(R.id.left_card_info).text = summaryMaker(route)
 
             // Fill card's horizontal shower of transits
-            val transitsShower : HorizontalScrollView = cardLeftBinding.findViewById<HorizontalScrollView>(R.id.transit_viewer)
+            val transitsShower : LinearLayout = cardLeftBinding.findViewById<LinearLayout>(R.id.left_card_container)
             transitsShower.removeAllViews()
             val routeTransit = route.getJSONArray("transits")
             for(i: Int in 0 until routeTransit.length()) {
                 val transit = routeTransit.getJSONObject(i)
-                val transportView = inflater.inflate(R.layout.transit_show_small, transitsShower, true)
-                transportView.findViewById<TextView>(R.id.transit_desc).text = transit.getString("transit_line")
+                val transportView = inflater.inflate(R.layout.transit_show_small, null)
+                transportView.findViewById<TextView>(R.id.small_transit_desc).text = transit.getString("transit_line")
+                val delay = createDelay(transit)
+                if (delay != null) {
+                    transportView.findViewById<TextView>(R.id.small_transit_delay).text = delay
+                } else {
+                    transportView.findViewById<TextView>(R.id.small_transit_delay).visibility = View.GONE
+                }
+                when (transit.getString("transit_type")) {
+                    "tram" -> transportView.findViewById<ImageView>(R.id.small_transit_img).setImageResource(R.drawable.tram)
+                    "bus" -> transportView.findViewById<ImageView>(R.id.small_transit_img).setImageResource(R.drawable.bus)
+                }
+                transportView.findViewById<ImageView>(R.id.small_transit_img).setColorFilter(Color.parseColor(transit.getString("transit_color")))
+
+                transitsShower.addView(transportView)
+
+                if (i < routeTransit.length() - 1) {
+                    transitsShower.addView(inflater.inflate(R.layout.da_arrow,null))
+                }
             }
 
             // Add actions to card
-            cardLeftBinding.findViewById<Button>(R.id.continueButton).setOnClickListener{
+            cardLeftBinding.findViewById<Button>(R.id.left_card_continueButton).setOnClickListener{
                 continueRoute()
             }
-            cardLeftBinding.findViewById<ImageView>(R.id.close_x).setOnClickListener{
+            cardLeftBinding.findViewById<ImageView>(R.id.left_card_closeX).setOnClickListener{
                 linearLayout.removeView(cardLeftBinding)
                 linearLayout.removeView(banner)
                 (activity?.application as MobiliTeam).route_left = null
             }
+
+            linearLayout.addView(cardLeftBinding)
         }
 
 
-        val recentRoutes = (activity?.application as MobiliTeam).recentRoutesStore.recentRoutes
+        val recentRoutes = (activity?.application as MobiliTeam).store.recentRoutes
+
+        Log.d("AAAAA", recentRoutes.toString())
 
         if(recentRoutes.length() > 0){
             // Add banner
-            val banner = inflater.inflate(R.layout.list_banner, linearLayout, true) as TextView
+            val banner = inflater.inflate(R.layout.list_banner, null) as TextView
             banner.text = "RECENT ROUTES"
+            linearLayout.addView(banner)
+
 
             // Add all routes
             for (i: Int in 0 until recentRoutes.length()) {
 
                 val route: JSONObject = recentRoutes.getJSONObject(i)
 
-                val cardRecentView = inflater.inflate(R.layout.card_recent, linearLayout, true)
-                cardRecentView.findViewById<TextView>(R.id.actual_from).text = route.getString("from")
-                cardRecentView.findViewById<TextView>(R.id.actual_to).text = route.getString("to")
+                val cardRecentView = inflater.inflate(R.layout.card_recent, null)
+                cardRecentView.findViewById<TextView>(R.id.recent_card_actualFrom).text = route.getString("from")
+                cardRecentView.findViewById<TextView>(R.id.recent_card_actualTo).text = route.getString("to")
                 cardRecentView.setOnClickListener {
                     searchRoute(route.getString("from"), route.getString("to"))
                 }
+
+                linearLayout.addView(cardRecentView)
             }
         }
     }

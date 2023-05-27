@@ -6,12 +6,11 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF"
     android:backgroundTint="@color/background"
-    tools:context=".ui.travel.SelectFragment"
-    android:id="@+id/fragmentSelect">
+    tools:context=".ui.travel.SelectFragment">
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout2"
+        android:id="@+id/fragment_select_topBanner"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@color/gray_neutral"
@@ -20,7 +19,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/textView5"
+            android:id="@+id/fragment_select_fromTo"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -33,12 +32,12 @@
             android:textAlignment="textStart"
             android:textColor="@color/black"
             android:textSize="20sp"
-            app:layout_constraintEnd_toStartOf="@+id/textView6"
+            app:layout_constraintEnd_toStartOf="@+id/fragment_select_times"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/textView6"
+            android:id="@+id/fragment_select_times"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
@@ -53,18 +52,17 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ScrollView
-        android:id="@+id/scrollView2"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/fragmentSelectButton"
+        app:layout_constraintBottom_toTopOf="@+id/fragment_select_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout2"
+        app:layout_constraintTop_toBottomOf="@+id/fragment_select_topBanner"
         app:layout_constraintVertical_bias="0.0">
 
         <LinearLayout
-            android:id="@+id/linearLayout"
+            android:id="@+id/fragment_select_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:divider="@drawable/select_fragment_divider"
@@ -87,7 +85,7 @@
     </ScrollView>
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/fragmentSelectButton"
+        android:id="@+id/fragment_select_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="#FFFFFF"

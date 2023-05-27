@@ -1,10 +1,10 @@
 package com.example.mobiliteam
 
 import android.app.Application
-import com.example.mobiliteam.data.RecentRoutesStore
-import com.example.mobiliteam.data.UsernameStore
+import com.example.mobiliteam.data.MyStore
 import okhttp3.OkHttpClient
 import org.json.JSONObject
+
 
 class MobiliTeam : Application() {
     // Volatile stuff
@@ -12,8 +12,7 @@ class MobiliTeam : Application() {
     var route_left: JSONObject? = null
 
     // Permanent stuff
-    val usernameStore: UsernameStore = UsernameStore(this)
-    val recentRoutesStore: RecentRoutesStore = RecentRoutesStore(this)
+    val store: MyStore = MyStore(this)
 
     // Support stuff
     val client: OkHttpClient = OkHttpClient()

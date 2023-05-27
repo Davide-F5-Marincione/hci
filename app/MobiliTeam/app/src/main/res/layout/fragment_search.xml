@@ -6,11 +6,10 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF"
     android:backgroundTint="@color/background"
-    tools:context=".ui.travel.SearchFragment"
-    android:id="@+id/fragmentSearch">
+    tools:context=".ui.travel.SearchFragment">
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/fromInput"
+        android:id="@+id/fragment_search_fromInput"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -24,6 +23,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/fragment_search_fromInputEdit"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:backgroundTint="#FFFFFF"
@@ -34,7 +34,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/toInput"
+        android:id="@+id/fragment_search_toInput"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -45,9 +45,10 @@
         app:boxBackgroundMode="outline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fromInput">
+        app:layout_constraintTop_toBottomOf="@+id/fragment_search_fromInput">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/fragment_search_toInputEdit"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:backgroundTint="#FFFFFF"
@@ -64,10 +65,10 @@
         app:layout_constrainedHeight="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toInput">
+        app:layout_constraintTop_toBottomOf="@+id/fragment_search_toInput">
 
         <LinearLayout
-            android:id="@+id/searchlayout"
+            android:id="@+id/fragment_search_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:divider="@drawable/divider"
@@ -81,7 +82,6 @@
                 android:visibility="visible" />
 
             <include
-                android:id="@+id/search_card"
                 layout="@layout/card_search"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -44,7 +44,7 @@ class HomeActivity : AppCompatActivity() {
             val username = intent?.getStringExtra("username")
 
             Log.d("GivenUsername", username.toString())
-            (this.application as MobiliTeam).usernameStore.username = username.toString()
+            (this.application as MobiliTeam).store.username = username.toString()
         }
     }
 
@@ -70,7 +70,7 @@ class HomeActivity : AppCompatActivity() {
             tab.text = TAB_TITLES[position]
         }.attach()
 
-        (this.application as MobiliTeam).auth = logIn((this.application as MobiliTeam).usernameStore.username)
+        (this.application as MobiliTeam).auth = logIn((this.application as MobiliTeam).store.username)
         if ((this.application as MobiliTeam).auth == null) {
             launchLogIn()
         }

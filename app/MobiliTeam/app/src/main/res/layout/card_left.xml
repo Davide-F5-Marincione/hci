@@ -14,7 +14,7 @@
         android:layout_height="match_parent">
 
         <ImageView
-            android:id="@+id/close_x"
+            android:id="@+id/left_card_closeX"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
@@ -26,7 +26,7 @@
             app:tint="@color/red_destructive" />
 
         <TextView
-            android:id="@+id/bus_time"
+            android:id="@+id/left_card_times"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
@@ -42,7 +42,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/actual_to"
+            android:id="@+id/left_card_actualTo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
@@ -50,11 +50,11 @@
             android:text="Actual To"
             android:textColor="@color/black"
             android:textSize="20sp"
-            app:layout_constraintStart_toEndOf="@+id/from"
-            app:layout_constraintTop_toBottomOf="@+id/actual_from" />
+            app:layout_constraintStart_toEndOf="@+id/left_card_fromText"
+            app:layout_constraintTop_toBottomOf="@+id/left_card_actualFrom" />
 
         <TextView
-            android:id="@+id/actual_from"
+            android:id="@+id/left_card_actualFrom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
@@ -62,11 +62,11 @@
             android:text="Actual From"
             android:textColor="@color/black"
             android:textSize="20sp"
-            app:layout_constraintStart_toEndOf="@+id/from"
-            app:layout_constraintTop_toTopOf="@+id/from" />
+            app:layout_constraintStart_toEndOf="@+id/left_card_fromText"
+            app:layout_constraintTop_toTopOf="@+id/left_card_fromText" />
 
         <TextView
-            android:id="@+id/from"
+            android:id="@+id/left_card_fromText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -79,7 +79,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/to"
+            android:id="@+id/left_card_toText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -88,10 +88,10 @@
             android:textColor="@color/black"
             android:textSize="20sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/from" />
+            app:layout_constraintTop_toBottomOf="@+id/left_card_fromText" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/continueButton"
+            android:id="@+id/left_card_continueButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
@@ -115,16 +115,17 @@
             app:layout_constraintEnd_toEndOf="parent" />
 
         <HorizontalScrollView
-            android:id="@+id/transit_viewer"
+            android:id="@+id/left_card_HScroll"
             android:layout_width="0dp"
             android:layout_height="88dp"
             android:layout_marginTop="2dp"
             android:contentDescription="Transits"
-            app:layout_constraintEnd_toStartOf="@+id/bus_time"
-            app:layout_constraintStart_toStartOf="@+id/to"
-            app:layout_constraintTop_toBottomOf="@+id/actual_to">
+            app:layout_constraintEnd_toStartOf="@+id/left_card_times"
+            app:layout_constraintStart_toStartOf="@+id/left_card_toText"
+            app:layout_constraintTop_toBottomOf="@+id/left_card_actualTo">
 
             <LinearLayout
+                android:id = "@+id/left_card_container"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
@@ -148,7 +149,7 @@
         </HorizontalScrollView>
 
         <TextView
-            android:id="@+id/info"
+            android:id="@+id/left_card_info"
             android:layout_width="0dp"
             android:layout_height="65dp"
             android:layout_marginStart="16dp"
@@ -158,9 +159,9 @@
             android:textColor="@color/gray_label"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/transit_viewer"
+            app:layout_constraintEnd_toEndOf="@+id/left_card_HScroll"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/transit_viewer" />
+            app:layout_constraintTop_toBottomOf="@+id/left_card_HScroll" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

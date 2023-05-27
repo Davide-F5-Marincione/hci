@@ -90,9 +90,9 @@ class DonationFragment : Fragment() {
     }
 
     fun reloadCredits() {
-        Log.d("ProfileInfoGET", "Getting info for " + (activity?.application as MobiliTeam).usernameStore.username)
+        Log.d("ProfileInfoGET", "Getting info for " + (activity?.application as MobiliTeam).store.username)
 
-        val username = (activity?.application as MobiliTeam).usernameStore.username
+        val username = (activity?.application as MobiliTeam).store.username
 
         //check if the username is 'admin' then directly go to the home page
         if(username == "admin"){
@@ -148,9 +148,9 @@ class DonationFragment : Fragment() {
             return
         }
 
-        Log.d("Donating", (activity?.application as MobiliTeam).usernameStore.username + " is donating " + donation_amount.toString())
+        Log.d("Donating", (activity?.application as MobiliTeam).store.username + " is donating " + donation_amount.toString())
 
-        val username = (activity?.application as MobiliTeam).usernameStore.username
+        val username = (activity?.application as MobiliTeam).store.username
 
         //check if the username is 'admin' then directly go to the home page
         if(username == "admin"){

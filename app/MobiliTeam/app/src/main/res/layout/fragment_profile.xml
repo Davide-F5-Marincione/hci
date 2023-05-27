@@ -9,7 +9,7 @@
     tools:context=".ui.home.HomeProfileFragment">
 
     <ImageView
-        android:id="@+id/profileImg"
+        android:id="@+id/fragment_profile_img"
         android:layout_width="102dp"
         android:layout_height="99dp"
         android:layout_marginStart="43dp"
@@ -21,7 +21,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/profile_name"
+        android:id="@+id/fragment_profile_username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
@@ -30,11 +30,11 @@
         android:textColor="@color/black"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/profileImg"
-        app:layout_constraintStart_toEndOf="@+id/profileImg" />
+        app:layout_constraintBottom_toBottomOf="@+id/fragment_profile_img"
+        app:layout_constraintStart_toEndOf="@+id/fragment_profile_img" />
 
     <TextView
-        android:id="@+id/num_credits"
+        android:id="@+id/fragment_profile_num_credits"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
@@ -43,11 +43,11 @@
         android:textColor="@color/black"
         android:textStyle="bold"
         android:textSize="20sp"
-        app:layout_constraintStart_toEndOf="@+id/current_credits"
-        app:layout_constraintTop_toTopOf="@+id/current_credits" />
+        app:layout_constraintStart_toEndOf="@+id/fragment_profile_currentCreditsText"
+        app:layout_constraintTop_toTopOf="@+id/fragment_profile_currentCreditsText" />
 
     <TextView
-        android:id="@+id/current_credits"
+        android:id="@+id/fragment_profile_currentCreditsText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -58,10 +58,10 @@
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profileImg" />
+        app:layout_constraintTop_toBottomOf="@+id/fragment_profile_img" />
 
     <View
-        android:id="@+id/view"
+        android:id="@+id/fragment_profile_bar1"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginStart="12dp"
@@ -70,10 +70,10 @@
         android:background="@android:color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/num_credits" />
+        app:layout_constraintTop_toBottomOf="@+id/fragment_profile_num_credits" />
 
     <TextView
-        android:id="@+id/personal_info"
+        android:id="@+id/fragment_profile_personalInfoText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
@@ -84,10 +84,10 @@
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view" />
+        app:layout_constraintTop_toBottomOf="@+id/fragment_profile_bar1" />
 
     <TextView
-        android:id="@+id/actual_firstname"
+        android:id="@+id/fragment_profile_actualFirstName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="2dp"
@@ -96,11 +96,11 @@
         android:textColor="@color/black"
         android:textStyle="bold"
         android:textSize="20sp"
-        app:layout_constraintStart_toEndOf="@+id/first_name"
-        app:layout_constraintTop_toTopOf="@+id/first_name" />
+        app:layout_constraintStart_toEndOf="@+id/fragment_profile_firstNameText"
+        app:layout_constraintTop_toTopOf="@+id/fragment_profile_firstNameText" />
 
     <TextView
-        android:id="@+id/first_name"
+        android:id="@+id/fragment_profile_firstNameText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -111,10 +111,10 @@
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/personal_info" />
+        app:layout_constraintTop_toBottomOf="@+id/fragment_profile_personalInfoText" />
 
     <TextView
-        android:id="@+id/actual_lastname"
+        android:id="@+id/fragment_profile_actualLastName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="2dp"
@@ -123,11 +123,11 @@
         android:textColor="@color/black"
         android:textStyle="bold"
         android:textSize="20sp"
-        app:layout_constraintStart_toEndOf="@+id/last_name"
-        app:layout_constraintTop_toTopOf="@+id/last_name" />
+        app:layout_constraintStart_toEndOf="@+id/fragment_profile_lastNameText"
+        app:layout_constraintTop_toTopOf="@+id/fragment_profile_lastNameText" />
 
     <TextView
-        android:id="@+id/last_name"
+        android:id="@+id/fragment_profile_lastNameText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -138,11 +138,11 @@
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/first_name" />
+        app:layout_constraintTop_toBottomOf="@+id/fragment_profile_firstNameText" />
 
 
     <TextView
-        android:id="@+id/actual_email"
+        android:id="@+id/fragment_profile_actualEmail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="2dp"
@@ -151,11 +151,11 @@
         android:textColor="@color/black"
         android:textStyle="bold"
         android:textSize="20sp"
-        app:layout_constraintStart_toEndOf="@+id/email_address"
-        app:layout_constraintTop_toTopOf="@+id/email_address" />
+        app:layout_constraintStart_toEndOf="@+id/fragment_profile_emailText"
+        app:layout_constraintTop_toTopOf="@+id/fragment_profile_emailText" />
 
     <TextView
-        android:id="@+id/email_address"
+        android:id="@+id/fragment_profile_emailText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -166,10 +166,10 @@
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/last_name" />
+        app:layout_constraintTop_toBottomOf="@+id/fragment_profile_lastNameText" />
 
     <View
-        android:id="@+id/view2"
+        android:id="@+id/fragment_profile_bar2"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginStart="12dp"
@@ -179,10 +179,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/email_address" />
+        app:layout_constraintTop_toBottomOf="@+id/fragment_profile_emailText" />
 
     <TextView
-        android:id="@+id/stats"
+        android:id="@+id/fragment_profile_statsText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
@@ -193,10 +193,10 @@
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view2" />
+        app:layout_constraintTop_toBottomOf="@+id/fragment_profile_bar2" />
 
     <TextView
-        android:id="@+id/num_reports"
+        android:id="@+id/fragment_profile_numReports"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="2dp"
@@ -205,11 +205,11 @@
         android:textColor="@color/black"
         android:textStyle="bold"
         android:textSize="20sp"
-        app:layout_constraintStart_toEndOf="@+id/total_reports"
-        app:layout_constraintTop_toTopOf="@+id/total_reports" />
+        app:layout_constraintStart_toEndOf="@+id/fragment_profile_totalReportsText"
+        app:layout_constraintTop_toTopOf="@+id/fragment_profile_totalReportsText" />
 
     <TextView
-        android:id="@+id/total_reports"
+        android:id="@+id/fragment_profile_totalReportsText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -220,10 +220,10 @@
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/stats" />
+        app:layout_constraintTop_toBottomOf="@+id/fragment_profile_statsText" />
 
     <TextView
-        android:id="@+id/num_donations"
+        android:id="@+id/fragment_profile_numDonations"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="2dp"
@@ -232,11 +232,11 @@
         android:textColor="@color/black"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@+id/total_donations"
-        app:layout_constraintTop_toTopOf="@+id/total_donations" />
+        app:layout_constraintStart_toEndOf="@+id/fragment_profile_totalDonationsText"
+        app:layout_constraintTop_toTopOf="@+id/fragment_profile_totalDonationsText" />
 
     <TextView
-        android:id="@+id/total_donations"
+        android:id="@+id/fragment_profile_totalDonationsText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -247,10 +247,10 @@
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/total_reports" />
+        app:layout_constraintTop_toBottomOf="@+id/fragment_profile_totalReportsText" />
 
     <View
-        android:id="@+id/view3"
+        android:id="@+id/fragment_profile_bar3"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginStart="12dp"
@@ -260,19 +260,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/total_donations" />
+        app:layout_constraintTop_toBottomOf="@+id/fragment_profile_totalDonationsText" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/logoutThingie"
+        android:id="@+id/fragment_profile_logoutThingie"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view3">
+        app:layout_constraintTop_toBottomOf="@+id/fragment_profile_bar3">
 
         <TextView
-            android:id="@+id/logout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/roboto_regular"
@@ -280,11 +279,11 @@
             android:textColor="@color/red_destructive"
             android:textSize="20sp"
             android:textStyle="bold"
-            app:layout_constraintStart_toEndOf="@+id/img_logout"
+            app:layout_constraintStart_toEndOf="@+id/fragment_profile_imgLogout"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-            android:id="@+id/img_logout"
+            android:id="@+id/fragment_profile_imgLogout"
             android:layout_width="38dp"
             android:layout_height="32dp"
             android:layout_weight="1"

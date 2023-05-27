@@ -14,7 +14,7 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/delta"
+            android:id="@+id/search_card_delta"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="60dp"
@@ -28,7 +28,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/bus_time"
+            android:id="@+id/search_card_times"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
@@ -42,7 +42,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/cardSelectButton"
+            android:id="@+id/search_card_select_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
@@ -66,26 +66,24 @@
             app:layout_constraintEnd_toEndOf="parent" />
 
         <HorizontalScrollView
-            android:id="@+id/transit_viewer"
+            android:id = "@+id/search_card_HScroll"
             android:layout_width="0dp"
             android:layout_height="88dp"
             android:layout_marginTop="4dp"
             android:layout_marginEnd="4dp"
             android:contentDescription="Transits"
-            app:layout_constraintEnd_toStartOf="@+id/delta"
-            app:layout_constraintStart_toStartOf="@+id/bus_time"
-            app:layout_constraintTop_toBottomOf="@+id/bus_time">
+            app:layout_constraintEnd_toStartOf="@+id/search_card_delta"
+            app:layout_constraintStart_toStartOf="@+id/search_card_times"
+            app:layout_constraintTop_toBottomOf="@+id/search_card_times">
 
             <LinearLayout
-                android:id="@+id/card_layout"
+                android:id="@+id/search_card_container"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <include
-                    android:id="@+id/transit"
-                    layout="@layout/transit_show_small" />
+                <include layout="@layout/transit_show_small" />
 
                 <include layout="@layout/da_arrow" />
 
@@ -103,7 +101,7 @@
         </HorizontalScrollView>
 
         <TextView
-            android:id="@+id/info"
+            android:id="@+id/searc_card_info"
             android:layout_width="0dp"
             android:layout_height="65dp"
             android:layout_marginBottom="4dp"
@@ -112,9 +110,9 @@
             android:textColor="@color/gray_label"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/transit_viewer"
-            app:layout_constraintStart_toStartOf="@+id/transit_viewer"
-            app:layout_constraintTop_toBottomOf="@+id/transit_viewer" />
+            app:layout_constraintEnd_toEndOf="@+id/search_card_HScroll"
+            app:layout_constraintStart_toStartOf="@+id/search_card_HScroll"
+            app:layout_constraintTop_toBottomOf="@+id/search_card_HScroll" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

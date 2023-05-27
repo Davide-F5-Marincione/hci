@@ -364,8 +364,6 @@ def directions(start, end, graph, routes, vbuses):
 
         seconds_passed += 1
 
-    print(tree)
-
     if len(reached["stop-" + end]) < 1:
         print("Couldn't find route")
         return None
@@ -444,9 +442,9 @@ if __name__ == "__main__":
                 "C1": TrueBus("C1", "C", "D", "G"),
                 "C2": TrueBus("C2", "C", "F", "G", -1)}
 
-    routes = {"A": Route("A", (255, 0, 0), ["A", "B", "C", "D"]),
-              "B": Route("B", (0, 255, 0), ["C", "E", "F"]),
-              "C": Route("C", (0, 0, 255), ["D", "G", "F"])}
+    routes = {"A": Route("A", (205, 92, 92), ["A", "B", "C", "D"]),
+              "B": Route("B", (0, 49, 83), ["C", "E", "F"]),
+              "C": Route("C", (1,68,33), ["D", "G", "F"])}
     
     for route in routes.values():
         this_buses = []

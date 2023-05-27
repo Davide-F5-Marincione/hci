@@ -10,7 +10,7 @@
     tools:showIn="@layout/card_left">
 
     <ImageView
-        android:id="@+id/transit_img"
+        android:id="@+id/small_transit_img"
         android:layout_width="wrap_content"
         android:layout_height="60dp"
         android:layout_weight="1"
@@ -24,7 +24,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/delay"
+        android:id="@+id/small_transit_delay"
         android:layout_width="30dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="7dp"
@@ -39,10 +39,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.166"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/transit_img" />
+        app:layout_constraintBottom_toBottomOf="@id/small_transit_img" />
 
     <TextView
-        android:id="@+id/transit_desc"
+        android:id="@+id/small_transit_desc"
         android:layout_width="0dp"
         android:layout_height="28dp"
         android:layout_weight="1"
@@ -54,5 +54,5 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/transit_img" />
+        app:layout_constraintTop_toBottomOf="@+id/small_transit_img" />
 </androidx.constraintlayout.widget.ConstraintLayout>

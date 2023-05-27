@@ -3,10 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:visibility="visible">
 
     <TextView
-        android:id="@+id/actual_to"
+        android:id="@+id/base_actualTo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
@@ -14,11 +15,11 @@
         android:text="Actual To - 23:59"
         android:textColor="@color/black"
         android:textSize="20sp"
-        app:layout_constraintStart_toEndOf="@+id/from"
-        app:layout_constraintTop_toBottomOf="@+id/actual_from" />
+        app:layout_constraintStart_toEndOf="@+id/base_from"
+        app:layout_constraintTop_toBottomOf="@+id/base_actualFrom" />
 
     <TextView
-        android:id="@+id/actual_from"
+        android:id="@+id/base_actualFrom"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
@@ -26,11 +27,11 @@
         android:text="Actual From - 00:00"
         android:textColor="@color/black"
         android:textSize="20sp"
-        app:layout_constraintStart_toEndOf="@+id/from"
-        app:layout_constraintTop_toTopOf="@+id/from" />
+        app:layout_constraintStart_toEndOf="@+id/base_from"
+        app:layout_constraintTop_toTopOf="@+id/base_from" />
 
     <TextView
-        android:id="@+id/from"
+        android:id="@+id/base_from"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -43,7 +44,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/to"
+        android:id="@+id/base_to"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -52,78 +53,81 @@
         android:textColor="@color/black"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/from" />
+        app:layout_constraintTop_toBottomOf="@+id/base_from" />
 
     <include
-        android:id="@+id/include"
+        android:id="@+id/base_transit"
         layout="@layout/transit_show_big"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        app:layout_constraintStart_toStartOf="@id/to"
-        app:layout_constraintTop_toBottomOf="@id/to" />
+        app:layout_constraintStart_toStartOf="@id/base_to"
+        app:layout_constraintTop_toBottomOf="@id/base_to" />
 
 
     <TextView
-        android:id="@+id/textView7"
+        android:id="@+id/base_nCBText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="120dp"
         android:layout_marginEnd="2dp"
         android:text="not community based"
         android:textColor="@color/gray_label"
-        app:layout_constraintEnd_toStartOf="@+id/imageView2"
+        app:layout_constraintEnd_toStartOf="@+id/base_nCBImage"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView8"
+        android:id="@+id/base_OCText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="120dp"
         android:layout_marginEnd="2dp"
         android:text="overcrowded"
         android:textColor="@color/gray_label"
-        app:layout_constraintEnd_toStartOf="@+id/imageView2"
+        app:layout_constraintEnd_toStartOf="@+id/base_nCBImage"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/imageView2"
+        android:id="@+id/base_nCBImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="-4dp"
-        app:layout_constraintBottom_toBottomOf="@+id/textView7"
+        app:layout_constraintBottom_toBottomOf="@+id/base_nCBText"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/alert_outline" />
 
     <ImageView
-        android:id="@+id/imageView3"
+        android:id="@+id/base_OCImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
-        app:layout_constraintBottom_toBottomOf="@+id/textView8"
-        app:layout_constraintStart_toEndOf="@+id/textView8"
-        app:layout_constraintStart_toStartOf="@+id/imageView2"
+        app:layout_constraintBottom_toBottomOf="@+id/base_OCText"
+        app:layout_constraintStart_toEndOf="@+id/base_OCText"
+        app:layout_constraintStart_toStartOf="@+id/base_nCBImage"
         app:srcCompat="@drawable/people" />
 
     <ImageButton
-        android:id="@+id/imageButton"
+        android:id="@+id/base_wedgeButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="#00FFFFFF"
         android:rotation="180"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/include"
+        app:layout_constraintTop_toBottomOf="@+id/base_transit"
         app:srcCompat="@drawable/wedge" />
 
     <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageButton"
-        tools:layout_editor_absoluteX="-150dp">
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/base_wedgeButton">
 
         <LinearLayout
+            android:id="@+id/base_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -131,68 +135,11 @@
             android:clipChildren="false"
             android:divider="@drawable/select_card_divider"
             android:orientation="vertical"
-            android:showDividers="middle">
+            android:showDividers="beginning">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="20dp"
-                android:clipChildren="false"
-                android:clipToPadding="false">
+            <include layout="@layout/card_stops_item" />
 
-                <ImageView
-                    android:id="@+id/imageView4"
-                    android:layout_width="10dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="12dp"
-                    android:adjustViewBounds="true"
-                    android:cropToPadding="false"
-                    android:scaleType="center"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/textView9"
-                    app:srcCompat="@drawable/line" />
-
-                <TextView
-                    android:id="@+id/textView9"
-                    android:layout_width="0dp"
-                    android:layout_height="18dp"
-                    android:layout_marginStart="2dp"
-                    android:text="First Stop"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/imageView4"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="20dp"
-                android:clipChildren="false"
-                android:clipToPadding="false">
-
-                <ImageView
-                    android:id="@+id/imageViewa"
-                    android:layout_width="10dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="6dp"
-                    android:adjustViewBounds="true"
-                    android:cropToPadding="false"
-                    android:scaleType="center"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/textViewa"
-                    app:srcCompat="@drawable/line_end" />
-
-                <TextView
-                    android:id="@+id/textViewa"
-                    android:layout_width="0dp"
-                    android:layout_height="18dp"
-                    android:layout_marginStart="2dp"
-                    android:text="Second Stop"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/imageViewa"
-                    app:layout_constraintTop_toTopOf="parent" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            <include layout="@layout/card_stops_item" />
 
         </LinearLayout>
     </ScrollView>

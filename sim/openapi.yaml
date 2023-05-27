@@ -72,29 +72,46 @@ components:
       title: Route
       description: |-
         This object contains all of the info for a possible route
-      type: array
-      items:
-        type: object
-        properties:
-          transit_type:
-            type: string
-          transit_color:
-            type: string
-          transit_name:
-            type: string
-          transit_line:
-            type: string
-          delay:
-            type: string
-          stops:
-            type: array
-            items:
-              type: object
-              properties:
-                stop-name:
-                  type: string
-                time:
-                  type: string
+      type: object
+      properties:
+        from:
+          type: string
+        to:
+          type: string
+        departure_time:
+          type: string
+        arrival_time:
+          type: string
+        transits:
+          type: array
+          items:
+            type: object
+            properties:
+              transit_type:
+                type: string
+              transit_color:
+                type: string
+              transit_name:
+                type: string
+              transit_line:
+                type: string
+              delay:
+                type: string
+              crowdedness_mu:
+                type: number
+              crowdedness_var:
+                type: number
+              last_seen:
+                type: string
+              stops:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    stop-name:
+                      type: string
+                    time:
+                      type: string
 paths:
   /lines/{line}:
     parameters:

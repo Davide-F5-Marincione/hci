@@ -11,11 +11,8 @@
     tools:showIn="@layout/fragment_select">
 
     <include
-        android:id="@+id/include"
         layout="@layout/card_select_base"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="@id/to"
-        app:layout_constraintTop_toBottomOf="@id/to" />
+        android:layout_height="wrap_content" />
 
 </androidx.cardview.widget.CardView>

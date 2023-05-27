@@ -1,23 +1,24 @@
 package com.example.mobiliteam
 
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.mobiliteam.databinding.ActivityTravelBinding
-import com.example.mobiliteam.ui.home.Route
 import org.json.JSONArray
 import org.json.JSONObject
+import java.time.Duration
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 
 class TravelActivity : AppCompatActivity() {
@@ -26,8 +27,8 @@ class TravelActivity : AppCompatActivity() {
     lateinit var binding: ActivityTravelBinding
     var from : String = ""
     var to : String = ""
-    var routes: JSONArray = JSONArray("")
-    var viewingRoute: JSONObject = JSONObject("")
+    var routes: JSONArray = JSONArray()
+    var viewingRoute: JSONObject = JSONObject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
 

@@ -10,7 +10,7 @@
     tools:context=".ui.home.HomeDonationsFragment">
 
     <TextView
-        android:id="@+id/num_available_credits"
+        android:id="@+id/fragment_donations_numCredits"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="91dp"
@@ -26,10 +26,10 @@
         android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/available_credits" />
+        app:layout_constraintTop_toBottomOf="@+id/fragment_donations_availableCreditsText" />
 
     <TextView
-        android:id="@+id/available_credits"
+        android:id="@+id/fragment_donations_availableCreditsText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="91dp"
@@ -54,7 +54,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/num_available_credits">
+        app:layout_constraintTop_toBottomOf="@+id/fragment_donations_numCredits">
 
         <LinearLayout
             android:layout_width="match_parent"

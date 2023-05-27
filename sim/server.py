@@ -222,6 +222,7 @@ async def request_directions():
     res_outer = []
     for solution in ret:
         res = []
+        first_stop = None
         for bus_name, stops in solution:
             bus = v_buses[bus_name]
             val = {
@@ -229,7 +230,10 @@ async def request_directions():
                 "transit_color": '#%02x%02x%02x' % routes[bus.route].color, # cool af https://stackoverflow.com/a/3380739
                 "transit_name": bus_name,
                 "transit_line": bus.route,
-                "delay": v_buses[bus_name].delay,
+                "delay": bus.delay,
+                "crowdedness_mu": bus.mu_overcrowded,
+                "crowdedness_var": bus.var_overcrowded,
+                "last_seen": bus.last_signal.isoformat(),
                 "stops": [
                     {
                         "stop-name": name,
@@ -238,8 +242,13 @@ async def request_directions():
                     for name, time in stops
                 ],
             }
+            if first_stop is None:
+                first_stop = val["stops"][0]["time"]
             res.append(val)
-        res_outer.append(res)
+        last_stop = res[-1]["stops"][-1]["time"]
+        res_outer.append({"from":data_dict["from"], "to":data_dict["to"], "departure_time": first_stop, "arrival_time":last_stop, "transits":res})
+
+    print(res_outer)
 
     return Response(
         response=json.dumps(res_outer), status=200, mimetype="application/json"
@@ -488,9 +497,9 @@ if __name__ == "__main__":
     }
 
     routes = {
-        "A": vsim.Route("A", (255, 0, 0), ["A", "B", "C", "D"], "tram"),
-        "B": vsim.Route("B", (0, 255, 0), ["C", "E", "F"], "bus"),
-        "C": vsim.Route("C", (0, 0, 255), ["D", "G", "F"], "bus"),
+        "A": vsim.Route("A", (205, 92, 92), ["A", "B", "C", "D"], "tram"),
+        "B": vsim.Route("B", (0, 49, 83), ["C", "E", "F"], "bus"),
+        "C": vsim.Route("C", (1,68,33), ["D", "G", "F"], "bus"),
     }
 
     for route in routes.values():

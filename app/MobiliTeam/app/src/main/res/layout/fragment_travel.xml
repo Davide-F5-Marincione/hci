@@ -10,7 +10,7 @@
     tools:context=".ui.home.HomeTravelFragment">
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/fromInput"
+        android:id="@+id/fragment_travel_fromInput"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -24,58 +24,20 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/fromInputEdit"
+            android:id="@+id/fragment_travel_fromInputEdit"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:backgroundTint="#FFFFFF"
             android:drawableTint="#B65555"
             android:fontFamily="@font/roboto_regular"
+            android:hint="From"
             android:singleLine="true"
             android:textColorHint="#d9d9d9" />
 
-        <TextView
-            android:id="@+id/from_home"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="18dp"
-            android:layout_marginTop="-40dp"
-            android:layout_marginEnd="30dp"
-            android:fontFamily="@font/roboto_regular"
-            android:text="From:"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            app:layout_constraintHorizontal_bias="0.488"
-            app:layout_constraintVertical_bias="0.19" />
-
-        <ImageView
-            android:id="@+id/currentposition"
-            android:layout_width="35dp"
-            android:layout_height="41dp"
-            android:layout_marginStart="60dp"
-            android:layout_marginTop="-31dp"
-            android:src="@drawable/current_position"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.097"
-            app:layout_constraintStart_toEndOf="@+id/from_home" />
-
-        <TextView
-            android:id="@+id/current_position_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="100dp"
-            android:layout_marginTop="-32dp"
-            android:layout_marginEnd="30dp"
-            android:fontFamily="@font/roboto_regular"
-            android:text="Your Position (Piazza Bologna)"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            app:layout_constraintHorizontal_bias="0.488"
-            app:layout_constraintStart_toEndOf="@+id/currentposition"
-            app:layout_constraintVertical_bias="0.19" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/toInput"
+        android:id="@+id/fragment_travel_toInput"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -86,10 +48,10 @@
         app:boxBackgroundMode="outline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fromInput">
+        app:layout_constraintTop_toBottomOf="@+id/fragment_travel_fromInput">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/toInputEdit"
+            android:id="@+id/fragment_travel_toInputEdit"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:backgroundTint="#FFFFFF"
@@ -101,16 +63,15 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <ScrollView
-        android:id="@+id/scroll_content"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toInput">
+        app:layout_constraintTop_toBottomOf="@+id/fragment_travel_toInput">
 
         <LinearLayout
-            android:id="@+id/linearLayout"
+            android:id="@+id/fragment_travel_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:divider="@drawable/divider"
@@ -124,7 +85,6 @@
                 android:visibility="visible" />
 
             <include
-                android:id="@+id/card_left"
                 layout="@layout/card_left"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -137,7 +97,6 @@
                 android:visibility="visible" />
 
             <include
-                android:id="@+id/card_recent"
                 layout="@layout/card_recent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
