@@ -32,6 +32,6 @@
     <fragment
         android:id="@+id/PathFollowFragment"
         android:name="com.example.mobiliteam.ui.travel.PathFollowFragment"
-        android:label="Searching Routes"
+        android:label="My Route"
         tools:layout="@layout/fragment_path_follow"/>
 </navigation>
