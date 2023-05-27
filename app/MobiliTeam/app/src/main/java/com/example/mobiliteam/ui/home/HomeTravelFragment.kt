@@ -66,6 +66,9 @@ class HomeTravelFragment : Fragment() {
 
         val textViewEdit = binding.fragmentTravelFromInput
         textViewEdit.editText?.setText("[current-pos] A")
+        binding.fragmentTravelFromInput.addImage("[current-pos]", R.drawable.current_position,
+            resources.getDimensionPixelOffset(R.dimen.dp_30),
+            resources.getDimensionPixelOffset(R.dimen.dp_30))
 
         binding.fragmentTravelFromInputEdit.setOnEditorActionListener(
             OnEditorActionListener { v, actionId, event ->
@@ -92,10 +95,6 @@ class HomeTravelFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-
-        binding.fragmentTravelFromInput.addImage("[current-pos]", R.drawable.current_position,
-            resources.getDimensionPixelOffset(R.dimen.dp_30),
-            resources.getDimensionPixelOffset(R.dimen.dp_30))
 
         val inflater = activity?.layoutInflater!!
 
