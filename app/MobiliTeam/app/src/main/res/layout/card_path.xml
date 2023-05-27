@@ -81,7 +81,6 @@
             android:typeface="normal"
             app:backgroundTint="@color/green_extra"
             app:cornerRadius="4dp" />
-        />
     </RelativeLayout>
 
 
