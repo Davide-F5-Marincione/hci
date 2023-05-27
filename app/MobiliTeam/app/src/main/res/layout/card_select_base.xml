@@ -113,6 +113,7 @@
         android:layout_height="wrap_content"
         android:background="#00FFFFFF"
         android:rotation="180"
+        android:contentDescription="Press button to look at the stops"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/base_transit"
