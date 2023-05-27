@@ -3,10 +3,7 @@ package com.example.mobiliteam
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
-import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -14,7 +11,6 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.viewpager2.widget.ViewPager2
-import com.example.mobiliteam.data.SettingsStore
 import com.example.mobiliteam.databinding.ActivityHomeBinding
 import com.example.mobiliteam.ui.home.SectionsPagerAdapter
 import com.google.android.material.tabs.TabLayout
@@ -48,7 +44,7 @@ class HomeActivity : AppCompatActivity() {
             val username = intent?.getStringExtra("username")
 
             Log.d("GivenUsername", username.toString())
-            (this.application as MobiliTeam).store.username = username.toString()
+            (this.application as MobiliTeam).usernameStore.username = username.toString()
         }
     }
 
@@ -74,7 +70,7 @@ class HomeActivity : AppCompatActivity() {
             tab.text = TAB_TITLES[position]
         }.attach()
 
-        (this.application as MobiliTeam).auth = logIn((this.application as MobiliTeam).store.username)
+        (this.application as MobiliTeam).auth = logIn((this.application as MobiliTeam).usernameStore.username)
         if ((this.application as MobiliTeam).auth == null) {
             launchLogIn()
         }

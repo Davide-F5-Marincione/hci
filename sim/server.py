@@ -223,8 +223,12 @@ async def request_directions():
     for solution in ret:
         res = []
         for bus_name, stops in solution:
+            bus = v_buses[bus_name]
             val = {
-                "bus": bus_name,
+                "transit_type": routes[bus.route].transit_type,
+                "transit_color": '#%02x%02x%02x' % routes[bus.route].color, # cool af https://stackoverflow.com/a/3380739
+                "transit_name": bus_name,
+                "transit_line": bus.route,
                 "delay": v_buses[bus_name].delay,
                 "stops": [
                     {
@@ -484,9 +488,9 @@ if __name__ == "__main__":
     }
 
     routes = {
-        "A": vsim.Route("A", (255, 0, 0), ["A", "B", "C", "D"]),
-        "B": vsim.Route("B", (0, 255, 0), ["C", "E", "F"]),
-        "C": vsim.Route("C", (0, 0, 255), ["D", "G", "F"]),
+        "A": vsim.Route("A", (255, 0, 0), ["A", "B", "C", "D"], "tram"),
+        "B": vsim.Route("B", (0, 255, 0), ["C", "E", "F"], "bus"),
+        "C": vsim.Route("C", (0, 0, 255), ["D", "G", "F"], "bus"),
     }
 
     for route in routes.values():

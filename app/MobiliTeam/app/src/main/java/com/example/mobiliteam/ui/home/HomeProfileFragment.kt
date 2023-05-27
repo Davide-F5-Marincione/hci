@@ -44,7 +44,7 @@ class HomeProfileFragment : Fragment() {
 
         binding.logoutThingie.setOnClickListener {
             val act = activity as HomeActivity
-            (activity?.application as MobiliTeam).store.username = ""
+            (activity?.application as MobiliTeam).usernameStore.username = ""
             act.launchLogIn()
         }
 
@@ -83,9 +83,9 @@ class HomeProfileFragment : Fragment() {
     }
 
     fun fillProfileInfo() {
-        Log.d("ProfileInfoGET", "Getting info for " + (activity?.application as MobiliTeam).store.username)
+        Log.d("ProfileInfoGET", "Getting info for " + (activity?.application as MobiliTeam).usernameStore.username)
 
-        val username = (activity?.application as MobiliTeam).store.username
+        val username = (activity?.application as MobiliTeam).usernameStore.username
 
         //check if the username is 'admin' then directly go to the home page
         if(username == "admin"){

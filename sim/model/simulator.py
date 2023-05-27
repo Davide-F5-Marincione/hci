@@ -218,6 +218,7 @@ class Route:
     name: str
     color: Tuple[int, int, int]
     circuit: List[str]
+    transit_type: str
 
 
 @dataclass

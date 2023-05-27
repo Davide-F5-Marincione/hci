@@ -76,7 +76,13 @@ components:
       items:
         type: object
         properties:
-          bus:
+          transit_type:
+            type: string
+          transit_color:
+            type: string
+          transit_name:
+            type: string
+          transit_line:
             type: string
           delay:
             type: string

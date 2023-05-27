@@ -16,28 +16,21 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.mobiliteam.databinding.ActivityTravelBinding
 import com.example.mobiliteam.ui.home.Route
+import org.json.JSONArray
+import org.json.JSONObject
 
 
 class TravelActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     lateinit var binding: ActivityTravelBinding
-    public var actual_route: Route = Route()
-    public var from : String = ""
-    public var to : String = ""
+    var from : String = ""
+    var to : String = ""
+    var routes: JSONArray = JSONArray("")
+    var viewingRoute: JSONObject = JSONObject("")
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
-        var intent : Intent = getIntent();
-        if (intent.hasExtra("from")) {
-            Log.d("From", intent.getStringExtra("from").toString())
-            from = intent.getStringExtra("from").toString()
-
-        }
-        if (intent.hasExtra("to")) {
-            Log.d("To", intent.getStringExtra("to").toString())
-            to = intent.getStringExtra("to").toString()
-        }
         WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
 
@@ -66,13 +59,17 @@ class TravelActivity : AppCompatActivity() {
             }
         })
 
-
         val b = intent.extras
         if (b != null)
             if (b.getInt("key") == 0) {
-                // Add the "from" and "to" to their respective inputs and make request
+                // Just add this stuff
+                from = intent.getStringExtra("from").toString()
+                to = intent.getStringExtra("to").toString()
             } else {
                 // Payload means we have already a route to follow, skip past all the other fragments!
+                viewingRoute = (this.application as MobiliTeam).route_left!!
+                from = viewingRoute.getString("from")
+                to = viewingRoute.getString("to")
                 navController.navigate(R.id.action_SearchFragment_to_PathFollowFragment)
             }
     }

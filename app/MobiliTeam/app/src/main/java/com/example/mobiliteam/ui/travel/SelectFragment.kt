@@ -30,24 +30,6 @@ class SelectFragment : Fragment() {
 
         _binding = FragmentSelectBinding.inflate(inflater, container, false)
 
-
-        var travelActivity: TravelActivity = activity as TravelActivity
-
-        var route = travelActivity.actual_route
-        Log.d("current_route", route.from)
-        binding.textView5.text = "From: " + route.from+ " To: " + route.to
-        binding.textView6.text = route.starting_time + " - " + route.arrival_time
-
-
-        var linearLayout : LinearLayout = binding.linearLayout
-        //linearLayout.removeAllViews()
-        for (transport in route.list_of_transport){
-            var transportCard= inflater.inflate(R.layout.card_select, null)
-            linearLayout.addView(transportCard)
-        }
-
-
-
         return binding.root
 
     }
@@ -63,5 +45,24 @@ class SelectFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        val travelActivity: TravelActivity = activity as TravelActivity
+
+        val route = travelActivity.viewingRoute
+        binding.textView5.text = "From: " + route.getString("from") + " To: " + route.getString("to")
+        binding.textView6.text = route.getString("departure_time") + " - " + route.getString("arrival_time")
+
+
+        val linearLayout : LinearLayout = binding.linearLayout
+        linearLayout.removeAllViews()
+
+        for (transport in route.list_of_transport){
+            var transportCard= inflater.inflate(R.layout.card_select, null)
+            linearLayout.addView(transportCard)
+        }
     }
 }

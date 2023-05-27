@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 
-class SettingsStore(private val context: Context) {
+class UsernameStore(private val context: Context) {
     companion object {
         private val Context.dataStore: DataStore<Preferences> by preferencesDataStore("settings")
         private val USERNAME_KEY = stringPreferencesKey("username")

@@ -14,7 +14,6 @@ import com.example.mobiliteam.MobiliTeam
 import com.example.mobiliteam.R
 import com.example.mobiliteam.databinding.FragmentDonationsFrBinding
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.textfield.TextInputLayout
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Request
@@ -91,9 +90,9 @@ class DonationFragment : Fragment() {
     }
 
     fun reloadCredits() {
-        Log.d("ProfileInfoGET", "Getting info for " + (activity?.application as MobiliTeam).store.username)
+        Log.d("ProfileInfoGET", "Getting info for " + (activity?.application as MobiliTeam).usernameStore.username)
 
-        val username = (activity?.application as MobiliTeam).store.username
+        val username = (activity?.application as MobiliTeam).usernameStore.username
 
         //check if the username is 'admin' then directly go to the home page
         if(username == "admin"){
@@ -149,9 +148,9 @@ class DonationFragment : Fragment() {
             return
         }
 
-        Log.d("Donating", (activity?.application as MobiliTeam).store.username + " is donating " + donation_amount.toString())
+        Log.d("Donating", (activity?.application as MobiliTeam).usernameStore.username + " is donating " + donation_amount.toString())
 
-        val username = (activity?.application as MobiliTeam).store.username
+        val username = (activity?.application as MobiliTeam).usernameStore.username
 
         //check if the username is 'admin' then directly go to the home page
         if(username == "admin"){
