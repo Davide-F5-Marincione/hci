@@ -26,14 +26,32 @@ class MyStore(private val context: Context) {
         }.first()) }
 
     fun push(new_route: JSONObject) = runBlocking {
+        val new_elem = JSONObject()
+        new_elem.put("from", new_route.getString("from"))
+        new_elem.put("to", new_route.getString("to"))
         // This is ugly af, I don't care
         val routesCopy = recentRoutes
+
+        var copy = 0
+        var found = false
+
+        while (copy  < routesCopy.length() && !found) {
+            val elem = routesCopy.getJSONObject(copy)
+            if (elem.getString("from") == new_elem.getString("from") && elem.getString("to") == new_elem.getString("to")) {
+                found = true
+            } else {
+                copy += 1
+            }
+        }
+
         var i = routesCopy.length()
         while (i > 0) {
-            if (i < 3) routesCopy.put(i, routesCopy[i-1])
+            if (i <= copy) {
+                if (i < 3) routesCopy.put(i, routesCopy[i - 1])
+            }
             i -= 1
         }
-        routesCopy.put(0,new_route)
+        routesCopy.put(0,new_elem)
         context.dataStore.edit { preferences -> preferences[RECENT_ROUTES] = routesCopy.toString() }
     }
 

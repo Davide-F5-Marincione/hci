@@ -9,9 +9,9 @@ import math
 
 MIN = 0
 MAX = 1
-ADD = .1
+ADD = 0
 WAITING_SECONDS = 20
-SPEED = 200
+SPEED = 20
 CAPACITY = 50
 MAX_OVERCROWD_TIME_AGO = 1024
 TELEPORT = True
@@ -30,6 +30,8 @@ TIME_TO_RECHARGE = 120
 EXPECTED_SPEED = ((MAX + MIN) / 2 + ADD) * SPEED
 AVG_SPEED = (MAX + MIN) / 2 * SPEED
 
+SIMPLEX_GRANULARITY = 1
+
 def simplex_noise(seed):
     np.random.seed(seed)
     vals = np.random.rand(3) * 15 + 10
@@ -37,7 +39,7 @@ def simplex_noise(seed):
     i = 0
     while True:
         i += 1
-        yield (1 / 6 * np.sin(vals * i / 50).sum() + 0.5)
+        yield (1 / 6 * np.sin(vals * i / SIMPLEX_GRANULARITY).sum() + 0.5)
 
 def fixed_sigmoid(fill, max):
     sigm = lambda x: 1/(1 + math.exp(UNCERTAINTY * SHARPNESS - x * SHARPNESS))

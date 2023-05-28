@@ -150,11 +150,13 @@ class SelectFragment : Fragment() {
 
             // Add actions to card
             imButton.setOnClickListener{
-                if (imButton.rotation > 90f) { // Is open
-                    imButton.rotation = 0f
+                if (imButton.rotationX > 90f) { // Is open
+                    imButton.animate().rotationX(0f).setDuration(300)
+                    stopsShower.animate().scaleY(0f).setDuration(300)
                     stopsShower.visibility = View.GONE
                 } else { // Is closed
-                    imButton.rotation = 180f
+                    imButton.animate().rotationX(180f).setDuration(300)
+                    stopsShower.animate().scaleY(1f).setDuration(300)
                     stopsShower.visibility = View.VISIBLE
                 }
             }

@@ -248,8 +248,6 @@ async def request_directions():
         last_stop = res[-1]["stops"][-1]["time"]
         res_outer.append({"from":data_dict["from"], "to":data_dict["to"], "departure_time": first_stop, "arrival_time":last_stop, "transits":res})
 
-    print(res_outer)
-
     return Response(
         response=json.dumps(res_outer), status=200, mimetype="application/json"
     )
@@ -271,7 +269,7 @@ async def bus_signal(bus):
     data_dict = {k: v for k, v in data.items()}
 
     if (a := v_buses.get(bus, None)) is not None:
-        a.overcrowd(data_dict["is_overcrowded"], buses[bus])
+        a.overcrowd_signal(data_dict["is_overcrowded"], buses[bus])
 
         cur = con.execute(
             "UPDATE users SET reports_counter = reports_counter + 1 WHERE auth = ?",
@@ -360,7 +358,7 @@ async def sim():
                     buff_img,
                     (shrink(prev.x), shrink(prev.y)),
                     (shrink(curr.x), shrink(curr.y)),
-                    route.color,
+                    route.color[::-1],
                     3,
                 )
                 prev = curr
@@ -368,7 +366,7 @@ async def sim():
                 buff_img,
                 (shrink(prev.x), shrink(prev.y)),
                 (shrink(start.x), shrink(start.y)),
-                route.color,
+                route.color[::-1],
                 3,
             )
 

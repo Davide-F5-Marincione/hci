@@ -2,17 +2,19 @@ package com.example.mobiliteam
 
 import android.text.Spannable
 import android.text.SpannableStringBuilder
-import android.view.View
+import android.view.animation.Animation
+import android.view.animation.Transformation
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
-import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import org.json.JSONObject
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+
 
 fun TextInputLayout.addImage(atText: String, @DrawableRes imgSrc: Int, imgWidth: Int, imgHeight: Int) {
     val ssb = SpannableStringBuilder(this.editText?.text)
@@ -23,8 +25,22 @@ fun TextInputLayout.addImage(atText: String, @DrawableRes imgSrc: Int, imgWidth:
         imgWidth,
         imgHeight)
     val start = this.editText?.text?.indexOf(atText)!!
+    if (start < 0) return
     ssb.setSpan(VerticalImageSpan(drawable), start, start + atText.length, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
     this.editText?.setText(ssb, TextView.BufferType.SPANNABLE)
+}
+
+class ProgressBarAnimation(
+    private val progressBar: ProgressBar,
+    private val from: Float,
+    private val to: Float
+) :
+    Animation() {
+    override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
+        super.applyTransformation(interpolatedTime, t)
+        val value = from + (to - from) * interpolatedTime
+        progressBar.progress = value.toInt()
+    }
 }
 
 fun createDelay(transit: JSONObject) : String? {
@@ -47,7 +63,7 @@ fun createDuration(route: JSONObject): String {
 }
 
 fun extractTime(time: String): String {
-    return LocalTime.parse(time, DateTimeFormatter.ISO_LOCAL_DATE_TIME).format(DateTimeFormatter.ofPattern("H:m"))
+    return LocalTime.parse(time, DateTimeFormatter.ISO_LOCAL_DATE_TIME).format(DateTimeFormatter.ofPattern("HH:mm"))
 }
 
 fun summaryMaker(route: JSONObject): String {
