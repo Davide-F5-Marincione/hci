@@ -179,7 +179,7 @@ class SearchFragment : Fragment() {
 
     fun requestRoutes() {
 
-        val url ="http://10.0.2.2:5000/route";// Replace with your API endpoint
+        val url ="http://"+ (activity?.application as MobiliTeam).ip +":5000/route";// Replace with your API endpoint
 
         val jsonObject = JSONObject()
 

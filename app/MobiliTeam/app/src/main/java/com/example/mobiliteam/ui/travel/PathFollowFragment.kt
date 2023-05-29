@@ -256,7 +256,7 @@ class PathFollowFragment : Fragment() {
             // Do something if Admin
             return false
         }
-        val url ="http://10.0.2.2:5000/buses/" + transit_name + "/signal";
+        val url ="http://"+ (activity?.application as MobiliTeam).ip +":5000/buses/" + transit_name + "/signal";
 
         val jsonObject = JSONObject()
         jsonObject.put("is_overcrowded", overcrowded)

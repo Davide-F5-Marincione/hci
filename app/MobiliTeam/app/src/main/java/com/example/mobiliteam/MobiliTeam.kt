@@ -18,6 +18,8 @@ class MobiliTeam : Application() {
     var last_signal: LocalDateTime = LocalDateTime.now() - Duration.ofMinutes(10)
     var buttonsControl: MutableList<View> = mutableListOf<View>()
 
+    var ip: String = "10.0.2.2"
+
     // Permanent stuff
     val store: MyStore = MyStore(this)
 

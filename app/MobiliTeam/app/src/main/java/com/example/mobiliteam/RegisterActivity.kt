@@ -59,7 +59,7 @@ class RegisterActivity : AppCompatActivity() {
         // else, display an error message
 
         // Davide - Must change as the endpoint for login is now on /session
-        val url ="http://10.0.2.2:5000/users";// Replace with your API endpoint
+        val url ="http://"+ (this.application as MobiliTeam).ip + ":5000/users";// Replace with your API endpoint
 
         val jsonObject = JSONObject()
         jsonObject.put("username", username)

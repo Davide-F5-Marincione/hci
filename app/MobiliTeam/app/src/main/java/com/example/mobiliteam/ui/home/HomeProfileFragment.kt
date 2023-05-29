@@ -92,7 +92,7 @@ class HomeProfileFragment : Fragment() {
             // Do something if Admin
             return
         }
-        val url ="http://10.0.2.2:5000/users/" + username;
+        val url ="http://"+ (activity?.application as MobiliTeam).ip +":5000/users/" + username;
 
         val request: Request = Request.Builder()
             .url(url).get().header("Authorization", "Bearer " + (activity?.application as MobiliTeam).auth).build()

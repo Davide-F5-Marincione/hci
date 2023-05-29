@@ -87,7 +87,7 @@ class LogInActivity : AppCompatActivity() {
             finish()
             return
         }
-        val url ="http://10.0.2.2:5000/session";// Replace with your API endpoint
+        val url ="http://"+ (this.application as MobiliTeam).ip +":5000/session";// Replace with your API endpoint
 
         val jsonObject = JSONObject()
         jsonObject.put("username", username)
