@@ -452,7 +452,7 @@ async def sim():
 
 
 async def main():
-    await asyncio.gather(sim(), app.run_task())
+    await asyncio.gather(sim(), app.run_task(host="0.0.0.0"))
 
 
 if __name__ == "__main__":
