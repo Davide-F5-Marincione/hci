@@ -117,14 +117,14 @@ class TrueBus:
                         passenger.time_to_recharge -= delta_t
                     else:
                         p_overcrowding = p_to_signal_whatever * p_to_signal_overcrowding
-                        p_not_overcrowding = 1 - p_to_signal_whatever * (1 - p_to_signal_overcrowding)
                         r = random.random()
-                        if r < p_overcrowding:
+                        if r < p_overcrowding: # signal overcrowding
                             v_buses[self.name].overcrowd_signal(True, self)
                             passenger.time_to_recharge = TIME_TO_RECHARGE
-                        elif r > p_not_overcrowding:
+                        elif r < p_to_signal_whatever: # signal not overcrowded
                             v_buses[self.name].overcrowd_signal(False, self)
                             passenger.time_to_recharge = TIME_TO_RECHARGE
+                        # else do not signal
                 passenger.on_for += delta_t
 
             if self.distance_travelled >= conn.length():  # Arrived at next stop
