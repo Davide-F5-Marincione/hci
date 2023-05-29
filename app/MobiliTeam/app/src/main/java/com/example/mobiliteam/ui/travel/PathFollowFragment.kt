@@ -23,7 +23,6 @@ import com.example.mobiliteam.TravelActivity
 import com.example.mobiliteam.createDelay
 import com.example.mobiliteam.databinding.FragmentPathFollowBinding
 import com.example.mobiliteam.extractTime
-import com.google.android.material.button.MaterialButton
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Request
@@ -174,19 +173,23 @@ class PathFollowFragment : Fragment() {
                 }
             }
 
-            cardSelect.findViewById<ProgressBar>(R.id.path_card_ocProgress).visibility = View.INVISIBLE
-            cardSelect.findViewById<ProgressBar>(R.id.path_card_nOCProgress).visibility = View.INVISIBLE
-            val overcrowded = cardSelect.findViewById<MaterialButton>(R.id.path_card_overcrowdedButton)
-            val notOvercrowded = cardSelect.findViewById<MaterialButton>(R.id.path_card_notOvercrowdedButton)
+            val overcrowded = cardSelect.findViewById<ProgressBar>(R.id.path_card_ocProgress)
+            val notOvercrowded = cardSelect.findViewById<ProgressBar>(R.id.path_card_nOCProgress)
 
             overcrowded.setOnClickListener {
                 if (canDo()) {
                     val done = signalToServer(transit.getString("transit_name"), true)
                     if (done) {
                         (activity?.application as MobiliTeam).last_signal = LocalDateTime.now()
-                        // Animation single button
-                        // Disable all
-                        disableAll()
+                        val monetina = cardSelect.findViewById<ImageView>(R.id.path_card_OCMonetina)
+
+                        monetina.visibility = View.VISIBLE
+                        monetina.animate().translationY(-40f).rotationY(360f).setDuration(800)
+                        monetina.postDelayed({
+                            monetina.visibility = View.GONE
+                            monetina.animate().translationY(40f)
+                            disableAll()
+                        }, 1000)
                     }
                 }
             }
@@ -196,9 +199,15 @@ class PathFollowFragment : Fragment() {
                     val done = signalToServer(transit.getString("transit_name"), false)
                     if (done) {
                         (activity?.application as MobiliTeam).last_signal = LocalDateTime.now()
-                        // Animation single button
-                        // Disable all
-                        disableAll()
+                        val monetina = cardSelect.findViewById<ImageView>(R.id.path_card_nOCMonetina)
+
+                        monetina.visibility = View.VISIBLE
+                        monetina.animate().translationY(-40f).rotationY(360f).setDuration(800)
+                        monetina.postDelayed({
+                            monetina.visibility = View.GONE
+                            monetina.animate().translationY(40f)
+                            disableAll()
+                        }, 1000)
                     }
                 }
             }
@@ -216,13 +225,8 @@ class PathFollowFragment : Fragment() {
 
     fun disableAll(progress: Float = 0f) {
         for (view in (activity?.application as MobiliTeam).buttonsControl) {
-            val overcrowded = view.findViewById<MaterialButton>(R.id.path_card_overcrowdedButton)
-            val notOvercrowded = view.findViewById<MaterialButton>(R.id.path_card_notOvercrowdedButton)
             val progOver = view.findViewById<ProgressBar>(R.id.path_card_ocProgress)
             val progNotOver = view.findViewById<ProgressBar>(R.id.path_card_nOCProgress)
-
-            progOver.visibility = View.VISIBLE
-            progNotOver.visibility = View.VISIBLE
 
             val diff = ((120f - progress)* 1000).toLong()
 
@@ -231,25 +235,8 @@ class PathFollowFragment : Fragment() {
             val animNotProg = ProgressBarAnimation(progNotOver, progress, 120f)
             animNotProg.duration = diff
 
-            overcrowded.setBackgroundColor(Color.parseColor("#FF181818"))
-            overcrowded.setTextColor(Color.parseColor("#FF828282"))
-
-            notOvercrowded.setBackgroundColor(Color.parseColor("#FF181818"))
-            notOvercrowded.setTextColor(Color.parseColor("#FF828282"))
-
             progNotOver.startAnimation(animNotProg)
             progOver.startAnimation(animProg)
-
-            progNotOver.postDelayed({
-                progNotOver.visibility = View.INVISIBLE
-                notOvercrowded.setBackgroundColor(Color.parseColor("#FF82B955"))
-                notOvercrowded.setTextColor(Color.parseColor("#FFF8F8F8"))
-            }, diff)
-            progOver.postDelayed({
-                progOver.visibility = View.INVISIBLE
-                overcrowded.setBackgroundColor(Color.parseColor("#FF82B955"))
-                overcrowded.setTextColor(Color.parseColor("#FFF8F8F8"))
-            }, diff)
         }
     }
 
