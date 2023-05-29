@@ -71,7 +71,7 @@
             android:layout_height="match_parent"
             android:backgroundTint="#FFFFFF"
             android:fontFamily="@font/roboto_regular"
-            android:hint=""
+            android:hint="Enter amount"
             android:inputType="number"
             android:singleLine="true"
             android:textColorHint="@color/gray_hint" />

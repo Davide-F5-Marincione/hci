@@ -119,6 +119,9 @@ class SearchFragment : Fragment() {
         val linearLayout: LinearLayout = binding.fragmentSearchContainer
         linearLayout.removeAllViews()
 
+        (activity as TravelActivity).from = binding.fragmentSearchFromInputEdit.text.toString()
+        (activity as TravelActivity).to = binding.fragmentSearchToInputEdit.text.toString()
+
         requestRoutes()
 
         val routes = (activity as TravelActivity).routes
