@@ -337,7 +337,7 @@ async def sim():
     title = "Simulation"
     v_title = "Virtual buses"
 
-    img = np.ones((800, 800, 3), dtype=np.uint8) * 255
+    img = np.ones((800, 800, 3), dtype=np.uint8) * 222
 
     run = True
 
@@ -374,9 +374,9 @@ async def sim():
             cv2.putText(
                 buff_img,
                 node.name,
-                (shrink(node.x) + 15, shrink(node.y) + 15),
-                fontFace=3,
-                fontScale=0.4,
+                (shrink(node.x) + 5, shrink(node.y) + 10),
+                fontFace=2,
+                fontScale=0.3,
                 color=(12, 12, 12),
             )
             cv2.circle(buff_img, (shrink(node.x), shrink(node.y)), 5, (12, 12, 12), 3)
@@ -393,16 +393,24 @@ async def sim():
             pos_x = dir_x + start.x
             pos_y = dir_y + start.y
 
-            col = (255, 255, 0)
+            col = routes[bus.route].color[::-1]
 
             cv2.circle(buff_img, (shrink(pos_x), shrink(pos_y)), 5, col, -1)
             cv2.putText(
                 buff_img,
-                f"{bus.name}, {len(bus.passengers) / bus.capacity:.2f}",
+                f"{bus.name}",
                 (shrink(pos_x) + 5, shrink(pos_y)),
                 fontFace=0,
-                fontScale=0.4,
-                color=(12, 12, 12),
+                fontScale=0.3,
+                color=(255, 0, 0),
+            )
+            cv2.putText(
+                buff_img,
+                f"{len(bus.passengers) / bus.capacity:.2f}",
+                (shrink(pos_x) + 5, shrink(pos_y)+7),
+                fontFace=0,
+                fontScale=0.3,
+                color=(255, 0, 0),
             )
 
         for bus in v_buses.values():
@@ -415,16 +423,24 @@ async def sim():
             pos_x = dir_x + start.x
             pos_y = dir_y + start.y
 
-            col = (255, 255, 0)
+            col = routes[bus.route].color[::-1]
 
             cv2.circle(v_buff_img, (shrink(pos_x), shrink(pos_y)), 5, col, -1)
             cv2.putText(
                 v_buff_img,
-                f"{bus.name}, {bus.mu_overcrowded:.2f}~{bus.var_overcrowded**.5:.2f}",
+                f"{bus.name}",
                 (shrink(pos_x) + 5, shrink(pos_y)),
                 fontFace=0,
-                fontScale=0.4,
-                color=(12, 12, 12),
+                fontScale=0.3,
+                color=(255, 0, 0),
+            )
+            cv2.putText(
+                v_buff_img,
+                f"{bus.mu_overcrowded:.2f}", #~{bus.var_overcrowded**.5:.1f}
+                (shrink(pos_x) + 5, shrink(pos_y) + 7),
+                fontFace=0,
+                fontScale=0.3,
+                color=(255, 0, 0),
             )
 
         cv2.imshow(title, buff_img)
@@ -456,48 +472,48 @@ async def main():
 
 
 if __name__ == "__main__":
-    stops = ["A", "B", "C", "D", "E", "F", "G"]
+    stops = ["Vicolo Corto", "Bastioni Gran Sasso", "Corso Ateneo", "Piazza Dante", "Corso Magellano", "Parco della Vittoria", "Via Roma"]
     graph = vsim.Graph(dict(), dict())
     graph.startup(stops)
-    graph.stops["A"].x = 3000
-    graph.stops["A"].y = 3000
-    graph.stops["B"].x = 4000
-    graph.stops["B"].y = 3000
-    graph.stops["C"].x = 4000
-    graph.stops["C"].y = 4000
-    graph.stops["D"].x = 3000
-    graph.stops["D"].y = 4000
-    graph.stops["E"].x = 4500
-    graph.stops["E"].y = 4750
-    graph.stops["F"].x = 3500
-    graph.stops["F"].y = 4750
-    graph.stops["G"].x = 2500
-    graph.stops["G"].y = 4750
+    graph.stops["Vicolo Corto"].x = 3000
+    graph.stops["Vicolo Corto"].y = 3000
+    graph.stops["Bastioni Gran Sasso"].x = 4000
+    graph.stops["Bastioni Gran Sasso"].y = 3000
+    graph.stops["Corso Ateneo"].x = 4000
+    graph.stops["Corso Ateneo"].y = 4000
+    graph.stops["Piazza Dante"].x = 3000
+    graph.stops["Piazza Dante"].y = 4000
+    graph.stops["Corso Magellano"].x = 4500
+    graph.stops["Corso Magellano"].y = 4750
+    graph.stops["Parco della Vittoria"].x = 3500
+    graph.stops["Parco della Vittoria"].y = 4750
+    graph.stops["Via Roma"].x = 2500
+    graph.stops["Via Roma"].y = 4750
 
     v_buses = {
-        "A1": vsim.VirtualBus("A1", "A", "A", "B"),
-        "A3": vsim.VirtualBus("A3", "A", "C", "D"),
-        "A2": vsim.VirtualBus("A2", "A", "D", "C", -1),
-        "B1": vsim.VirtualBus("B1", "B", "C", "E"),
-        "B2": vsim.VirtualBus("B2", "B", "F", "E", -1),
-        "C1": vsim.VirtualBus("C1", "C", "D", "G"),
-        "C2": vsim.VirtualBus("C2", "C", "F", "G", -1),
+        "ifrit": vsim.VirtualBus("ifrit", "42", "Vicolo Corto", "Bastioni Gran Sasso"),
+        "alexander": vsim.VirtualBus("alexander", "42", "Corso Ateneo", "Piazza Dante"),
+        "titan": vsim.VirtualBus("titan", "42", "Piazza Dante", "Corso Ateneo", -1),
+        "shiva": vsim.VirtualBus("shiva", "38", "Corso Ateneo", "Corso Magellano"),
+        "bahamut": vsim.VirtualBus("bahamut", "38", "Parco della Vittoria", "Corso Magellano", -1),
+        "garuda": vsim.VirtualBus("garuda", "124", "Piazza Dante", "Via Roma"),
+        "odin": vsim.VirtualBus("odin", "124", "Parco della Vittoria", "Via Roma", -1),
     }
 
     buses = {
-        "A1": vsim.TrueBus("A1", "A", "A", "B"),
-        "A3": vsim.TrueBus("A3", "A", "C", "D"),
-        "A2": vsim.TrueBus("A2", "A", "D", "C", -1),
-        "B1": vsim.TrueBus("B1", "B", "C", "E"),
-        "B2": vsim.TrueBus("B2", "B", "F", "E", -1),
-        "C1": vsim.TrueBus("C1", "C", "D", "G"),
-        "C2": vsim.TrueBus("C2", "C", "F", "G", -1),
+        "ifrit": vsim.TrueBus("ifrit", "42", "Vicolo Corto", "Bastioni Gran Sasso"),
+        "alexander": vsim.TrueBus("alexander", "42", "Corso Ateneo", "Piazza Dante"),
+        "titan": vsim.TrueBus("titan", "42", "Piazza Dante", "Corso Ateneo", -1),
+        "shiva": vsim.TrueBus("shiva", "38", "Corso Ateneo", "Corso Magellano"),
+        "bahamut": vsim.TrueBus("bahamut", "38", "Parco della Vittoria", "Corso Magellano", -1),
+        "garuda": vsim.TrueBus("garuda", "124", "Piazza Dante", "Via Roma"),
+        "odin": vsim.TrueBus("odin", "124", "Parco della Vittoria", "Via Roma", -1),
     }
 
     routes = {
-        "A": vsim.Route("A", (205, 92, 92), ["A", "B", "C", "D"], "tram"),
-        "B": vsim.Route("B", (0, 49, 83), ["C", "E", "F"], "bus"),
-        "C": vsim.Route("C", (1,68,33), ["D", "G", "F"], "bus"),
+        "42": vsim.Route("42", (205, 92, 92), ["Vicolo Corto", "Bastioni Gran Sasso", "Corso Ateneo", "Piazza Dante"], "tram"),
+        "38": vsim.Route("38", (0, 49, 83), ["Corso Ateneo", "Corso Magellano", "Parco della Vittoria"], "bus"),
+        "124": vsim.Route("124", (1,68,33), ["Piazza Dante", "Via Roma", "Parco della Vittoria"], "bus"),
     }
 
     for route in routes.values():

@@ -65,7 +65,7 @@ class HomeTravelFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val textViewEdit = binding.fragmentTravelFromInput
-        textViewEdit.editText?.setText("[current-pos] A")
+        textViewEdit.editText?.setText("[current-pos] Vicolo Corto")
         binding.fragmentTravelFromInput.addImage("[current-pos]", R.drawable.current_position,
             resources.getDimensionPixelOffset(R.dimen.dp_30),
             resources.getDimensionPixelOffset(R.dimen.dp_30))

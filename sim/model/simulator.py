@@ -9,7 +9,7 @@ import math
 
 MIN = 0
 MAX = 1
-ADD = 0
+ADD = 0.1
 WAITING_SECONDS = 20
 SPEED = 20
 CAPACITY = 50
@@ -30,7 +30,7 @@ TIME_TO_RECHARGE = 120
 EXPECTED_SPEED = ((MAX + MIN) / 2 + ADD) * SPEED
 AVG_SPEED = (MAX + MIN) / 2 * SPEED
 
-SIMPLEX_GRANULARITY = 1
+SIMPLEX_GRANULARITY = 50
 
 def simplex_noise(seed):
     np.random.seed(seed)

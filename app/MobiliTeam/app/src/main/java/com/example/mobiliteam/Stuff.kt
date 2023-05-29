@@ -50,7 +50,7 @@ fun createDelay(transit: JSONObject) : String? {
     }
     val minutes = delay.toInt() / 60
 
-    return "$minutes min"
+    return "+$minutes min"
 }
 
 fun createDuration(route: JSONObject): String {

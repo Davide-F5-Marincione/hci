@@ -32,6 +32,7 @@
         android:background="@drawable/delay_background"
         android:fontFamily="@font/roboto_regular"
         android:text="+3 min"
+        android:textAlignment="center"
         android:textColor="#CC0000"
         android:textSize="12sp"
         android:textStyle="bold"
