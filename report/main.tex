@@ -651,9 +651,11 @@ moved on to finalizing the application.
 \subsection{The Simulation}\label{ssec:the-simulation}
 
 In order to avoid having to deal with the complexities of a real-world application,
-such as integrating various Google APIs (Maps, Authentication, etc\dots), we decided to build a \emph{simulation} of a transit system, which would allow us to test our application with live data in a shorter timespan.
+such as integrating various Google APIs (Maps, Authentication, etc\dots), we decided to build a \emph{simulation} of a transit system, which would allow us to test our application with "live" data in a shorter timespan.
 
-% write up about it
+In reality, there are two simulations running at the same time inside the backend- one is used to produce the "live" data and is omniscient to the status of the transits, governing each and every of their movements through simple routes (in which traffic is "simulated", such as to create possible delays, through some simplex noise functions) and also simulating the existence of passengers (of which some are users) which through multiple probability distributions can signal to our backend how crowded the transits they are on are.
+
+The second simulation is one which would be needed even if we were to use the Google APIs- it \emph{doesn't} know the transits' true current position, assumes a constant traffic, and is oblivious to how many people are onboard the transits. To approximate these informations it uses the signals produced by the "users" in the first simulation.
 
 
 \subsection{The Server}\label{ssec:the-server}
@@ -661,30 +663,32 @@ such as integrating various Google APIs (Maps, Authentication, etc\dots), we dec
 The server is a simple Flask application, Flask was chosen
 as a backend for its simplicity and ease of use, in line
 with the philosophy of the project.
+It uses both the second (non-omniscient) simulator, to keep track of the transits, and a SQLite database, to maintain information about the users (real users, not the simulated ones). A description of all the requests that can be done to the server can be found in form of an OpenAPI \texttt{.yaml} file.
 
-% write more about it? make this a paragraph under `The Simulation'?
+
+\section{The application}
+
+Built via Android Studio, our Kotlin application was programmed to be as close to the Figma as possible while trying to improve the user experience with animations and better responsiveness. The task of producing this app truly was a feat, as none of us had ever built a mobile application\dots because of this it is more than possible that we've done gross mistakes during its development, nonetheless, we are satisfied with the results that we reached, as we managed to make the application fully functional and to look as nice as we possibly could (arguably not a lot\dots we are computer scientists after all).
 
 \section{Conclusion}\label{sec:conclusion}
-
 
 \paragraph{Possible Improvements}
 
 The application, if developed further, could be improved
 by strengthening the backend by improving the ways in
-which overcroding and delays are predicted based
+which overcrowding and delays are predicted based
 on the data collected from the users. The possibility
 to report other types of disservices could also be
-added, as long as it does not overencumber the
+added, as long as it does not encumber the
 User Experience. Lastly, the application could be
 made available to a wider audience, by porting it
-to iOS through a cross-platform language such as flutter.
+to iOS through a cross-platform language such as Flutter.
 
 \paragraph{Final Thoughts}
-We believe our final prototype to be a solid showcase of
-the potential of the application, which we belive has
+We believe our demo to be a solid showcase of
+the potential of the application, which we believe has
 the opportunity to change the way that people interact
 with public transportation, and to improve the quality
 of the service as a whole.
-
 
 \end{document}
