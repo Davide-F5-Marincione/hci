@@ -623,4 +623,68 @@ evolution through the various iterations of our design process.
 		then tap on a button to report boarding/overcrowdedness (\cref{fig:path5})}\label{fig:path}
 \end{figure}
 
+\chapter{Post-Evaluation and Development}\label{chap:post-evaluation-and-development}
+
+\section{Final Changes}\label{sec:final-changes}
+
+After our last discussion with the professor, we proceeded to swiftly
+implement his suggestions, namely:
+
+\begin{itemize}
+	\item \textbf{Reworking the reporting system:} Instead of having two separate
+	      buttons to report boarding and overcrowding, the actions have now been \emph{merged}, the user is presented with two buttons, `overcrowded' and `not overcrowded'. This change was made to simplify the reporting process, as well as to make it more intuitive: this way, the user can report the status of the current vehicle with a single tap, while also giving us information on its position.
+	\item \textbf{Various text fixes:} Some of the text in the application was
+	      incorrect, with some lines appearing twice and others having inconsistent
+	      timings.
+	\item \textbf{Component consistency:} Buttons and cards were made more consistent with
+	      the material design philosophy all across the application.
+	\item \textbf{Community based information:} The application now shows when
+	      some information is \emph{not} community based, and instead comes from
+	      statistical inferences.
+\end{itemize}
+
+After these changes, the prototyping stage was considered complete, and we
+moved on to finalizing the application.
+
+\section{The Backend}\label{sec:the-backend}
+
+\subsection{The Simulation}\label{ssec:the-simulation}
+
+In order to avoid having to deal with the complexities of a real-world application,
+such as integrating various Google APIs (Maps, Authentication, etc\dots), we decided to build a \emph{simulation} of a transit system, which would allow us to test our application with live data in a shorter timespan.
+
+% write up about it
+
+
+\subsection{The Server}\label{ssec:the-server}
+
+The server is a simple Flask application, Flask was chosen
+as a backend for its simplicity and ease of use, in line
+with the philosophy of the project.
+
+% write more about it? make this a paragraph under `The Simulation'?
+
+\section{Conclusion}\label{sec:conclusion}
+
+
+\paragraph{Possible Improvements}
+
+The application, if developed further, could be improved
+by strengthening the backend by improving the ways in
+which overcroding and delays are predicted based
+on the data collected from the users. The possibility
+to report other types of disservices could also be
+added, as long as it does not overencumber the
+User Experience. Lastly, the application could be
+made available to a wider audience, by porting it
+to iOS through a cross-platform language such as flutter.
+
+\paragraph{Final Thoughts}
+We believe our final prototype to be a solid showcase of
+the potential of the application, which we belive has
+the opportunity to change the way that people interact
+with public transportation, and to improve the quality
+of the service as a whole.
+
+
 \end{document}
