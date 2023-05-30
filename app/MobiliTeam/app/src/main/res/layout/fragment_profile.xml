@@ -161,7 +161,7 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="16dp"
         android:fontFamily="@font/roboto_regular"
-        android:text="Email Address:"
+        android:text="Email:"
         android:textColor="@color/black"
         android:textSize="20sp"
         android:textStyle="bold"

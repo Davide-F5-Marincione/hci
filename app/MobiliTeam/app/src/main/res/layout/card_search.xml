@@ -45,8 +45,6 @@
             android:id="@+id/search_card_select_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="4dp"
             android:background="#00000000"
             android:fontFamily="@font/inter_bold"
             android:paddingHorizontal="0dp"
@@ -63,10 +61,11 @@
             app:cornerRadius="4dp"
             app:iconPadding="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="@+id/search_card_delta"
+            app:layout_constraintTop_toBottomOf="@+id/search_card_HScroll" />
 
         <HorizontalScrollView
-            android:id = "@+id/search_card_HScroll"
+            android:id="@+id/search_card_HScroll"
             android:layout_width="0dp"
             android:layout_height="88dp"
             android:layout_marginTop="4dp"
@@ -103,13 +102,11 @@
         <TextView
             android:id="@+id/searc_card_info"
             android:layout_width="0dp"
-            android:layout_height="65dp"
-            android:layout_marginBottom="4dp"
+            android:layout_height="wrap_content"
             android:fontFamily="@font/roboto_regular"
             android:text="Some bla bla bla bla bla"
             android:textColor="@color/gray_label"
             android:textSize="14sp"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/search_card_HScroll"
             app:layout_constraintStart_toStartOf="@+id/search_card_HScroll"
             app:layout_constraintTop_toBottomOf="@+id/search_card_HScroll" />
