@@ -1,6 +1,8 @@
 package com.example.mobiliteam
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
@@ -21,15 +23,12 @@ class DebugActivity : AppCompatActivity() {
         windowInsetsController.systemBarsBehavior =
             WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
 
-       var view=layoutInflater.inflate(R.layout.activity_debug, null)
+        var view= layoutInflater.inflate(R.layout.activity_debug, null)
         setContentView(view)
 
-        val IP  = findViewById<TextInputLayout>(R.id.IP)
+        val IP = findViewById<TextInputLayout>(R.id.IP)
         //remove the return key
-        IP.editText?.setSingleLine(false)
-        IP.editText?.maxLines = 1
         IP.editText?.setText(MobiliTeam.ip)
-
 
         val button  = findViewById<Button>(R.id.DebugConfirm)
 
@@ -38,12 +37,11 @@ class DebugActivity : AppCompatActivity() {
             MobiliTeam.ip = ip
             finish()
         }
-        val toolbar=findViewById<MaterialToolbar>(R.id.toolbar)
-        toolbar.setOnClickListener {
+
+        val backButton = findViewById<ImageView>(R.id.backButton)
+        backButton.setOnClickListener {
             finish()
         }
-
-
     }
 
 }
