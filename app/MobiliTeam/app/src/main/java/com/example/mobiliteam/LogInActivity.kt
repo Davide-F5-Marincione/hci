@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -59,7 +60,11 @@ class LogInActivity : AppCompatActivity() {
             val intent = Intent(this@LogInActivity, RecoverActivity::class.java)
             startActivity(intent)
         }
-
+        val debugGoTo = findViewById<TextView>(R.id.debugGoTo)
+        debugGoTo.setOnClickListener {
+            val intent = Intent(this@LogInActivity, DebugActivity::class.java)
+            startActivity(intent)
+        }
 
         val logInButton = findViewById<MaterialButton>(R.id.registerButton)
         logInButton.setOnClickListener {
@@ -87,7 +92,8 @@ class LogInActivity : AppCompatActivity() {
             finish()
             return
         }
-        val url ="http://"+ (this.application as MobiliTeam).ip +":5000/session";// Replace with your API endpoint
+        Log.d("IP",MobiliTeam.ip )
+        val url ="http://"+ MobiliTeam.ip +":5000/session";// Replace with your API endpoint
 
         val jsonObject = JSONObject()
         jsonObject.put("username", username)

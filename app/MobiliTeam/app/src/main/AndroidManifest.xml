@@ -36,6 +36,10 @@
             android:label="Username Recovery"
             android:theme="@style/Theme.MobiliTeam.NoActionBar" />
         <activity
+            android:name=".DebugActivity"
+            android:label="Debug Activity">
+        </activity>
+        <activity
             android:name=".HomeActivity"
             android:exported="true"
             android:label="@string/title_activity_home"

@@ -99,7 +99,7 @@ class DonationFragment : Fragment() {
             // Do something if Admin
             return
         }
-        val url ="http://"+ (activity?.application as MobiliTeam).ip +":5000/users/" + username;
+        val url ="http://"+ MobiliTeam.ip +":5000/users/" + username;
 
         val request: Request = Request.Builder()
             .url(url).get().header("Authorization", "Bearer " + (activity?.application as MobiliTeam).auth).build()
@@ -157,7 +157,7 @@ class DonationFragment : Fragment() {
             // Do something if Admin
             return
         }
-        val url ="http://"+ (activity?.application as MobiliTeam).ip +":5000/users/" + username + "/donate";
+        val url ="http://"+ MobiliTeam.ip +":5000/users/" + username + "/donate";
 
         val jsonObject = JSONObject()
         jsonObject.put("credits", donation_amount)
