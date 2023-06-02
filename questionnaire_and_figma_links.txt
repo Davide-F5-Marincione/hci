@@ -1,0 +1,3 @@
+questionnaire (it): https://docs.google.com/forms/d/13J6Qy1ixznMZqjCqhXUyeZiviXDA_kTFvhJE6S2tU-Q/edit
+questionnaire (en): https://docs.google.com/forms/d/1Q8SA4KQA7DwlhVPoy-P55X7huUcSf_IkgWe2ZotDzjg/edit
+figma link: https://www.figma.com/proto/79iXdbhOZP1pKwH8kEN14G/HCI?type=design&node-id=9-300&scaling=scale-down&page-id=0%3A1&starting-point-node-id=9%3A300&show-proto-sidebar=1
